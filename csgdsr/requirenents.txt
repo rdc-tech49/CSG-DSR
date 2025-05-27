@@ -1,0 +1,10 @@
+pip install psycopg2-binary
+pip install django-filter
+pip install django-tables2
+pip install django-import-export
+pip install django-chartjs
+pip install django-allauth django-guardian
+pip install django-crispy-forms
+pip install celery
+pip install django-celery-beat
+pip install django-allauth django-guardian django-crispy-forms django-tables2 django-filter reportlab pandas openpyxl django-import-export django-mptt django-leaflet django-notifications-hq celery django-chartjs django-adminlte2 django-axes django-auditlog
