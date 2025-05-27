@@ -1,4 +1,24 @@
-{% extends 'base.html' %}
+{% extends 'dsr/base.html' %}
+{% load static %}
 {% block content %}
-<h1>Welcome</h1>
+
+{% include 'dsr/header.html' %}  <!-- ✅ Header included -->
+
+<main>
+  <div class="container px-1 py-0">
+    <div class="row align-items-center g-lg-5 py-3">
+      <div class="col-lg-7 text-center ">
+        <img class="bi " width="150" height="150" src="{% static 'dsr/images/csg.png' %}" alt="TN Police Logo">
+        <h3 class="display-5 fw-bold lh-1 mb-3 text-danger">COASTAL SECURITY GROUP</h3>
+        <h1 class="display-5 fw-bold lh-1 mb-3 text-danger">DAILY STATUS REPORT</h1>
+      </div>
+      <div class="col-md-10 mx-auto col-lg-5" id="login-form">
+        {% include 'dsr/login.html' %}
+      </div>
+    </div>
+  </div>
+</main>
+
+{% include 'dsr/footer.html' %}
+
 {% endblock %}

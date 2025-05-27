@@ -44,13 +44,11 @@ INSTALLED_APPS = [
     # Third-party apps
     'crispy_forms', # for form rendering
     'crispy_bootstrap5',  # for Bootstrap 5 support
-    'allauth', # Django Allauth for authentication 
-    'allauth.account', # for account management
-    'allauth.socialaccount', # for social account management
     'guardian', # Object-level permissions
     'django_tables2', # for table rendering
     'django_filters', # for filtering querysets
     'import_export', # for data import/export
+    'widget_tweaks',
 
 ]
 
@@ -59,18 +57,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-    'guardian.backends.ObjectPermissionBackend',
-]
 
-SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'csgdsr.urls'

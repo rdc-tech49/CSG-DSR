@@ -1,0 +1,21 @@
+{% load static %}
+<header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between px-5 py-2 mb-0 border-bottom text-bg-info">
+    <div class="col-md-3 mb-0 mb-md-0">
+      <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+            <img class="bi" width="90" height="90" src="{% static 'dsr/images/tnp.png' %}" alt="TN Police Logo">
+        </a>
+    </div>
+
+    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+    <li><a href="#" class="nav-link px-2 text-white ">Home</a></li>
+    <li><a href="#" class="nav-link px-2 text-white">About</a></li>
+    <li><a href="#" class="nav-link px-2 text-white">Contact</a></li>
+    </ul>
+
+    <div class="col-md-3 text-end">
+    <a type="button" class="btn btn-outline-light me-2" href="{% url 'home' %}">Login</a>
+    <a type="button" class="btn btn-primary" href="{% url 'signup' %}">Sign-up</a>
+    </div>
+</header>
+
+
