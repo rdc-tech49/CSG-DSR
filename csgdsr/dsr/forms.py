@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
     ('SP Nagapattinam', 'SP Nagapattinam'),('SP Ramnad', 'SP Ramnad'),
@@ -9,12 +10,12 @@ USER_CHOICES = [
     ('DSP Chennai', 'DSP Chennai'),('DSP Vedaranyam', 'DSP Vedaranyam'),('DSP Pattukottai', 'DSP Pattukottai'),('DSP Thoothukudi', 'DSP Thoothukudi'),
     ('INS Chennai', 'INS Chennai'),('INS Mahaballipuram', 'INS Mahaballipuram'),('INS Cuddalore', 'INS Cuddalore'),('INS Nagapattinam', 'INS Nagapattinam'),('INS Vedaranyam', 'INS Vedaranyam'),('INS Pattukottai', 'INS Pattukottai'),('INS Manamelkudi', 'INS Manamelkudi'),('INS Ramnad', 'INS Ramnad'),('INS Thoothukudi', 'INS Thoothukudi'),('INS Kanyakumari', 'INS Kanyakumari'),
     ('MARINA MPS', 'MARINA MPS'),('ERNAVUR MPS', 'ERNAVUR MPS'),('PAZHAVERKADU MPS', 'PAZHAVERKADU MPS'),
-    ('ARAMBAKKAM MPS', 'ARAMBAKKAM'),
-    ('KOVALAM MPS', 'KOVALAM'),
-    ('KALPAKKAM MPS', 'KALPAKKAM'),
-    ('MUTHALIYARKUPPAM MPS', 'MUTHALIYARKUPPAM'),
-    ('MARAKKANAM MPS','MARAKKANAM'),
-    ('PUDUKUPPAM MPS','PUDUKUPPAM'),
+    ('ARAMBAKKAM MPS', 'ARAMBAKKAM MPS'),
+    ('KOVALAM MPS', 'KOVALAM MPS'),
+    ('KALPAKKAM MPS', 'KALPAKKAM MPS'),
+    ('MUTHALIYARKUPPAM MPS', 'MUTHALIYARKUPPAM MPS'),
+    ('MARAKKANAM MPS','MARAKKANAM MPS'),
+    ('PUDUKUPPAM MPS','PUDUKUPPAM MPS'),
     ('DEVANAMPATTINAM  MPS','DEVANAMPATTINAM MPS'), 
     ('PARANGIPETTAI MPS','PARANGIPETTAI MPS'),
     ('PUDUPATTINAM MPS','PUDUPATTINAM MPS'),
@@ -76,3 +77,10 @@ class CustomSignupForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+
+class UpdateUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']

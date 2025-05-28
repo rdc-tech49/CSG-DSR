@@ -88,7 +88,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'csgdsr.wsgi.application'
+# Optional: customize message tag mapping to Bootstrap classes
+from django.contrib.messages import constants as messages
 
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

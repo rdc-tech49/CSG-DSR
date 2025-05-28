@@ -1,0 +1,34 @@
+{% extends 'dsr/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="col-sm-6 mx-auto">
+    <div class="card shadow-sm p-4">
+      <h3 class="mb-3 text-center">Update Your Account</h3>
+      <form method="POST">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          {{ form.username|add_class:"form-control" }}
+          {% for error in form.username.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          {{ form.email|add_class:"form-control" }}
+          {% for error in form.email.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Update & Logout</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
