@@ -1,0 +1,90 @@
+{% load static %}
+<section class="d-flex flex-nowrap" id="sidebar">      
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 250px;">
+    <a href="" class="d-flex align-items-center  mb-1 mb-md-0 me-md-auto text-white text-decoration-none">
+      <img src="{% static 'dsr/images/tnp.png' %}" alt="Logo" width="40" height="40" class="me-4">
+      <span class="fs-4">CSG DSR</span>
+    </a>
+    <hr>
+    
+    <ul class="nav nav-pills flex-column mb-auto">
+      
+      <li>
+        <a href="{% url 'user_dashboard' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'user_dashboard' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-speedometer2"></i>
+          <span class="ms-2">Dashboard</span>
+        </a>
+      </li>
+       <li>
+        <a href="{% url 'csg_forms' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'csg_forms' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-grid"></i>
+          <span class="ms-2">Forms</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'cases_registered' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'cases_registered' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-grid"></i>
+          <span class="ms-2">Cases Registerd</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'rescue_seizure' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'rescue_seizure' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-table"></i>
+          <span class="ms-2">Rescue  {{ &amp }} Seizure </span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'forecast' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'forecast' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-table"></i>
+          <span class="ms-2">Forecast</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'fishermen_attack_arrest' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'fishermen_attack_arrest' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-table"></i>
+          <span class="ms-2">Fishermen attack {{ &amp }} arrest </span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'vehicle_status' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'vehicle_status' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-table"></i>
+          <span class="ms-2">Vehicle Status</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'vvc_beat_proforma' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'vvc_beat_proforma' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-table"></i>
+          <span class="ms-2">VVC, Beat {{ &amp }} Proforma</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'patrol_vcheck' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'patrol_vcheck' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-table"></i>
+          <span class="ms-2">Patrol {{ &amp }} Vehicle Check</span>
+        </a>
+      </li>
+    </ul>
+    
+
+
+
+    <hr>
+    <div class="dropdown">
+      <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="{% static 'dsr/images/tnp.png' %}" alt="" width="32" height="32" class="rounded-circle me-2">
+        <strong>{{ request.user.username }}</strong>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+        <li><a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a></li>
+        <li><a class="dropdown-item" href="{% url 'update_user' %}">Update User</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sign Out</button>
+        </form></li>
+      {% comment %} <li><a class="dropdown-item" href="#">Sign out</a></li> {% endcomment %}
+      </ul>
+    </div>
+  </div>
+</section>

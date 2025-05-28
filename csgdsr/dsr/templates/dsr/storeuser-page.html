@@ -1,0 +1,11 @@
+{% extends 'dsr/base.html' %}
+{% load static %}
+{% block content %}
+  {% comment %} Sidebar  {% endcomment %}
+  {% include 'dsr/user_sidebar.html' %}
+  {% comment %} content  {% endcomment %}
+  <div style="margin-left: 250px; padding: 15px; overflow-y: auto;">
+    {% block usercontent %} {% endblock %}
+    <!-- Dynamic content from views will be injected here -->
+  </div>
+{% endblock %}
