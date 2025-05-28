@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+from .models import CSR, FIR
+
 
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
@@ -84,3 +86,24 @@ class UpdateUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email']
+
+
+
+
+class CSRForm(forms.ModelForm):
+    class Meta:
+        model = CSR
+        fields = '__all__'
+        widgets = {
+            'date_of_occurrence': forms.DateInput(attrs={'type': 'date'}),
+            'date_of_receipt': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+class FIRForm(forms.ModelForm):
+    class Meta:
+        model = FIR
+        fields = '__all__'
+        widgets = {
+            'date_of_occurrence': forms.DateInput(attrs={'type': 'date'}),
+            'date_of_receipt': forms.DateInput(attrs={'type': 'date'}),
+        }

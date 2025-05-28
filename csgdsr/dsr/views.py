@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import CustomSignupForm, UpdateUserForm
+from .forms import CustomSignupForm, UpdateUserForm, CSRForm, FIRForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -75,3 +75,61 @@ def update_user_view(request):
     else:
         form = UpdateUserForm(instance=request.user)
     return render(request, 'dsr/registration/update_user.html', {'form': form})
+
+@login_required
+def forms_view(request):
+    return render(request, 'dsr/user/forms_page.html')
+
+@login_required
+def register_case_form_view(request):
+    csr_form = CSRForm()
+    fir_form = FIRForm()
+
+    if request.method == 'POST':
+        if 'submit_csr' in request.POST:
+            csr_form = CSRForm(request.POST)
+            if csr_form.is_valid():
+                csr_form.save()
+                return redirect('register_case_form')
+        elif 'submit_fir' in request.POST:
+            fir_form = FIRForm(request.POST)
+            if fir_form.is_valid():
+                fir_form.save()
+                return redirect('register_case_form')
+
+    return render(request, 'dsr/user/register_case.html', {
+        'csr_form': csr_form,
+        'fir_form': fir_form
+    })
+
+@login_required
+def rescue_seizure_form_view(request):
+    return render(request, 'dsr/rescue_seizure.html')
+
+@login_required
+def forecast_form_view(request):
+    return render(request, 'dsr/forecast.html')
+
+@login_required
+def fishermen_attack_arrest_form_view(request):
+    return render(request, 'dsr/fishermen_attacks.html')
+
+@login_required
+def vehicle_status_form_view(request):
+    return render(request, 'dsr/vehicle_status.html')
+
+@login_required
+def vvc_beat_proforma_form_view(request):
+    return render(request, 'dsr/vvc_beat_proforma.html')
+
+@login_required
+def patrol_vehicle_check_form_view(request):
+    return render(request, 'dsr/patrol_vehicle_check.html')
+
+@login_required
+def vvc_view(request):
+    return render(request, 'dsr/vvc.html')
+
+@login_required
+def beat_proforma_view(request):
+    return render(request, 'dsr/beat_proforma.html')

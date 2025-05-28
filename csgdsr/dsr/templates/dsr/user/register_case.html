@@ -1,0 +1,91 @@
+{% extends 'dsr/user/user_page.html' %}
+{% load static %}
+{% block usercontent %} 
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+<div class="container my-4">
+  <h2 class="mb-4">Cases Registered</h2>
+  
+  <!-- CSR Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">CSR Form</div>
+    <div class="card-body">
+      <form method="POST">
+        {% csrf_token %}
+        {{ csr_form|crispy }}
+        <button type="submit" name="submit_csr" class="btn btn-success">Submit CSR</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- FIR Form -->
+  <div class="card">
+    <div class="card-header bg-dark text-white">FIR Form</div>
+    <div class="card-body">
+      <form method="POST">
+        {% csrf_token %}
+        {{ fir_form.category|add_class:"form-control" }}
+        {{ fir_form.crime_number|add_class:"form-control" }}
+        {{ fir_form.case_registered|add_class:"form-control" }}
+        {{ fir_form.mps_limit|add_class:"form-control" }}
+        {{ fir_form.date_of_occurrence|add_class:"form-control" }}
+        {{ fir_form.date_of_receipt|add_class:"form-control" }}
+        {{ fir_form.scene_of_crime|add_class:"form-control" }}
+        {{ fir_form.petitioner|add_class:"form-control" }}
+
+        <div id="accused-field" class="mb-3">
+          <label>Accused</label>
+          {{ fir_form.accused|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label>Deceased</label>
+          {{ fir_form.deceased|add_class:"form-control" }}
+        </div>
+
+        <div id="missing-field" class="mb-3">
+          <label>Missing</label>
+          {{ fir_form.missing|add_class:"form-control" }}
+        </div>
+
+        {{ fir_form.gist_of_case|add_class:"form-control" }}
+        {{ fir_form.investigation_officer|add_class:"form-control" }}
+
+        <button type="submit" name="submit_fir" class="btn btn-success mt-3">Submit FIR</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for conditional fields -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const categorySelect = document.querySelector('#id_category');
+  const accusedField = document.getElementById('accused-field');
+  const missingField = document.getElementById('missing-field');
+
+  function toggleFields() {
+    const selected = categorySelect.value;
+    
+    // Hide 'Accused' if category is '194 BNSS' or 'Missing'
+    if (selected === '194 BNSS' || selected === 'Missing') {
+      accusedField.style.display = 'none';
+    } else {
+      accusedField.style.display = 'block';
+    }
+
+    // Show 'Missing' only if category is 'Missing'
+    if (selected === 'Missing') {
+      missingField.style.display = 'block';
+    } else {
+      missingField.style.display = 'none';
+    }
+  }
+
+  categorySelect.addEventListener('change', toggleFields);
+  toggleFields();  // Initial call on load
+});
+</script>
+
+{% endblock %}
+
