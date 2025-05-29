@@ -1,5 +1,8 @@
 
 from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 MPS_CHOICES = [
     ("MARINA MPS", "MARINA MPS"),("ERNAVUR MPS", "ERNAVUR MPS"),("PAZHAVERKADU MPS", "PAZHAVERKADU MPS"),
@@ -44,38 +47,20 @@ MPS_CHOICES = [
     ("COLACHEL MPS","COLACHEL MPS")
 ]
 
-FIR_CATEGORIES = [
-    ("194 BNSS", "194 BNSS"),
-    ("Missing", "Missing"),
-    ("Maritime Act", "Maritime Act"),
-    ("NDPS", "NDPS"),
-    ("102 BNSS", "102 BNSS"),
-    ("294 BNS", "294 BNS"),
-    ("BNS (others)", "BNS (others)"),
-]
+
 
 class CSR(models.Model):
-    csr_no = models.CharField(max_length=20)
-    case_registered = models.CharField(max_length=50, choices=MPS_CHOICES)
-    mps_limit = models.CharField(max_length=50, choices=MPS_CHOICES)
-    date_of_occurrence = models.DateField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    csr_number = models.CharField(max_length=20)
+    police_station = models.CharField(max_length=50, choices=MPS_CHOICES, default="-- Select Police Station --")
     date_of_receipt = models.DateField()
-    scene_of_crime = models.TextField()
+    place_of_occurrence = models.CharField(max_length=255)
     petitioner = models.CharField(max_length=255)
-    gist_of_case = models.TextField()
-
-class FIR(models.Model):
-    category = models.CharField(max_length=50, choices=FIR_CATEGORIES)
-    crime_number = models.CharField(max_length=20)
-    case_registered = models.CharField(max_length=50, choices=MPS_CHOICES)
-    mps_limit = models.CharField(max_length=50, choices=MPS_CHOICES)
-    date_of_occurrence = models.DateField()
-    date_of_receipt = models.DateField()
-    scene_of_crime = models.TextField()
-    petitioner = models.CharField(max_length=255)
-    accused = models.CharField(max_length=255, blank=True, null=True)
-    deceased = models.CharField(max_length=255, blank=True, null=True)
-    missing = models.CharField(max_length=255, blank=True, null=True)
-    gist_of_case = models.TextField()
-    investigation_officer = models.CharField(max_length=255)
-
+    counter_petitioner = models.CharField(max_length=255, blank=True, null=True)
+    nature_of_petition = models.TextField()
+    gist_of_petition = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+      # stores the logged-in user
+ 
+    def __str__(self):
+        return self.csr_number

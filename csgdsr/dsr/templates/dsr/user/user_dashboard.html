@@ -1,5 +1,30 @@
 {% extends 'dsr/user/user_page.html' %}
 {% load static %}
-{% block user_content %}
+{% block usercontent %}
+
+{% if messages %}
+  <div id="message-container">
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<script>
+  // hide message after 5 seconds 
+setTimeout(function() {
+  const alertBox = document.querySelector('#message-container .alert');
+  if (alertBox) {
+    alertBox.classList.remove('show');
+    alertBox.classList.add('hide');
+    setTimeout(() => alertBox.remove(), 500); // remove from DOM
+  }
+}, 5000);
+
+
+</script>
 
 {% endblock %}

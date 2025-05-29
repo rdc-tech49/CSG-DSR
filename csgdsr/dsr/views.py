@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
-from .forms import CustomSignupForm, UpdateUserForm, CSRForm, FIRForm
+from .forms import CustomSignupForm, UpdateUserForm,CSRForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from .forms import UpdateUserForm
 from django import forms
@@ -103,7 +103,19 @@ def forms_view(request):
 
 @login_required
 def csr_form_view(request):
-    return render(request, 'dsr/user/forms/csr_form.html')
+    if request.method == 'POST':
+        form = CSRForm(request.POST)
+        if form.is_valid():
+            csr = form.save(commit=False)
+            csr.user = request.user  # ✅ Assign the logged-in user
+            csr.save()
+            messages.success(request, 'CSR form submitted successfully!')
+            print("Message added!")
+            return redirect('user_dashboard')
+    else:
+        form = CSRForm()
+    return render(request, 'dsr/user/forms/csr_form.html', {'form': form})
+
 
 @login_required
 def bnss194_form_view(request):

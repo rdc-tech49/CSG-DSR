@@ -1,56 +1,98 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-
-from .models import CSR, FIR
+from .models import CSR
 
 
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
-    ('SP Nagapattinam', 'SP Nagapattinam'),('SP Ramnad', 'SP Ramnad'),
-    ('ADSP Nagapattinam', 'ADSP Nagapattinam'),('ADSP Ramnad', 'ADSP Ramnad'),
-    ('DSP Chennai', 'DSP Chennai'),('DSP Vedaranyam', 'DSP Vedaranyam'),('DSP Pattukottai', 'DSP Pattukottai'),('DSP Thoothukudi', 'DSP Thoothukudi'),
-    ('INS Chennai', 'INS Chennai'),('INS Mahaballipuram', 'INS Mahaballipuram'),('INS Cuddalore', 'INS Cuddalore'),('INS Nagapattinam', 'INS Nagapattinam'),('INS Vedaranyam', 'INS Vedaranyam'),('INS Pattukottai', 'INS Pattukottai'),('INS Manamelkudi', 'INS Manamelkudi'),('INS Ramnad', 'INS Ramnad'),('INS Thoothukudi', 'INS Thoothukudi'),('INS Kanyakumari', 'INS Kanyakumari'),
-    ('MARINA MPS', 'MARINA MPS'),('ERNAVUR MPS', 'ERNAVUR MPS'),('PAZHAVERKADU MPS', 'PAZHAVERKADU MPS'),
-    ('ARAMBAKKAM MPS', 'ARAMBAKKAM MPS'),
-    ('KOVALAM MPS', 'KOVALAM MPS'),
-    ('KALPAKKAM MPS', 'KALPAKKAM MPS'),
-    ('MUTHALIYARKUPPAM MPS', 'MUTHALIYARKUPPAM MPS'),
-    ('MARAKKANAM MPS','MARAKKANAM MPS'),
-    ('PUDUKUPPAM MPS','PUDUKUPPAM MPS'),
-    ('DEVANAMPATTINAM  MPS','DEVANAMPATTINAM MPS'), 
-    ('PARANGIPETTAI MPS','PARANGIPETTAI MPS'),
-    ('PUDUPATTINAM MPS','PUDUPATTINAM MPS'),
-    ('THIRUMULLAIVASAL MPS','THIRUMULLAIVASAL MPS'), 
-    ('POOMBUHAR MPS','POOMBUHAR MPS'), 
-    ('THARANGAMBADI MPS','THARANGAMBADI MPS'), 
-    ('NAGAPATTINAM MPS','NAGAPATTINAM MPS'), 
-    ('VELANKANNI MPS','VELANKANNI MPS'), 
-    ('KEELAIYUR MPS','KEELAIYUR MPS'), 
-    ('VEDARANYAM MPS','VEDARANYAM MPS'), 
-    ('THERKUKADU MPS','THERKUKADU MPS'), 
-    ('ADHIRAMAPATTINAM MPS','ADHIRAMAPATTINAM MPS'), 
-    ('SETHUBAVACHATIRAM MPS','SETHUBAVACHATIRAM MPS'), 
-    ('MANAMELKUDI MPS','MANAMELKUDI MPS'), 
-    ('MIMISAL MPS','MIMISAL MPS'), 
-    ('THIRUPUNAVASAL MPS','THIRUPUNAVASAL MPS'), 
-    ('THONDI MPS','THONDI MPS'), 
-    ('DEVIPATTINAM MPS','DEVIPATTINAM MPS'), 
-    ('ATTRANKARAI MPS','ATTRANKARAI MPS'), 
-    ('MANDAPAM MPS','MANDAPAM MPS'), 
-    ('RAMESWARAM MPS','RAMESWARAM MPS'), 
-    ('PUDUMADAM MPS','PUDUMADAM MPS'), 
-    ('KEELAKARAI MPS','KEELAKARAI MPS'), 
-    ('VALINOKKAM MPS','VALINOKKAM MPS'),
-    ('VEMBAR MPS','VEMBAR MPS'),
-    ('THARUVAIKULAM MPS','THARUVAIKULAM MPS'),
-    ('MEENAVAR COLONY MPS','MEENAVAR COLONY MPS'),
-    ('THIRUCHENDUR MPS','THIRUCHENDUR MPS'),
-    ('KULASEKARAPATTINAM MPS','KULASEKARAPATTINAM MPS'),
-    ('UVARI MPS','UVARI MPS'),
-    ('KOODANKULAM MPS','KOODANKULAM MPS'),
-    ('KANNIYAKUMARI MPS','KANNIYAKUMARI MPS'),
-    ('COLACHEL MPS','COLACHEL MPS') 
+    ('SP_Nagapattinam', 'SP_Nagapattinam'),('SP_Ramnad', 'SP_Ramnad'),
+    ('ADSP_Nagapattinam', 'ADSP_Nagapattinam'),('ADSP_Ramnad', 'ADSP_Ramnad'),
+    ('DSP_Chennai', 'DSP_Chennai'),('DSP_Vedaranyam', 'DSP_Vedaranyam'),('DSP_Pattukottai', 'DSP_Pattukottai'),('DSP_Thoothukudi', 'DSP_Thoothukudi'),
+    ('INS_Chennai', 'INSChennai'),('INS_Mahaballipuram', 'INS_Mahaballipuram'),('INS_Cuddalore', 'INS_Cuddalore'),('INS_Nagapattinam', 'INS_Nagapattinam'),('INS_Vedaranyam', 'INS_Vedaranyam'),('INS_Pattukottai', 'INS_Pattukottai'),('INS_Manamelkudi', 'INS_Manamelkudi'),('INS_Ramnad', 'INS_Ramnad'),('INS_Thoothukudi', 'INS_Thoothukudi'),('INS_Kanyakumari', 'INS_Kanyakumari'),
+    ('MARINA_MPS', 'MARINA_MPS'),('ERNAVUR_MPS', 'ERNAVUR_MPS'),('PAZHAVERKADU_MPS', 'PAZHAVERKADU_MPS'),
+    ('ARAMBAKKAM_MPS', 'ARAMBAKKAM_MPS'),
+    ('KOVALAM_MPS', 'KOVALAM_MPS'),
+    ('KALPAKKAM_MPS', 'KALPAKKAM_MPS'),
+    ('MUTHALIYARKUPPAM_MPS', 'MUTHALIYARKUPPAM_MPS'),
+    ('MARAKKANAM_MPS','MARAKKANAM_MPS'),
+    ('PUDUKUPPAM_MPS','PUDUKUPPAM_MPS'),
+    ('DEVANAMPATTINAM _MPS','DEVANAMPATTINAM_MPS'), 
+    ('PARANGIPETTAI_MPS','PARANGIPETTAI_MPS'),
+    ('PUDUPATTINAM_MPS','PUDUPATTINAM_MPS'),
+    ('THIRUMULLAIVASAL_MPS','THIRUMULLAIVASAL_MPS'), 
+    ('POOMBUHAR_MPS','POOMBUHAR_MPS'), 
+    ('THARANGAMBADI_MPS','THARANGAMBADI_MPS'), 
+    ('NAGAPATTINAM_MPS','NAGAPATTINAM_MPS'), 
+    ('VELANKANNI_MPS','VELANKANNI_MPS'), 
+    ('KEELAIYUR_MPS','KEELAIYUR_MPS'), 
+    ('VEDARANYAM_MPS','VEDARANYAM_MPS'), 
+    ('THERKUKADU_MPS','THERKUKADU_MPS'), 
+    ('ADHIRAMAPATTINAM_MPS','ADHIRAMAPATTINAM_MPS'), 
+    ('SETHUBAVACHATIRAM_MPS','SETHUBAVACHATIRAM_MPS'), 
+    ('MANAMELKUDI_MPS','MANAMELKUDI_MPS'), 
+    ('MIMISAL_MPS','MIMISAL_MPS'), 
+    ('THIRUPUNAVASAL_MPS','THIRUPUNAVASAL_MPS'), 
+    ('THONDI_MPS','THONDI_MPS'), 
+    ('DEVIPATTINAM_MPS','DEVIPATTINAM_MPS'), 
+    ('ATTRANKARAI_MPS','ATTRANKARAI_MPS'), 
+    ('MANDAPAM_MPS','MANDAPAM_MPS'), 
+    ('RAMESWARAM_MPS','RAMESWARAM_MPS'), 
+    ('PUDUMADAM_MPS','PUDUMADAM_MPS'), 
+    ('KEELAKARAI_MPS','KEELAKARAI_MPS'), 
+    ('VALINOKKAM_MPS','VALINOKKAM_MPS'),
+    ('VEMBAR_MPS','VEMBAR_MPS'),
+    ('THARUVAIKULAM_MPS','THARUVAIKULAM_MPS'),
+    ('MEENAVAR_COLONY_MPS','MEENAVAR_COLONY_MPS'),
+    ('THIRUCHENDUR_MPS','THIRUCHENDUR_MPS'),
+    ('KULASEKARAPATTINAM_MPS','KULASEKARAPATTINAM_MPS'),
+    ('UVARI_MPS','UVARI_MPS'),
+    ('KOODANKULAM_MPS','KOODANKULAM_MPS'),
+    ('KANNIYAKUMARI_MPS','KANNIYAKUMARI_MPS'),
+    ('COLACHEL_MPS','COLACHEL_MPS') 
+]
+
+MPS_CHOICES = [
+    ("MARINA_MPS", "MARINA_MPS"),("ERNAVUR_MPS", "ERNAVUR_MPS"),("PAZHAVERKADU_MPS", "PAZHAVERKADU_MPS"),
+    ("ARAMBAKKAM_MPS", "ARAMBAKKAM_MPS"),
+    ("KOVALAM_MPS", "KOVALAM_MPS"),
+    ("KALPAKKAM_MPS", "KALPAKKAM_MPS"),
+    ("MUTHALIYARKUPPAM_MPS", "MUTHALIYARKUPPAM_MPS"),
+    ("MARAKKANAM_MPS","MARAKKANAM_MPS"),
+    ("PUDUKUPPAM_MPS","PUDUKUPPAM_MPS"),
+    ("DEVANAMPATTINAM _MPS","DEVANAMPATTINAM_MPS"), 
+    ("PARANGIPETTAI_MPS","PARANGIPETTAI_MPS"),
+    ("PUDUPATTINAM_MPS","PUDUPATTINAM_MPS"),
+    ("THIRUMULLAIVASAL_MPS","THIRUMULLAIVASAL_MPS"), 
+    ("POOMBUHAR_MPS","POOMBUHAR_MPS"), 
+    ("THARANGAMBADI_MPS","THARANGAMBADI_MPS"), 
+    ("NAGAPATTINAM_MPS","NAGAPATTINAM_MPS"), 
+    ("VELANKANNI_MPS","VELANKANNI_MPS"), 
+    ("KEELAIYUR_MPS","KEELAIYUR_MPS"), 
+    ("VEDARANYAM_MPS","VEDARANYAM_MPS"), 
+    ("THERKUKADU_MPS","THERKUKADU_MPS"), 
+    ("ADHIRAMAPATTINAM_MPS","ADHIRAMAPATTINAM_MPS"), 
+    ("SETHUBAVACHATIRAM_MPS","SETHUBAVACHATIRAM_MPS"), 
+    ("MANAMELKUDI_MPS","MANAMELKUDI_MPS"), 
+    ("MIMISAL_MPS","MIMISAL_MPS"), 
+    ("THIRUPUNAVASAL_MPS","THIRUPUNAVASAL_MPS"), 
+    ("THONDI_MPS","THONDI_MPS"), 
+    ("DEVIPATTINAM_MPS","DEVIPATTINAM_MPS"), 
+    ("ATTRANKARAI_MPS","ATTRANKARAI_MPS"), 
+    ("MANDAPAM_MPS","MANDAPAM_MPS"), 
+    ("RAMESWARAM_MPS","RAMESWARAM_MPS"), 
+    ("PUDUMADAM_MPS","PUDUMADAM_MPS"), 
+    ("KEELAKARAI_MPS","KEELAKARAI_MPS"), 
+    ("VALINOKKAM_MPS","VALINOKKAM_MPS"),
+    ("VEMBAR_MPS","VEMBAR_MPS"),
+    ("THARUVAIKULAM_MPS","THARUVAIKULAM_MPS"),
+    ("MEENAVAR COLONY_MPS","MEENAVAR COLONY_MPS"),
+    ("THIRUCHENDUR_MPS","THIRUCHENDUR_MPS"),
+    ("KULASEKARAPATTINAM_MPS","KULASEKARAPATTINAM_MPS"),
+    ("UVARI_MPS","UVARI_MPS"),
+    ("KOODANKULAM_MPS","KOODANKULAM_MPS"),
+    ("KANNIYAKUMARI_MPS","KANNIYAKUMARI_MPS"),
+    ("COLACHEL_MPS","COLACHEL_MPS")
 ]
 
 class CustomSignupForm(forms.ModelForm):
@@ -87,23 +129,27 @@ class UpdateUserForm(forms.ModelForm):
         model = User
         fields = ['username', 'email']
 
-
-
-
 class CSRForm(forms.ModelForm):
     class Meta:
         model = CSR
         fields = '__all__'
-        widgets = {
-            'date_of_occurrence': forms.DateInput(attrs={'type': 'date'}),
-            'date_of_receipt': forms.DateInput(attrs={'type': 'date'}),
+        labels = {
+            'csr_number': 'CSR Number',
+            'police_station': 'Police Station',
+            'date_of_receipt': 'Date of Receipt',
+            'place_of_occurrence': 'Place of Occurrence',
+            'petitioner': 'Petitioner',
+            'counter_petitioner': 'Counter Petitioner',
+            'nature_of_petition': 'Nature of Petition',
+            'gist_of_petition': 'Gist of Petition',
         }
-
-class FIRForm(forms.ModelForm):
-    class Meta:
-        model = FIR
-        fields = '__all__'
         widgets = {
-            'date_of_occurrence': forms.DateInput(attrs={'type': 'date'}),
-            'date_of_receipt': forms.DateInput(attrs={'type': 'date'}),
+            'csr_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 202/2025'}),
+            'police_station': forms.Select(attrs={'class': 'form-control'}),
+            'date_of_receipt': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'place_of_occurrence': forms.TextInput(attrs={'class': 'form-control'}),
+            'petitioner': forms.TextInput(attrs={'class': 'form-control'}),
+            'counter_petitioner': forms.TextInput(attrs={'class': 'form-control'}),
+            'nature_of_petition': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'gist_of_petition': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
