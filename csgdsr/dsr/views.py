@@ -77,7 +77,26 @@ def logout_view(request):
 
 @login_required
 def forms_view(request):
-    return render(request, 'dsr/user/forms_page.html')
+    cards = [
+        {"title": "CSR", "url_name": "csr_form", "icon": "bi-file-earmark-text", "color": "#0d6efd"},
+        {"title": "194 BNSS", "url_name": "194bnss_form", "icon": "bi-clipboard-data", "color": "#6610f2"},
+        {"title": "Missing", "url_name": "missing_form", "icon": "bi-person-dash", "color": "#dc3545"},
+        {"title": "Maritime Act", "url_name": "maritimeact_form", "icon": "bi-globe", "color": "#20c997"},
+        {"title": "Other Cases", "url_name": "othercases_form", "icon": "bi-briefcase", "color": "#6f42c1"},
+        {"title": "Rescue", "url_name": "rescue_form", "icon": "bi-life-preserver", "color": "#fd7e14"},
+        {"title": "Seizure", "url_name": "seizure_form", "icon": "bi-shield-check", "color": "#198754"},
+        {"title": "Forecast", "url_name": "forecast_form", "icon": "bi-cloud-sun", "color": "#0dcaf0"},
+        {"title": "Attack on TN Fishermen", "url_name": "fishermen_attack_form", "icon": "bi-person-x", "color": "#ffc107"},
+        {"title": "TN Fishermen Arrest", "url_name": "fishermen_arrest_form", "icon": "bi-handcuffs", "color": "#dc3545"},
+        {"title": "Vehicle & Boat Status", "url_name": "boat_vehicle_status_form", "icon": "bi-truck", "color": "#6c757d"},
+        {"title": "VVC", "url_name": "vvc_form", "icon": "bi-folder2-open", "color": "#20c997"},
+        {"title": "Beat", "url_name": "beat_form", "icon": "bi-compass", "color": "#0d6efd"},
+        {"title": "Proforma", "url_name": "proforma_form", "icon": "bi-ui-checks", "color": "#198754"},
+        {"title": "Boat Patrol", "url_name": "boat_patrol_form", "icon": "bi-ship", "color": "#0dcaf0"},
+        {"title": "Vehicle Check", "url_name": "vehicle_check_form", "icon": "bi-search", "color": "#6f42c1"},
+    ]
+    return render(request, 'dsr/user/forms_page.html', {'cards': cards})
+
 
 
 
