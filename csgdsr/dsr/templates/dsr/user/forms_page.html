@@ -5,22 +5,78 @@
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
     <!-- Cases Registered -->
+     {% comment %} csr  {% endcomment %}
     <div class="col">
       <div class="card shadow h-100">
         <div class="card-body text-center">
-          <a href="{% url 'register_case_form' %}" class="stretched-link text-decoration-none text-dark">
-            <h5 class="card-title">Cases Registered</h5>
+          <a href="{% url 'csr_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">CSR </h5>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Rescue & Seizure -->
+    {% comment %} 194 BNSS  {% endcomment %}
     <div class="col">
       <div class="card shadow h-100">
         <div class="card-body text-center">
-          <a href="{% url 'rescue_seizure_form' %}" class="stretched-link text-decoration-none text-dark">
-            <h5 class="card-title">Rescue & Seizure</h5>
+          <a href="{% url '194bnss_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">194 BNSS </h5>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} missing  {% endcomment %}
+    <div class="col">
+      <div class="card shadow h-100">
+        <div class="card-body text-center">
+          <a href="{% url 'missing_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Missing</h5>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} Maritime Act {% endcomment %}
+    <div class="col">
+      <div class="card shadow h-100">
+        <div class="card-body text-center">
+          <a href="{% url 'maritimeact_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Maritime Act </h5>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} Other cases {% endcomment %}
+    <div class="col">
+      <div class="card shadow h-100">
+        <div class="card-body text-center">
+          <a href="{% url 'othercases_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Other Cases</h5>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rescue -->
+    <div class="col">
+      <div class="card shadow h-100">
+        <div class="card-body text-center">
+          <a href="{% url 'rescue_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Rescue</h5>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seizure -->
+    <div class="col">
+      <div class="card shadow h-100">
+        <div class="card-body text-center">
+          <a href="{% url 'seizure_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Seizure</h5>
           </a>
         </div>
       </div>
@@ -37,23 +93,34 @@
       </div>
     </div>
 
-    <!-- Fishermen Attack & Arrest -->
+    <!--Attack on TN Fishermen -->
     <div class="col">
       <div class="card shadow h-100">
         <div class="card-body text-center">
-          <a href="{% url 'fishermen_attack_arrest_form' %}" class="stretched-link text-decoration-none text-dark">
-            <h5 class="card-title">Fishermen Attack & Arrest</h5>
+          <a href="{% url 'fishermen_attack_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Attack on TN Fishermen</h5>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Vehicle Status -->
+    <!--TN Fishermen  Arrest -->
     <div class="col">
       <div class="card shadow h-100">
         <div class="card-body text-center">
-          <a href="{% url 'vehicle_status_form' %}" class="stretched-link text-decoration-none text-dark">
-            <h5 class="card-title">Vehicle Status</h5>
+          <a href="{% url 'fishermen_arrest_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">TN Fishermen Arrest</h5>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Boat & Vehicle Status -->
+    <div class="col">
+      <div class="card shadow h-100">
+        <div class="card-body text-center">
+          <a href="{% url 'boat_vehicle_status_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Vehicle & Boat Status</h5>
           </a>
         </div>
       </div>
@@ -63,30 +130,52 @@
     <div class="col">
       <div class="card shadow h-100">
         <div class="card-body text-center">
-          <a href="{% url 'vvc' %}" class="stretched-link text-decoration-none text-dark">
+          <a href="{% url 'vvc_form' %}" class="stretched-link text-decoration-none text-dark">
             <h5 class="card-title">VVC</h5>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Beat & Proforma -->
+    <!-- Beat -->
     <div class="col">
       <div class="card shadow h-100">
         <div class="card-body text-center">
-          <a href="{% url 'vvc_beat_proforma_form' %}" class="stretched-link text-decoration-none text-dark">
-            <h5 class="card-title">Beat & Proforma</h5>
+          <a href="{% url 'beat_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Beat</h5>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Patrol & Vehicle Check -->
+    <!-- Proforma -->
     <div class="col">
       <div class="card shadow h-100">
         <div class="card-body text-center">
-          <a href="{% url 'patrol_vehicle_check_form' %}" class="stretched-link text-decoration-none text-dark">
-            <h5 class="card-title">Patrol & Vehicle Check</h5>
+          <a href="{% url 'proforma_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Proforma</h5>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Boat Patrol -->
+    <div class="col">
+      <div class="card shadow h-100">
+        <div class="card-body text-center">
+          <a href="{% url 'boat_patrol_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Boat Patrol</h5>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vehicle Check -->
+    <div class="col">
+      <div class="card shadow h-100">
+        <div class="card-body text-center">
+          <a href="{% url 'vehicle_check_form' %}" class="stretched-link text-decoration-none text-dark">
+            <h5 class="card-title">Vehicle Check</h5>
           </a>
         </div>
       </div>

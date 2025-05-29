@@ -24,16 +24,71 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     
     # user page
+    #dashboard
     path('user-dashboard/', views.user_dashboard_view, name='user_dashboard'),
+    #forms main page
     path('forms/', views.forms_view, name='forms_page'),
-    path('register_case_form/', views.register_case_form_view, name='register_case_form'),
-    path('rescue-seizure_form/', views.rescue_seizure_form_view, name='rescue_seizure_form'),
+
+    #findividual orms
+    #cases registered forms
+    #csr
+    path('csr_form/', views.csr_form_view, name='csr_form'),
+    #194bnss
+    path('194bnss_form/', views.bnss194_form_view, name='194bnss_form'),
+    #missing
+    path('missing_form/', views.missing_form_view, name='missing_form'),
+    #Maritime act
+    path('maritimeact_form/', views.maritimeact_form_view, name='maritimeact_form'),
+    #Other cases
+    path('othercases_form/', views.othercases_form, name='othercases_form'),
+    #Rescue
+    path('rescue_form/', views.rescue_form_view, name='rescue_form'),
+    #Seizure
+    path('seizure_form/', views.seizure_form_view, name='seizure_form'),
+    #forecast 
     path('forecast_form/', views.forecast_form_view, name='forecast_form'),
-    path('fishermen_attack_arrest_form/', views.fishermen_attack_arrest_form_view, name='fishermen_attack_arrest_form'),
-    path('vehicle-status_form/', views.vehicle_status_form_view, name='vehicle_status_form'),
-    path('vvc-beat-proforma_form/', views.vvc_beat_proforma_form_view, name='vvc_beat_proforma_form'),
-    path('patrol-vehicle-check_form/', views.patrol_vehicle_check_form_view, name='patrol_vehicle_check_form'),
-    path('beat_proforma/', views.beat_proforma_view, name='beat_proforma'),
-    path('vvc/', views.vvc_view, name='vvc')
+    #fishermen_attack
+    path('fishermen_attack_form/', views.fishermen_attack_form_view, name='fishermen_attack_form'),
+    #fishermen_arrest
+    path('fishermen_arrest_form/', views.fishermen_arrest_form_view, name='fishermen_arrest_form'),
+    #boat_vehicle_status
+    path('boat_vehicle_status_form/', views.boat_vehicle_status_form_view, name='boat_vehicle_status_form'),
+    #vvc
+    path('vvc_form/', views.vvc_form_view, name='vvc_form'),
+    #beat
+    path('beat_form/', views.beat_form_view, name='beat_form'),
+    #proforma
+    path('proforma_form/', views.proforma_form_view, name='proforma_form'),
+    #boat_patrol
+    path('boat_patrol_form/', views.boat_patrol_form_view, name='boat_patrol_form'),
+    #vehicle_check
+    path('vehicle_check_form/', views.vehicle_check_form_view, name='vehicle_check_form'),
+
+
+    #submitted forms summary
+    #cases_registered_summary
+    path('cases_registered_summary/', views.cases_registered_summary_view, name='cases_registered_summary'),
+    #rescue_seizure_summary
+    path('rescue_seizure_summary/', views.rescue_seizure_summary_view, name='rescue_seizure_summary'),
+    #forecast_summary
+    path('forecast_summary/', views.forecast_summary_view, name='forecast_summary'),
+    #fishermen_attack_arrest_summary
+    path('fishermen_attack_arrest_summary/', views.fishermen_attack_arrest_summary_view, name='fishermen_attack_arrest_summary'),
+    #vehicle_status_summary
+    path('vehicle_status_summary/', views.vehicle_status_summary_view, name='vehicle_status_summary'),
+    #vvc_beat_proforma_summary
+    path('vvc_beat_proforma_summary/', views.vvc_beat_proforma_summary_view, name='vvc_beat_proforma_summary'),
+    #patrol_vehicle_check_summary
+    path('patrol_vehicle_check_summary/', views.patrol_vehicle_check_summary_view, name='patrol_vehicle_check_summary'),
+
+
+
+
+
+
+
+
+
+
 
 ]
