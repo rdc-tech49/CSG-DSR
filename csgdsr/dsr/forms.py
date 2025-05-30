@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from .models import CSR
-
+from .models import BNSSMissingCase
 
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
@@ -152,4 +152,23 @@ class CSRForm(forms.ModelForm):
             'counter_petitioner': forms.TextInput(attrs={'class': 'form-control'}),
             'nature_of_petition': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'gist_of_petition': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+class BNSSMissingCaseForm(forms.ModelForm):
+    class Meta:
+        model = BNSSMissingCase
+        exclude = ['date_submitted', 'user']
+        widgets = {
+            'case_category': forms.Select(attrs={'class': 'form-control'}),
+            'crime_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'police_station': forms.TextInput(attrs={'class': 'form-control'}),
+            'mps_limit': forms.Select(attrs={'class': 'form-control'}),
+            'date_of_occurrence': forms.DateTimeInput(attrs={'type': 'datetime-local','class': 'form-control'}),
+            'date_of_receipt': forms.DateTimeInput(attrs={'type': 'datetime-local','class': 'form-control'}),
+            'place_of_occurrence': forms.TextInput(attrs={'class': 'form-control'}),
+            'diseased': forms.TextInput(attrs={'class': 'form-control'}),
+            'missing_person': forms.TextInput(attrs={'class': 'form-control'}),
+            'petitioner': forms.TextInput(attrs={'class': 'form-control'}),
+            'gist_of_case': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }

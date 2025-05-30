@@ -34,7 +34,9 @@ urlpatterns = [
     #csr
     path('csr_form/', views.csr_form_view, name='csr_form'),
     #194bnss
-    path('194bnss_form/', views.bnss194_form_view, name='194bnss_form'),
+    #path('194bnss_form/', views.bnss194_form_view, name='194bnss_form'),
+    path('bnss-missing-form/', views.bnss_missing_form_view, name='bnss_missing_form'),
+
     #missing
     path('missing_form/', views.missing_form_view, name='missing_form'),
     #Maritime act

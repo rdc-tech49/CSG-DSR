@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 User = get_user_model()
+from django.utils import timezone
+
 
 MPS_CHOICES = [
     ("-- Select Police Station --","-- Select Police Station --"),("MARINA MPS", "MARINA MPS"),("ERNAVUR MPS", "ERNAVUR MPS"),("PAZHAVERKADU MPS", "PAZHAVERKADU MPS"),
@@ -48,6 +50,10 @@ MPS_CHOICES = [
 ]
 
 
+CASE_CATEGORIES = [
+    ('194 BNSS', '194 BNSS'),
+    ('Missing', 'Missing'),
+]
 
 class CSR(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -57,10 +63,28 @@ class CSR(models.Model):
     place_of_occurrence = models.CharField(max_length=255)
     petitioner = models.CharField(max_length=255)
     counter_petitioner = models.CharField(max_length=255, blank=True, null=True)
-    nature_of_petition = models.TextField()
+    nature_of_petition = models.TextField(null=True)
     gist_of_petition = models.TextField()
     submitted_at = models.DateTimeField(auto_now_add=True)
       # stores the logged-in user
  
     def __str__(self):
         return self.csr_number
+
+class BNSSMissingCase(models.Model):
+    case_category = models.CharField(max_length=20, choices=CASE_CATEGORIES)
+    crime_number = models.CharField(max_length=50)
+    police_station = models.CharField(max_length=100)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    date_of_occurrence = models.DateTimeField(default=timezone.now)
+    date_of_receipt = models.DateTimeField(default=timezone.now)
+    place_of_occurrence = models.CharField(max_length=200)
+    diseased = models.CharField(max_length=100, blank=True, null=True)
+    missing_person = models.CharField(max_length=100, blank=True, null=True)
+    petitioner = models.CharField(max_length=100)
+    gist_of_case = models.TextField()
+    date_submitted = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.case_category} - {self.crime_number}"

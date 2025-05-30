@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect,get_object_or_404
 from django.http import HttpResponse
 from docx import Document
 from docx.shared import Inches
-from .forms import CustomSignupForm, UpdateUserForm,CSRForm
+from .forms import CustomSignupForm, UpdateUserForm,CSRForm, BNSSMissingCaseForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -84,7 +84,7 @@ def logout_view(request):
 def forms_view(request):
     cards = [
         {"title": "CSR", "url_name": "csr_form", "icon": "bi-file-earmark-text", "color": "#0d6efd"},
-        {"title": "194 BNSS", "url_name": "194bnss_form", "icon": "bi-clipboard-data", "color": "#6610f2"},
+        {"title": "194 BNSS", "url_name": "bnss_missing_form", "icon": "bi-clipboard-data", "color": "#6610f2"},
         {"title": "Missing", "url_name": "missing_form", "icon": "bi-person-dash", "color": "#dc3545"},
         {"title": "Maritime Act", "url_name": "maritimeact_form", "icon": "bi-globe", "color": "#20c997"},
         {"title": "Other Cases", "url_name": "othercases_form", "icon": "bi-briefcase", "color": "#6f42c1"},
@@ -120,6 +120,22 @@ def csr_form_view(request):
     else:
         form = CSRForm()
     return render(request, 'dsr/user/forms/csr_form.html', {'form': form})
+
+
+@login_required
+@login_required
+def bnss_missing_form_view(request):
+    if request.method == 'POST':
+        form = BNSSMissingCaseForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.save()
+            return redirect('cases_summary')  # Redirect to your summary page
+    else:
+        form = BNSSMissingCaseForm()
+
+    return render(request, 'dsr/user/forms/194bnss_missing_form.html', {'form': form})
 
 
 @login_required
