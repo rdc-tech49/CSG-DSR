@@ -1,0 +1,94 @@
+{% extends 'dsr/user/user_page.html' %}
+{% load static %}
+{% block usercontent %}
+<div class="container mt-4">
+  <h2 class="mb-4">Cases Registered Summary</h2>
+
+  <h3 class="mb-4">CSR Summary</h3>
+  <!-- Search and Download Row -->
+  <div class="row mb-3">
+    <div class="col-md-8">
+      <input type="text" id="csr-search" class="form-control" placeholder="Search by CSR Number or Petitioner">
+    </div>
+    <div class="col-md-4 text-end">
+      <a href="{% url 'csr_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
+  </div>
+  <!-- Table container -->
+  <div class="table-responsive" id="csr-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-striped table-bordered align-middle text-center" id="csr-table">
+      <thead class="table-dark">
+        <tr>
+          <th>S.No</th>
+          <th>CSR No.</th>
+          <th>D/R</th>
+          <th>Petitioner</th>
+          <th>View</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="csr-table-body">
+        {% for entry in csr_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ entry.csr_number }}</td>
+            <td>{{ entry.date_of_receipt }}</td>
+            <td>{{ entry.petitioner }}</td>
+            <td>
+              <a href="{% url 'csr_download' entry.id %}" class="btn btn-sm btn-info" target="_blank">
+                <i class="bi bi-download"></i> Download
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'csr_edit' entry.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <a href="{% url 'csr_delete' entry.id %}" class="btn btn-sm btn-danger"
+                 onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6">No CSR entries found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% comment %} script for searching CSR entries {% endcomment %}
+<script>
+  document.getElementById('csr-search').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/ajax/csr-search/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('csr-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6">No CSR entries found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${entry.csr_number}</td>
+                <td>${entry.date_of_receipt}</td>
+                <td>${entry.petitioner}</td>
+                <td>
+                  <a href="/csr/${entry.id}/download/" class="btn btn-sm btn-info" target="_blank">
+                    <i class="bi bi-download"></i> Download
+                  </a>
+                </td>
+                <td>
+                  <a href="/csr/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/csr/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                </td>
+              </tr>`;
+          });
+        }
+      });
+  });
+</script>
+{% endblock %}

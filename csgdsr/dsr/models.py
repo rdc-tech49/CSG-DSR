@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 MPS_CHOICES = [
-    ("MARINA MPS", "MARINA MPS"),("ERNAVUR MPS", "ERNAVUR MPS"),("PAZHAVERKADU MPS", "PAZHAVERKADU MPS"),
+    ("-- Select Police Station --","-- Select Police Station --"),("MARINA MPS", "MARINA MPS"),("ERNAVUR MPS", "ERNAVUR MPS"),("PAZHAVERKADU MPS", "PAZHAVERKADU MPS"),
     ("ARAMBAKKAM MPS", "ARAMBAKKAM MPS"),
     ("KOVALAM MPS", "KOVALAM MPS"),
     ("KALPAKKAM MPS", "KALPAKKAM MPS"),

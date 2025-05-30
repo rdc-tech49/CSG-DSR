@@ -1,4 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
+from django.http import HttpResponse
+from docx import Document
+from docx.shared import Inches
 from .forms import CustomSignupForm, UpdateUserForm,CSRForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -6,11 +9,13 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
-
+from .models import CSR
 from .forms import UpdateUserForm
 from django import forms
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+from django.db.models import Q
 
 # dsr/views.py
 def home_view(request):
@@ -180,7 +185,125 @@ def vehicle_check_form_view(request):
 #submitted forms summary views
 @login_required
 def cases_registered_summary_view(request):
-    return render(request, 'dsr/user/submitted_forms/cases_registered_summary.html')
+    csr_list = CSR.objects.filter(user=request.user).order_by('-date_of_receipt')
+    return render(request, 'dsr//user/submitted_forms/cases_registered_summary.html', {'csr_list': csr_list})
+
+#search for csr
+@login_required
+def csr_ajax_search_view(request):
+    query = request.GET.get('q', '').strip()
+    csr_list = CSR.objects.all()
+
+    if query:
+        csr_list = csr_list.filter(
+            Q(csr_number__icontains=query) |
+            Q(petitioner__icontains=query)
+        )
+
+    data = [
+        {
+            'id': csr.id,
+            'csr_number': csr.csr_number,
+            'date_of_receipt': csr.date_of_receipt.strftime('%Y-%m-%d'),
+            'petitioner': csr.petitioner,
+        }
+        for csr in csr_list
+    ]
+    return JsonResponse(data, safe=False)
+
+#exprt CSR to Word document
+@login_required
+def csr_export_word_view(request):
+    csrs = CSR.objects.all().order_by('date_of_receipt')
+    doc = Document()
+
+    for csr in csrs:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        # Fields to include in the Word document
+        fields = [
+            ("CSR No.", csr.csr_number),
+            ("Police Station", csr.police_station),  # Directly use it as string
+            ("Date of Receipt", csr.date_of_receipt.strftime('%Y-%m-%d') if csr.date_of_receipt else ''),
+            ("Place of Occurrence", csr.place_of_occurrence),
+            ("Petitioner", csr.petitioner),
+            ("Counter Petitioner", csr.counter_petitioner),
+            ("Nature of Petition", csr.nature_of_petition),
+            ("Gist of Petition", csr.gist_of_petition),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()  # Empty line
+        doc.add_paragraph()  # Second empty line
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="CSR_Export.docx"'
+    doc.save(response)
+    return response
+
+#export individual CSR
+@login_required
+def csr_download_view(request, pk):
+    csr = get_object_or_404(CSR, pk=pk)
+
+    # Create a new Word document
+    doc = Document()
+    doc.add_heading('Community Service Register (CSR)', level=1)
+
+    # Create a table with 2 columns
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    # Helper function to add a row
+    def add_row(field, value):
+        row = table.add_row().cells
+        row[0].text = field
+        row[1].text = str(value) if value else ''
+
+    # Add CSR details to the table
+    add_row('CSR Number', csr.csr_number)
+    add_row('Police Station', str(csr.police_station))
+    add_row('Date of Receipt', csr.date_of_receipt.strftime('%Y-%m-%d'))
+    add_row('Petitioner', csr.petitioner)
+    add_row('Counter Petitioner', csr.counter_petitioner)
+    add_row('Nature of Petition', csr.nature_of_petition)
+    add_row('Gist of Petition', csr.gist_of_petition)
+
+    # Prepare HTTP response with docx content
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = f'attachment; filename=CSR_{csr.csr_number}.docx'
+
+    doc.save(response)
+    return response
+
+
+# CSR edit view
+@login_required
+def csr_edit_view(request, pk):
+    csr = get_object_or_404(CSR, pk=pk)
+    if request.method == 'POST':
+        form = CSRForm(request.POST, instance=csr)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'CSR updated successfully!')
+            return redirect('cases_summary')
+    else:
+        form = CSRForm(instance=csr)
+
+    return render(request, 'dsr/user/forms/csr_form.html', {'form': form, 'edit_mode': True}) 
+
+#CSR delete view
+@login_required
+def csr_delete_view(request, pk):
+    csr = get_object_or_404(CSR, pk=pk)
+    csr.delete()
+    messages.success(request, 'CSR entry deleted successfully!')
+    return redirect('cases_summary')  # Adjust this to your summary view name
 
 @login_required
 def rescue_seizure_summary_view(request):

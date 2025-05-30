@@ -29,7 +29,7 @@ urlpatterns = [
     #forms main page
     path('forms/', views.forms_view, name='forms_page'),
 
-    #findividual orms
+    #findividual forms
     #cases registered forms
     #csr
     path('csr_form/', views.csr_form_view, name='csr_form'),
@@ -67,7 +67,16 @@ urlpatterns = [
 
     #submitted forms summary
     #cases_registered_summary
-    path('cases_registered_summary/', views.cases_registered_summary_view, name='cases_registered_summary'),
+    path('cases-summary/', views.cases_registered_summary_view, name='cases_summary'),
+    path('csr/<int:pk>/download/', views.csr_download_view, name='csr_download'),
+    path('csr/<int:pk>/edit/', views.csr_edit_view, name='csr_edit'),
+    path('csr/<int:pk>/delete/', views.csr_delete_view, name='csr_delete'),
+    path('ajax/csr-search/', views.csr_ajax_search_view, name='csr_ajax_search'),
+    path('csr/export-word/', views.csr_export_word_view, name='csr_export_word'),
+
+
+
+
     #rescue_seizure_summary
     path('rescue_seizure_summary/', views.rescue_seizure_summary_view, name='rescue_seizure_summary'),
     #forecast_summary

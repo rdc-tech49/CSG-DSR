@@ -1,44 +1,91 @@
 {% extends 'dsr/user/user_page.html' %}
 {% load static %}
-
 {% block usercontent %}
 <div class="container mt-4">
-  <h2 class="mb-4">CSR Form</h2>
+<h2 class="mb-4">{% if edit_mode %}Edit CSR{% else %}CSR Form{% endif %}</h2>
   <form method="post" novalidate>
     {% csrf_token %}
+
     <div class="row mb-3">
       <div class="col-md-6">
-        {{ form.csr_number.label_tag }} {{ form.csr_number }}
+        <label for="{{ form.csr_number.id_for_label }}" class="form-label">CSR Number</label>
+        <input type="text" name="{{ form.csr_number.name }}" id="{{ form.csr_number.id_for_label }}"
+               value="{{ form.csr_number.value|default_if_none:'' }}"
+               class="form-control {% if form.csr_number.errors %}is-invalid{% endif %}">
+        {% for error in form.csr_number.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
       </div>
+
       <div class="col-md-6">
-        {{ form.police_station.label_tag }} {{ form.police_station }}
+        <label for="{{ form.police_station.id_for_label }}" class="form-label">Police Station</label>
+        {{ form.police_station.as_widget }}
+        {% for error in form.police_station.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
       </div>
     </div>
-    
+
     <div class="row mb-3">
       <div class="col-md-6">
-        {{ form.date_of_receipt.label_tag }} {{ form.date_of_receipt }}
+        <label for="{{ form.date_of_receipt.id_for_label }}" class="form-label">Date of Receipt</label>
+        <input type="date" name="{{ form.date_of_receipt.name }}" id="{{ form.date_of_receipt.id_for_label }}"
+               value="{{ form.date_of_receipt.value|default_if_none:'' }}"
+               class="form-control {% if form.date_of_receipt.errors %}is-invalid{% endif %}">
+        {% for error in form.date_of_receipt.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
       </div>
+
       <div class="col-md-6">
-        {{ form.place_of_occurrence.label_tag }} {{ form.place_of_occurrence }}
+        <label for="{{ form.place_of_occurrence.id_for_label }}" class="form-label">Place of Occurrence</label>
+        <input type="text" name="{{ form.place_of_occurrence.name }}" id="{{ form.place_of_occurrence.id_for_label }}"
+               value="{{ form.place_of_occurrence.value|default_if_none:'' }}"
+               class="form-control {% if form.place_of_occurrence.errors %}is-invalid{% endif %}">
+        {% for error in form.place_of_occurrence.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
       </div>
     </div>
-    
+
     <div class="row mb-3">
       <div class="col-md-6">
-        {{ form.petitioner.label_tag }} {{ form.petitioner }}
+        <label for="{{ form.petitioner.id_for_label }}" class="form-label">Petitioner</label>
+        <input type="text" name="{{ form.petitioner.name }}" id="{{ form.petitioner.id_for_label }}"
+               value="{{ form.petitioner.value|default_if_none:'' }}"
+               class="form-control {% if form.petitioner.errors %}is-invalid{% endif %}">
+        {% for error in form.petitioner.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
       </div>
+
       <div class="col-md-6">
-        {{ form.counter_petitioner.label_tag }} {{ form.counter_petitioner }}
+        <label for="{{ form.counter_petitioner.id_for_label }}" class="form-label">Counter Petitioner</label>
+        <input type="text" name="{{ form.counter_petitioner.name }}" id="{{ form.counter_petitioner.id_for_label }}"
+               value="{{ form.counter_petitioner.value|default_if_none:'' }}"
+               class="form-control {% if form.counter_petitioner.errors %}is-invalid{% endif %}">
+        {% for error in form.counter_petitioner.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
       </div>
-    </div>
-    
-    <div class="mb-3">
-      {{ form.nature_of_petition.label_tag }} {{ form.nature_of_petition }}
     </div>
 
     <div class="mb-3">
-      {{ form.gist_of_petition.label_tag }} {{ form.gist_of_petition }}
+      <label for="{{ form.nature_of_petition.id_for_label }}" class="form-label">Nature of Petition</label>
+      <textarea name="{{ form.nature_of_petition.name }}" id="{{ form.nature_of_petition.id_for_label }}"
+                class="form-control {% if form.nature_of_petition.errors %}is-invalid{% endif %}" rows="3">{{ form.nature_of_petition.value }}</textarea>
+      {% for error in form.nature_of_petition.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.gist_of_petition.id_for_label }}" class="form-label">Gist of Petition</label>
+      <textarea name="{{ form.gist_of_petition.name }}" id="{{ form.gist_of_petition.id_for_label }}"
+                class="form-control {% if form.gist_of_petition.errors %}is-invalid{% endif %}" rows="3">{{ form.gist_of_petition.value }}</textarea>
+      {% for error in form.gist_of_petition.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>
