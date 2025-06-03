@@ -158,17 +158,24 @@ class CSRForm(forms.ModelForm):
 class BNSSMissingCaseForm(forms.ModelForm):
     class Meta:
         model = BNSSMissingCase
-        exclude = ['date_submitted', 'user']
+        exclude = ['submitted_at', 'user']
         widgets = {
             'case_category': forms.Select(attrs={'class': 'form-control'}),
             'crime_number': forms.TextInput(attrs={'class': 'form-control'}),
             'police_station': forms.TextInput(attrs={'class': 'form-control'}),
             'mps_limit': forms.Select(attrs={'class': 'form-control'}),
-            'date_of_occurrence': forms.DateTimeInput(attrs={'type': 'datetime-local','class': 'form-control'}),
-            'date_of_receipt': forms.DateTimeInput(attrs={'type': 'datetime-local','class': 'form-control'}),
+            'date_of_occurrence': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'date_of_receipt': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
             'place_of_occurrence': forms.TextInput(attrs={'class': 'form-control'}),
             'diseased': forms.TextInput(attrs={'class': 'form-control'}),
             'missing_person': forms.TextInput(attrs={'class': 'form-control'}),
             'petitioner': forms.TextInput(attrs={'class': 'form-control'}),
             'gist_of_case': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'io': forms.TextInput(attrs={'class': 'form-control'}),
         }

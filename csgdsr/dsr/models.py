@@ -72,19 +72,21 @@ class CSR(models.Model):
         return self.csr_number
 
 class BNSSMissingCase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
     case_category = models.CharField(max_length=20, choices=CASE_CATEGORIES)
     crime_number = models.CharField(max_length=50)
     police_station = models.CharField(max_length=100)
-    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES,default="-- Select Police Station --")
     date_of_occurrence = models.DateTimeField(default=timezone.now)
     date_of_receipt = models.DateTimeField(default=timezone.now)
     place_of_occurrence = models.CharField(max_length=200)
-    diseased = models.CharField(max_length=100, blank=True, null=True)
-    missing_person = models.CharField(max_length=100, blank=True, null=True)
+    diseased = models.CharField(max_length=200, blank=True, null=True)
+    missing_person = models.CharField(max_length=200, blank=True, null=True)
     petitioner = models.CharField(max_length=100)
     gist_of_case = models.TextField()
-    date_submitted = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    io=models.CharField(max_length=100,blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
         return f"{self.case_category} - {self.crime_number}"

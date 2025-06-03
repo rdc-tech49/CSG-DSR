@@ -9,13 +9,15 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import CSR
+from .models import CSR, BNSSMissingCase
 from .forms import UpdateUserForm
 from django import forms
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.db.models import Q
+
+from django.template.loader import render_to_string
 
 # dsr/views.py
 def home_view(request):
@@ -102,10 +104,6 @@ def forms_view(request):
     ]
     return render(request, 'dsr/user/forms_page.html', {'cards': cards})
 
-
-
-
-
 @login_required
 def csr_form_view(request):
     if request.method == 'POST':
@@ -115,14 +113,12 @@ def csr_form_view(request):
             csr.user = request.user  # ✅ Assign the logged-in user
             csr.save()
             messages.success(request, 'CSR form submitted successfully!')
-            print("Message added!")
-            return redirect('user_dashboard')
+            return redirect('cases_summary')
     else:
         form = CSRForm()
     return render(request, 'dsr/user/forms/csr_form.html', {'form': form})
 
 
-@login_required
 @login_required
 def bnss_missing_form_view(request):
     if request.method == 'POST':
@@ -130,8 +126,12 @@ def bnss_missing_form_view(request):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
+            # instance.date_submitted = timezone.now()
             instance.save()
-            return redirect('cases_summary')  # Redirect to your summary page
+            messages.success(request, "Form submitted successfully!")
+            return redirect('cases_summary')  # or wherever you want to go
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = BNSSMissingCaseForm()
 
@@ -202,8 +202,14 @@ def vehicle_check_form_view(request):
 @login_required
 def cases_registered_summary_view(request):
     csr_list = CSR.objects.filter(user=request.user).order_by('-date_of_receipt')
-    return render(request, 'dsr//user/submitted_forms/cases_registered_summary.html', {'csr_list': csr_list})
-
+    bnss_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='194 BNSS')
+    missing_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='Missing')
+    
+    return render(request, 'dsr/user/submitted_forms/cases_registered_summary.html', {
+        'csr_list': csr_list,
+        'bnss_cases': bnss_cases,
+        'missing_cases': missing_cases,
+    })
 #search for csr
 @login_required
 def csr_ajax_search_view(request):
@@ -320,6 +326,134 @@ def csr_delete_view(request, pk):
     csr.delete()
     messages.success(request, 'CSR entry deleted successfully!')
     return redirect('cases_summary')  # Adjust this to your summary view name
+
+
+@login_required
+def bnss194_cases_ajax_search_view(request):
+    query = request.GET.get('q', '').strip()
+    cases = BNSSMissingCase.objects.filter(case_category='194 BNSS', user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(crime_number__icontains=query) |
+            Q(petitioner__icontains=query) |
+            Q(police_station__icontains=query) |
+            Q(date_of_occurrence__icontains=query) |
+            Q(date_of_receipt__icontains=query)
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'crime_number': case.crime_number,
+            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
+            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
+            'police_station': case.police_station,
+            'mps_limit': case.mps_limit,
+            'petitioner': case.petitioner,
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+def bnss_194_export_word_view(request):
+    bnsss = BNSSMissingCase.objects.filter(case_category='194 BNSS').order_by('date_of_receipt')
+    doc = Document()
+
+    for bnss in bnsss:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        # Fields to include in the Word document
+        fields = [
+            ("Crime No.", bnss.crime_number),
+            ("Police Station", bnss.police_station),  # Directly use it as string
+            ("MPS Limit", bnss.mps_limit),
+            ("Date of Occurrence", bnss.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if bnss.date_of_occurrence else ''),
+            ("Date of Receipt", bnss.date_of_receipt.strftime('%Y-%m-%d') if bnss.date_of_receipt else ''),
+            ("Place of Occurrence", bnss.place_of_occurrence),
+            ("Petitioner", bnss.petitioner),
+            ("Diseased", bnss.diseased if bnss.case_category == '194 BNSS' else ''),
+            ("Missing Person", bnss.missing_person if bnss.case_category == 'Missing' else ''),
+            ("IO", bnss.io),
+            ("Gist of Case", bnss.gist_of_case),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()  # Empty line
+        doc.add_paragraph()  # Second empty line
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="CSR_Export.docx"'
+    doc.save(response)
+    return response
+
+@login_required
+def bnss194_download_view(request, pk):
+    case = get_object_or_404(BNSSMissingCase, pk=pk)
+
+    doc = Document()
+    doc.add_heading(f"{case.case_category} Case Details", level=1)
+
+    # Create table with two columns
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    # Add data
+    add_row('Crime Number', case.crime_number)
+    add_row('Case Category', case.case_category)
+    add_row('Police Station', case.police_station)
+    add_row('MPS Limit', case.mps_limit)
+    add_row('Date of Occurrence', case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_occurrence else '')
+    add_row('Date of Receipt', case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_receipt else '')
+    add_row('Place of Occurrence', case.place_of_occurrence)
+    if case.case_category == '194 BNSS':
+        add_row('Diseased', case.diseased)
+    elif case.case_category == 'Missing':
+        add_row('Missing Person', case.missing_person)
+
+    add_row('Petitioner', case.petitioner)
+    add_row('IO', case.io)
+    add_row('Gist of Case', case.gist_of_case)
+
+    # Prepare response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"{case.case_category.replace(' ', '_')}_{case.crime_number}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+
+@login_required
+def bnss_missing_edit_view(request, pk):
+    case = get_object_or_404(BNSSMissingCase, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = BNSSMissingCaseForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            return redirect('cases_summary')
+    else:
+        form = BNSSMissingCaseForm(instance=case)
+    return render(request, 'dsr/user/forms/194bnss_missing_form.html', {'form': form, 'edit_mode': True})
+
+@login_required
+def bnss_missing_delete_view(request, pk):
+    case = get_object_or_404(BNSSMissingCase, pk=pk, user=request.user)
+    case.delete()
+    return redirect('cases_summary')
+
+
+
+
 
 @login_required
 def rescue_seizure_summary_view(request):

@@ -70,13 +70,22 @@ urlpatterns = [
     #submitted forms summary
     #cases_registered_summary
     path('cases-summary/', views.cases_registered_summary_view, name='cases_summary'),
+
+    #csr_summary
     path('csr/<int:pk>/download/', views.csr_download_view, name='csr_download'),
     path('csr/<int:pk>/edit/', views.csr_edit_view, name='csr_edit'),
     path('csr/<int:pk>/delete/', views.csr_delete_view, name='csr_delete'),
     path('ajax/csr-search/', views.csr_ajax_search_view, name='csr_ajax_search'),
     path('csr/export-word/', views.csr_export_word_view, name='csr_export_word'),
 
-
+    #194bnss_summary
+    path('bnss-194/ajax-search/194bnss/', views.bnss194_cases_ajax_search_view, name='bnss194_cases_ajax_search'),
+    path('bnss-194/export-word/', views.bnss_194_export_word_view, name='bnss_194_export_word'),
+    path('bns194/<int:pk>/download/', views.bnss194_download_view, name='bnss194_download'),
+    path('bnss-missing/<int:pk>/edit/', views.bnss_missing_edit_view, name='bnss_missing_edit'),
+    path('bnss-missing/<int:pk>/delete/', views.bnss_missing_delete_view, name='bnss_missing_delete'),
+    
+    
 
 
     #rescue_seizure_summary

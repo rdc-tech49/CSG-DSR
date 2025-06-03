@@ -2,7 +2,12 @@
 {% load static %}
 {% block usercontent %}
 <div class="container mt-4">
-  <h2 class="mb-4">194 BNSS / Missing Case Form</h2>
+  <h2 class="mb-4">{% if edit_mode %}Edit 194/ Missing {% else %}194 BNSS / Missing Form{% endif %}</h2>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
 
   <form method="post" novalidate>
     {% csrf_token %}
@@ -12,7 +17,7 @@
         <label for="{{ form.case_category.id_for_label }}" class="form-label">Case Category</label>
         {{ form.case_category }}
         {% for error in form.case_category.errors %}
-          <div class="invalid-feedback d-block">{{ error }}</div>
+          <div class="invalid-feedback">{{ error }}</div>
         {% endfor %}
       </div>
 
@@ -61,6 +66,13 @@
       </div>
     </div>
 
+     <div class="mb-3">
+      <label for="{{ form.io.id_for_label }}" class="form-label">Investigating Officer</label>
+      {{ form.io }}
+      {% for error in form.io.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+      {% endfor %}
+    </div>
     <div class="row mb-3">
       <div class="col-md-6">
         <label for="{{ form.place_of_occurrence.id_for_label }}" class="form-label">Place of Occurrence</label>
@@ -70,15 +82,15 @@
         {% endfor %}
       </div>
 
-      <div class="mb-3 col-md-6" id="diseased-field" style="display: none;">
-        <label for="{{ form.diseased.id_for_label }}" class="form-label">Diseased</label>
-        {{ form.diseased }}
-        {% for error in form.diseased.errors %}
+      <div class="mb-3 col-md-6">
+        <label for="{{ form.petitioner.id_for_label }}" class="form-label">Petitioner</label>
+        {{ form.petitioner }}
+        {% for error in form.petitioner.errors %}
           <div class="invalid-feedback d-block">{{ error }}</div>
         {% endfor %}
       </div>
 
-      <div class="mb-3 col-md-6" id="missing-person-field" style="display: none;">
+      <div class="mb-3 col-md-6">
         <label for="{{ form.missing_person.id_for_label }}" class="form-label">Missing Person</label>
         {{ form.missing_person }}
         {% for error in form.missing_person.errors %}
@@ -87,13 +99,14 @@
       </div>
     </div>
 
-    <div class="mb-3">
-      <label for="{{ form.petitioner.id_for_label }}" class="form-label">Petitioner</label>
-      {{ form.petitioner }}
-      {% for error in form.petitioner.errors %}
+   <div class="mb-3">
+      <label for="{{ form.io.id_for_label }}" class="form-label">Investigating Officer</label>
+      {{ form.io }}
+      {% for error in form.io.errors %}
         <div class="invalid-feedback d-block">{{ error }}</div>
       {% endfor %}
     </div>
+
 
     <div class="mb-3">
       <label for="{{ form.gist_of_case.id_for_label }}" class="form-label">Gist of Case</label>
@@ -103,11 +116,12 @@
       {% endfor %}
     </div>
 
+    
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 </div>
 
-<script>
+{% comment %} <script>
   function toggleFields() {
     const category = document.getElementById("id_case_category").value;
     document.getElementById("diseased-field").style.display = category === "194 BNSS" ? "block" : "none";
@@ -119,5 +133,5 @@
     categoryField.addEventListener("change", toggleFields);
     toggleFields();  // Trigger on page load
   });
-</script>
+</script> {% endcomment %}
 {% endblock %}
