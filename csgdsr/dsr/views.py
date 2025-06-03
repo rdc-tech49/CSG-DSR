@@ -356,6 +356,36 @@ def bnss194_cases_ajax_search_view(request):
     ]
     return JsonResponse(data, safe=False)
 
+@login_required
+def missing_ajax_search_view(request):
+    query = request.GET.get('q', '').strip()
+    cases = BNSSMissingCase.objects.filter(case_category='Missing', user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(crime_number__icontains=query) |
+            Q(petitioner__icontains=query) |
+            Q(police_station__icontains=query) |
+            Q(date_of_occurrence__icontains=query) |
+            Q(date_of_receipt__icontains=query)
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'crime_number': case.crime_number,
+            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
+            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
+            'police_station': case.police_station,
+            'mps_limit': case.mps_limit,
+            'petitioner': case.petitioner,
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+
+@login_required
 def bnss_194_export_word_view(request):
     bnsss = BNSSMissingCase.objects.filter(case_category='194 BNSS').order_by('date_of_receipt')
     doc = Document()
@@ -388,9 +418,48 @@ def bnss_194_export_word_view(request):
         doc.add_paragraph()  # Second empty line
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    response['Content-Disposition'] = 'attachment; filename="CSR_Export.docx"'
+    response['Content-Disposition'] = 'attachment; filename="BNSS194_Export.docx"'
     doc.save(response)
     return response
+
+@login_required
+def missing_export_word_view(request):
+    missings = BNSSMissingCase.objects.filter(case_category='Missing').order_by('date_of_receipt')
+    doc = Document()
+
+    for missing in missings:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        # Fields to include in the Word document
+        fields = [
+            ("Crime No.", missing.crime_number),
+            ("Police Station", missing.police_station),  # Directly use it as string
+            ("MPS Limit", missing.mps_limit),
+            ("Date of Occurrence", missing.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if missing.date_of_occurrence else ''),
+            ("Date of Receipt", missing.date_of_receipt.strftime('%Y-%m-%d') if missing.date_of_receipt else ''),
+            ("Place of Occurrence", missing.place_of_occurrence),
+            ("Petitioner", missing.petitioner),
+            ("Diseased", missing.diseased if missing.case_category == '194 BNSS' else ''),
+            ("Missing Person", missing.missing_person if missing.case_category == 'Missing' else ''),
+            ("IO", missing.io),
+            ("Gist of Case", missing.gist_of_case),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()  # Empty line
+        doc.add_paragraph()  # Second empty line
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Missing_Export.docx"'
+    doc.save(response)
+    return response
+
+
 
 @login_required
 def bnss194_download_view(request, pk):

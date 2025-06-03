@@ -19,10 +19,15 @@
   <h3 class="mb-4">CSR Summary</h3>
   <!-- Search and Download Row -->
   <div class="row mb-3">
-    <div class="col-md-8">
+    <div class="col-md-6">
       <input type="text" id="csr-search" class="form-control" placeholder="Search by CSR Number or Petitioner">
     </div>
-    <div class="col-md-4 text-end">
+    <div class="col-md-3">
+      <button id="clear-csr-search" class="btn btn-secondary w-100">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="col-md-3 text-end">
       <a href="{% url 'csr_export_word' %}" class="btn btn-success">
         <i class="bi bi-download"></i> Download All (Word)
       </a>
@@ -46,7 +51,7 @@
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ entry.csr_number }}</td>
-            <td>{{ entry.date_of_receipt }}</td>
+            <td>{{ entry.date_of_receipt |date:"d-m-Y" }}</td>
             <td>{{ entry.petitioner }}</td>
             <td>
               <a href="{% url 'csr_download' entry.id %}" class="btn btn-sm btn-info" target="_blank">
@@ -72,13 +77,21 @@
   <div class="row mb-3">
     <div class="col-md-6">
       <input type="text" id="bnssSearchInput" class="form-control" placeholder="Search 194 BNSS cases">
-
+    </div>
+    <div class="col-md-3">
+      <button id="clear-bnss-search" class="btn btn-secondary w-100">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'bnss_194_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
     </div>
   </div>
-
-  <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-    <div id="bnssCaseTableContainer">
-      <table id="bnssTable" class="table table-striped table-bordered text-center">
+  <!-- Table container -->
+  <div class="table-responsive" id="bnss194_table-wrapper" style="max-height: 500px; overflow-y: auto;">
+      <table class="table table-striped table-bordered align-middle text-center" id="bnss194-table">
         <thead class="table-dark">
           <tr>
             <th>S.No</th>
@@ -91,17 +104,17 @@
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="bnss194-table-body">
           {% for case in bnss_cases %}
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>
-              <a href="{% url 'bnss194_download' case.id %}" target="_blank">
+              <a href="{% url 'bnss194_download' case.id %}" class= "text-decoration-none" target="_blank">
                 {{ case.crime_number }}
               </a>
             </td>
             <td>{{ case.date_of_receipt|date:"d-m-Y"}}</td>
-            <td>{{ case.date_of_occurrence|date:"d-m-Y" }}rs</td>
+            <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
             <td>{{ case.police_station }}</td>
             <td>{{ case.mps_limit }}</td>
             <td>{{ case.petitioner }}</td>
@@ -124,10 +137,19 @@
     <div class="col-md-6">
       <input type="text" id="missingSearchInput" class="form-control" placeholder="Search Missing cases">
     </div>
+    <div class="col-md-3">
+      <button id="clear-missing-search" class="btn btn-secondary w-100">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'missing_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
   </div>
-  <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-    <div id="bnssCaseTableContainer">
-      <table id="missingTable" class="table table-striped table-bordered text-center">
+  <div class="table-responsive" id="missing_table-wrapper" style="max-height: 500px; overflow-y: auto;">
+      <table id="missingTable" class="table table-striped table-bordered align-middle text-center">
         <thead class="table-dark">
           <tr>
             <th>S.No</th>
@@ -140,12 +162,13 @@
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="missing-table-body">
+         
           {% for case in missing_cases %}
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>
-              <a href="{% url 'bnss194_download' case.id %}" target="_blank">
+              <a href="{% url 'bnss194_download' case.id %}" class="text-decoration-none"  target="_blank">
                 {{ case.crime_number }}
               </a>
             </td>
@@ -210,69 +233,86 @@
 
 {% comment %} script for searching BNSS Missing Cases  {% endcomment %}
 <script>
-  document.getElementById('bnssSearchInput').addEventListener('keyup', function () {
+  document.getElementById('bnssSearchInput').addEventListener('input', function () {
     const query = this.value;
-    fetch(`/bnss-missing/ajax-search/bnss/?q=${encodeURIComponent(query)}`)
+    fetch(`/bnss-194/ajax-search/194bnss/?q=${encodeURIComponent(query)}`)
       .then(response => response.json())
       .then(data => {
-        let tableBody = '';
+        const tbody = document.getElementById('bnss194-table-body');
+        tbody.innerHTML = '';
+
         if (data.length === 0) {
-          tableBody = `<tr><td colspan="8">No matching 194 BNSS entries found.</td></tr>`;
+          tbody.innerHTML = '<tr><td colspan="8">No 194 BNSS entries found.</td></tr>';
         } else {
-          data.forEach((caseData, index) => {
-            tableBody += `
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
-                <td><a href="/bnss-missing/${caseData.id}/download/">${caseData.crime_number}</a></td>
-                <td>${caseData.date_of_receipt}</td>
-                <td>${caseData.date_of_occurrence}</td>
-                <td>${caseData.police_station}</td>
-                <td>${caseData.marine_limit}</td>
-                <td>${caseData.petitioner}</td>
-                <td>
-                  <a href="/bnss-missing/${caseData.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/bnss-missing/${caseData.id}/delete/" class="btn btn-sm btn-danger" onclick="return confirm('Delete this entry?');">Delete</a>
+                <td> <a href="/bns194/${entry.id}/download/" class="text-decoration-none" target="_blank">${entry.crime_number}</a>
                 </td>
-              </tr>
-            `;
+                <td>${entry.date_of_receipt}</td>
+                <td>${entry.date_of_occurrence}</td>
+                <td>${entry.police_station}</td>
+                <td>${entry.mps_limit}</td>
+                <td>${entry.petitioner}</td>
+                <td>
+                  <a href="/bnss-missing/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/bnss-missing/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                </td>
+              </tr>`;
           });
         }
-        document.querySelector('#bnssTable tbody').innerHTML = tableBody;
+      });
+  });
+</script>
+
+{% comment %} script for searching Missing Cases {% endcomment %}
+<script>
+  document.getElementById('missingSearchInput').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/missing/ajax-search/missing/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('missing-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8">No Missing entries found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td> <a href="/bns194/${entry.id}/download/" class="text-decoration-none"  target="_blank">${entry.crime_number}</a></td>
+                <td>${entry.date_of_receipt}</td>
+                <td>${entry.date_of_occurrence}</td>
+                <td>${entry.police_station}</td>
+                <td>${entry.mps_limit}</td>
+                <td>${entry.petitioner}</td>
+                <td>
+                  <a href="/bnss-missing/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/bnss-missing/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                </td>
+              </tr>`;
+          });
+        }
       });
   });
 </script>
 
 <script>
-  document.getElementById('missingSearchInput').addEventListener('keyup', function () {
-    const query = this.value;
-    fetch(`/bnss-missing/ajax-search/missing/?q=${encodeURIComponent(query)}`)
-      .then(response => response.json())
-      .then(data => {
-        let tableBody = '';
-        if (data.length === 0) {
-          tableBody = `<tr><td colspan="8">No matching Missing entries found.</td></tr>`;
-        } else {
-          data.forEach((caseData, index) => {
-            tableBody += `
-              <tr>
-                <td>${index + 1}</td>
-                <td><a href="/bnss-missing/${caseData.id}/download/">${caseData.crime_number}</a></td>
-                <td>${caseData.date_of_receipt}</td>
-                <td>${caseData.date_of_occurrence}</td>
-                <td>${caseData.police_station}</td>
-                <td>${caseData.marine_limit}</td>
-                <td>${caseData.petitioner}</td>
-                <td>
-                  <a href="/bnss-missing/${caseData.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/bnss-missing/${caseData.id}/delete/" class="btn btn-sm btn-danger" onclick="return confirm('Delete this entry?');">Delete</a>
-                </td>
-              </tr>
-            `;
-          });
-        }
-        document.querySelector('#missingTable tbody').innerHTML = tableBody;
-      });
+  document.getElementById('clear-csr-search').addEventListener('click', function () {
+    location.reload();
+  });
+  document.getElementById('clear-bnss-search').addEventListener('click', function () {
+    location.reload();
+  });
+  document.getElementById('clear-missing-search').addEventListener('click', function () {
+    location.reload();
   });
 </script>
+
 
 {% endblock %}
