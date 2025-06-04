@@ -37,9 +37,9 @@ urlpatterns = [
     path('bnss-missing-form/', views.bnss_missing_form_view, name='bnss_missing_form'),
     #Other cases
     path('othercases_form/', views.othercases_form, name='othercases_form'),
-
     #Maritime act
     path('maritimeact_form/', views.maritimeact_form_view, name='maritimeact_form'),
+
     #Rescue
     path('rescue_form/', views.rescue_form_view, name='rescue_form'),
     #Seizure
@@ -78,7 +78,6 @@ urlpatterns = [
     #194bnss_summary
     path('bnss-194/ajax-search/194bnss/', views.bnss194_cases_ajax_search_view, name='bnss194_cases_ajax_search'),
     path('bnss-194/export-word/', views.bnss_194_export_word_view, name='bnss_194_export_word'),
-    
     path('bns194/<int:pk>/download/', views.bnss194_download_view, name='bnss194_download'),
     path('bnss-missing/<int:pk>/edit/', views.bnss_missing_edit_view, name='bnss_missing_edit'),
     path('bnss-missing/<int:pk>/delete/', views.bnss_missing_delete_view, name='bnss_missing_delete'),
@@ -94,6 +93,12 @@ urlpatterns = [
     path('othercases/<int:pk>/edit/', views.othercases_edit_view, name='othercases_edit'),
     path('othercases/<int:pk>/delete/', views.othercases_delete_view, name='othercases_delete'),
 
+    #maritimeact_summary
+    path('maritimeact/ajax-search/maritimeact/', views.maritimeact_ajax_search_view, name='maritimeact_ajax_search'),
+    path('maritimeact/export-word/', views.maritimeact_export_word_view, name='maritimeact_export_word'),
+    path('maritimeact/<int:pk>/download/', views.maritimeact_download_view, name='maritimeact_download'),
+    path('maritimeact/<int:pk>/edit/', views.maritimeact_edit_view, name='maritimeact_edit'),
+    path('maritimeact/<int:pk>/delete/', views.maritimeact_delete_view, name='maritimeact_delete'),
     
     #rescue_seizure_summary
     path('rescue_seizure_summary/', views.rescue_seizure_summary_view, name='rescue_seizure_summary'),

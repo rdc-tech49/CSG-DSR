@@ -112,3 +112,20 @@ class othercases(models.Model):
 
     def __str__(self):
         return self.crime_number
+
+class maritimeact(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    crime_number = models.CharField(max_length=50)
+    police_station = models.CharField(max_length=100)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    date_of_occurrence = models.DateTimeField()
+    date_of_receipt = models.DateTimeField()
+    place_of_occurrence = models.CharField(max_length=200)
+    petitioner = models.CharField(max_length=100)
+    accused = models.CharField(max_length=200, blank=True, null=True)
+    gist_of_case = models.TextField()
+    io=models.CharField(max_length=100,blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.crime_number

@@ -3,14 +3,14 @@ from django.http import HttpResponse
 from docx import Document
 from docx.shared import Inches
 from django import forms
-from .forms import CustomSignupForm, UpdateUserForm,CSRForm, BNSSMissingCaseForm,othercasesForm
+from .forms import CustomSignupForm, UpdateUserForm,CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import CSR, BNSSMissingCase, othercases
+from .models import CSR, BNSSMissingCase, othercases, maritimeact
 
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -156,7 +156,18 @@ def othercases_form(request):
 
 @login_required
 def maritimeact_form_view(request):
-    return render(request, 'dsr/user/forms/maritimeact_form.html')
+    if request.method == 'POST':
+        form = MaritimeActForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.save()
+            messages.success(request, "Maritime Act form submitted successfully!")
+            return redirect('cases_summary')
+    else:
+        form = MaritimeActForm()
+    
+    return render(request, 'dsr/user/forms/maritimeact_form.html', {'form': form})
 
 
 
@@ -211,14 +222,17 @@ def cases_registered_summary_view(request):
     bnss_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='194 BNSS').order_by('-date_of_receipt')
     missing_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='Missing').order_by('-date_of_receipt')
     other_cases = othercases.objects.filter(user=request.user).order_by('-date_of_receipt')
+    maritime_cases= maritimeact.objects.filter(user=request.user).order_by('-date_of_receipt')
     
     return render(request, 'dsr/user/submitted_forms/cases_registered_summary.html', {
         'csr_list': csr_list,
         'bnss_cases': bnss_cases,
         'missing_cases': missing_cases,
         'other_cases': other_cases,
+        'maritime_cases': maritime_cases,
 
     })
+
 #search for csr
 @login_required
 def csr_ajax_search_view(request):
@@ -583,6 +597,11 @@ def othercases_export_word_view(request):
             row[1].text = str(value)
 
         doc.add_paragraph()
+        doc.add_paragraph()  # Second empty line
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Other_Cases_Export.docx"'
+    doc.save(response)
+    return response
 
 @login_required
 def othercases_download_view(request, pk):
@@ -642,6 +661,124 @@ def othercases_delete_view(request, pk):
     messages.success(request, 'Other case entry deleted successfully!')
     return redirect('cases_summary')
 
+@login_required
+def maritimeact_ajax_search_view(request):
+    query = request.GET.get('q', '').strip()
+    cases = maritimeact.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(crime_number__icontains=query) |
+            Q(petitioner__icontains=query) |
+            Q(police_station__icontains=query) |
+            Q(date_of_occurrence__icontains=query) |
+            Q(date_of_receipt__icontains=query)
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'crime_number': case.crime_number,
+            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
+            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
+            'police_station': case.police_station,
+            'mps_limit': case.mps_limit,
+            'petitioner': case.petitioner,
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+@login_required
+def maritimeact_export_word_view(request):
+    maritime_cases = maritimeact.objects.filter(user=request.user).order_by('date_of_receipt')
+    doc = Document()
+
+    for case in maritime_cases:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        # Fields to include in the Word document
+        fields = [
+            ("Crime No.", case.crime_number),
+            ("Police Station", case.police_station),  # Directly use it as string
+            ("MPS Limit", case.mps_limit),
+            ("Date of Occurrence", case.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if case.date_of_occurrence else ''),
+            ("Date of Receipt", case.date_of_receipt.strftime('%Y-%m-%d') if case.date_of_receipt else ''),
+            ("Place of Occurrence", case.place_of_occurrence),
+            ("Petitioner", case.petitioner),
+            ("Accused", case.accused if case.accused else ''),
+            ("IO", case.io),
+            ("Gist of Case", case.gist_of_case),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()  # Second empty line
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Maritime_Cases_Export.docx"'
+    doc.save(response)
+    return response
+
+@login_required
+def maritimeact_download_view(request, pk):
+    case = get_object_or_404(maritimeact, pk=pk, user=request.user)
+
+    doc = Document()
+    doc.add_heading('Maritime Act Case Details', level=1)
+
+    # Create table with two columns
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    # Add data
+    add_row('Crime Number', case.crime_number)
+    add_row('Police Station', case.police_station)
+    add_row('MPS Limit', case.mps_limit)
+    add_row('Date of Occurrence', case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_occurrence else '')
+    add_row('Date of Receipt', case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_receipt else '')
+    add_row('Place of Occurrence', case.place_of_occurrence)
+    add_row('Petitioner', case.petitioner)
+    add_row('Accused', case.accused if case.accused else '')
+    add_row('IO', case.io)
+    add_row('Gist of Case', case.gist_of_case)
+
+    # Prepare response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"Maritime_Case_{case.crime_number}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+@login_required
+def maritimeact_edit_view(request, pk):
+    case = get_object_or_404(maritimeact, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = MaritimeActForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Maritime Act case updated successfully!')
+            return redirect('cases_summary')
+    else:
+        form = MaritimeActForm(instance=case)
+
+    return render(request, 'dsr/user/forms/maritimeact_form.html', {'form': form, 'edit_mode': True})
+
+@login_required
+def maritimeact_delete_view(request, pk):
+    case = get_object_or_404(maritimeact, pk=pk, user=request.user)
+    case.delete()
+    messages.success(request, 'Maritime Act case entry deleted successfully!')
+    return redirect('cases_summary')
 
 
 @login_required

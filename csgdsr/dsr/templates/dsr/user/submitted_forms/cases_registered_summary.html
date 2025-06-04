@@ -91,47 +91,47 @@
   </div>
   <!-- Table container -->
   <div class="table-responsive" id="bnss194_table-wrapper" style="max-height: 500px; overflow-y: auto;">
-      <table class="table table-striped table-bordered align-middle text-center" id="bnss194-table">
-        <thead class="table-dark">
-          <tr>
-            <th>S.No</th>
-            <th>Crime Number</th>
-            <th>D/R</th>
-            <th>D/O</th>
-            <th>Police Station</th>
-            <th>MPS Limit</th>
-            <th>Petitioner</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="bnss194-table-body">
-          {% for case in bnss_cases %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>
-              <a href="{% url 'bnss194_download' case.id %}" class= "text-decoration-none" target="_blank">
-                {{ case.crime_number }}
-              </a>
-            </td>
-            <td>{{ case.date_of_receipt|date:"d-m-Y"}}</td>
-            <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
-            <td>{{ case.police_station }}</td>
-            <td>{{ case.mps_limit }}</td>
-            <td>{{ case.petitioner }}</td>
-            <td>
-              <a href="{% url 'bnss_missing_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'bnss_missing_delete' case.id %}" class="btn btn-sm btn-danger"
-                onclick="return confirm('Are you sure?')">Delete</a>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="8">No 194 BNSS cases found.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    <table class="table table-striped table-bordered align-middle text-center" id="bnss194-table">
+      <thead class="table-dark">
+        <tr>
+          <th>S.No</th>
+          <th>Crime Number</th>
+          <th>D/R</th>
+          <th>D/O</th>
+          <th>Police Station</th>
+          <th>MPS Limit</th>
+          <th>Petitioner</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="bnss194-table-body">
+        {% for case in bnss_cases %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <a href="{% url 'bnss194_download' case.id %}" class= "text-decoration-none" target="_blank">
+              {{ case.crime_number }}
+            </a>
+          </td>
+          <td>{{ case.date_of_receipt|date:"d-m-Y"}}</td>
+          <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
+          <td>{{ case.police_station }}</td>
+          <td>{{ case.mps_limit }}</td>
+          <td>{{ case.petitioner }}</td>
+          <td>
+            <a href="{% url 'bnss_missing_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
+            <a href="{% url 'bnss_missing_delete' case.id %}" class="btn btn-sm btn-danger"
+              onclick="return confirm('Are you sure?')">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No 194 BNSS cases found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-<!-- Missing Table -->
+  
+  <!-- Missing Table -->
   <h4 class="mt-5">Missing Cases</h4>
   <div class="row mb-3">
     <div class="col-md-6">
@@ -149,49 +149,49 @@
     </div>
   </div>
   <div class="table-responsive" id="missing_table-wrapper" style="max-height: 500px; overflow-y: auto;">
-      <table id="missingTable" class="table table-striped table-bordered align-middle text-center">
-        <thead class="table-dark">
-          <tr>
-            <th>S.No</th>
-            <th>Crime Number</th>
-            <th>D/R</th>
-            <th>D/O</th>
-            <th>Police Station</th>
-            <th>MPS Limit</th>
-            <th>Petitioner</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="missing-table-body">
-         
-          {% for case in missing_cases %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>
-              <a href="{% url 'bnss194_download' case.id %}" class="text-decoration-none"  target="_blank">
-                {{ case.crime_number }}
-              </a>
-            </td>
-            <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
-            <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
-            <td>{{ case.police_station }}</td>
-            <td>{{ case.mps_limit }}</td>
-            <td>{{ case.petitioner }}</td>
-            <td>
-              <a href="{% url 'bnss_missing_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'bnss_missing_delete' case.id %}" class="btn btn-sm btn-danger"
-                onclick="return confirm('Are you sure?')">Delete</a>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="8">No Missing cases found.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    <table id="missingTable" class="table table-striped table-bordered align-middle text-center">
+      <thead class="table-dark">
+        <tr>
+          <th>S.No</th>
+          <th>Crime Number</th>
+          <th>D/R</th>
+          <th>D/O</th>
+          <th>Police Station</th>
+          <th>MPS Limit</th>
+          <th>Petitioner</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="missing-table-body">
+        
+        {% for case in missing_cases %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <a href="{% url 'bnss194_download' case.id %}" class="text-decoration-none"  target="_blank">
+              {{ case.crime_number }}
+            </a>
+          </td>
+          <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
+          <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
+          <td>{{ case.police_station }}</td>
+          <td>{{ case.mps_limit }}</td>
+          <td>{{ case.petitioner }}</td>
+          <td>
+            <a href="{% url 'bnss_missing_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
+            <a href="{% url 'bnss_missing_delete' case.id %}" class="btn btn-sm btn-danger"
+              onclick="return confirm('Are you sure?')">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No Missing cases found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   
 
-<!-- Other cases Table -->
+  <!-- Other cases Table -->
   <h4 class="mt-5">Other Cases</h4>
   <div class="row mb-3">
     <div class="col-md-6">
@@ -210,47 +210,105 @@
   </div>
   <!-- Table container -->
   <div class="table-responsive" id="othercases_table-wrapper" style="max-height: 500px; overflow-y: auto;">
-      <table class="table table-striped table-bordered align-middle text-center" id="othercases-table">
-        <thead class="table-dark">
-          <tr>
-            <th>S.No</th>
-            <th>Crime Number</th>
-            <th>D/R</th>
-            <th>D/O</th>
-            <th>Police Station</th>
-            <th>MPS Limit</th>
-            <th>Petitioner</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="othercases-table-body">
-          {% for case in other_cases %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>
-              <a href="{% url 'othercases_download' case.id %}" class= "text-decoration-none" target="_blank">
-                {{ case.crime_number }}
-              </a>
-            </td>
-            <td>{{ case.date_of_receipt|date:"d-m-Y"}}</td>
-            <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
-            <td>{{ case.police_station }}</td>
-            <td>{{ case.mps_limit }}</td>
-            <td>{{ case.petitioner }}</td>
-            <td>
-              <a href="{% url 'othercases_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'othercases_delete' case.id %}" class="btn btn-sm btn-danger"
-                onclick="return confirm('Are you sure?')">Delete</a>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="8">No cases found.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <table class="table table-striped table-bordered align-middle text-center" id="othercases-table">
+      <thead class="table-dark">
+        <tr>
+          <th>S.No</th>
+          <th>Crime Number</th>
+          <th>D/R</th>
+          <th>D/O</th>
+          <th>Police Station</th>
+          <th>MPS Limit</th>
+          <th>Petitioner</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="othercases-table-body">
+        {% for case in other_cases %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <a href="{% url 'othercases_download' case.id %}" class= "text-decoration-none" target="_blank">
+              {{ case.crime_number }}
+            </a>
+          </td>
+          <td>{{ case.date_of_receipt|date:"d-m-Y"}}</td>
+          <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
+          <td>{{ case.police_station }}</td>
+          <td>{{ case.mps_limit }}</td>
+          <td>{{ case.petitioner }}</td>
+          <td>
+            <a href="{% url 'othercases_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
+            <a href="{% url 'othercases_delete' case.id %}" class="btn btn-sm btn-danger"
+              onclick="return confirm('Are you sure?')">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No cases found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+
+  <!--Maritime act table-->
+  <h4 class="mt-5">Maritime Act Cases</h4>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="maritimeSearchInput" class="form-control" placeholder="Search Maritime cases">
+    </div>
+    <div class="col-md-3">
+      <button id="clear-maritime-search" class="btn btn-secondary w-100">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'maritimeact_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
     </div>
   </div>
-
+  <!-- Table container -->
+  <div class="table-responsive" id="maritime_table-wrapper" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-striped table-bordered align-middle text-center" id="maritime-table">
+      <thead class="table-dark">
+        <tr>
+          <th>S.No</th>
+          <th>Crime Number</th>
+          <th>D/R</th>
+          <th>D/O</th>
+          <th>Police Station</th>
+          <th>MPS Limit</th>
+          <th>Petitioner</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="maritime-table-body">
+        {% for case in maritime_cases %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <a href="{% url 'maritimeact_download' case.id %}" class= "text-decoration-none" target="_blank">
+              {{ case.crime_number }}
+            </a>
+          </td>
+          <td>{{ case.date_of_receipt|date:"d-m-Y"}}</td>
+          <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
+          <td>{{ case.police_station }}</td>
+          <td>{{ case.mps_limit }}</td>
+          <td>{{ case.petitioner }}</td>
+          <td>
+            <a href="{% url 'maritimeact_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
+            <a href="{% url 'maritimeact_delete' case.id %}" class="btn btn-sm btn-danger"
+              onclick="return confirm('Are you sure?')">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No Maritime Act cases found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 {% comment %} script for searching CSR entries {% endcomment %}
@@ -396,6 +454,44 @@
   });
 
 </script>
+
+{% comment %} script for searching Maritime Act Cases  {% endcomment %}
+<script>
+  document.getElementById('maritimeSearchInput').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/maritimeact/ajax-search/maritimeact/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('maritime-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8">No Maritime Act entries found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td> <a href="/maritimeact/${entry.id}/download/" class="text-decoration-none" target="_blank">${entry.crime_number}</a></td>
+                <td>${entry.date_of_receipt}</td>
+                <td>${entry.date_of_occurrence}</td>
+                <td>${entry.police_station}</td>
+                <td>${entry.mps_limit}</td>
+                <td>${entry.petitioner}</td>
+                <td>
+                  <a href="/maritimeact/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/maritimeact/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                </td>
+              </tr>`;
+          });
+        }
+      });
+  });
+</script>
+
+
+{% comment %} clear search buttons functionality {% endcomment %}
 <script>
   document.getElementById('clear-csr-search').addEventListener('click', function () {
     location.reload();
@@ -407,6 +503,9 @@
     location.reload();
   });
   document.getElementById('clear-othercases-search').addEventListener('click', function () {
+    location.reload();
+  });
+  document.getElementById('clear-maritime-search').addEventListener('click', function () {
     location.reload();
   });
 </script>
