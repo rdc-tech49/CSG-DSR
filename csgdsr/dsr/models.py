@@ -7,7 +7,7 @@ from django.utils import timezone
 
 
 MPS_CHOICES = [
-    ("-- Select Police Station --","-- Select Police Station --"),("MARINA MPS", "MARINA MPS"),("ERNAVUR MPS", "ERNAVUR MPS"),("PAZHAVERKADU MPS", "PAZHAVERKADU MPS"),
+    ("MARINA MPS", "MARINA MPS"),("ERNAVUR MPS", "ERNAVUR MPS"),("PAZHAVERKADU MPS", "PAZHAVERKADU MPS"),
     ("ARAMBAKKAM MPS", "ARAMBAKKAM MPS"),
     ("KOVALAM MPS", "KOVALAM MPS"),
     ("KALPAKKAM MPS", "KALPAKKAM MPS"),
@@ -51,6 +51,7 @@ MPS_CHOICES = [
 
 
 CASE_CATEGORIES = [
+    
     ('194 BNSS', '194 BNSS'),
     ('Missing', 'Missing'),
 ]
@@ -58,8 +59,8 @@ CASE_CATEGORIES = [
 class CSR(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     csr_number = models.CharField(max_length=20)
-    police_station = models.CharField(max_length=50, choices=MPS_CHOICES, default="-- Select Police Station --")
-    date_of_receipt = models.DateField()
+    police_station = models.CharField(max_length=50, choices=MPS_CHOICES)
+    date_of_receipt = models.DateTimeField()
     place_of_occurrence = models.CharField(max_length=255)
     petitioner = models.CharField(max_length=255)
     counter_petitioner = models.CharField(max_length=255, blank=True, null=True)
@@ -76,9 +77,9 @@ class BNSSMissingCase(models.Model):
     case_category = models.CharField(max_length=20, choices=CASE_CATEGORIES)
     crime_number = models.CharField(max_length=50)
     police_station = models.CharField(max_length=100)
-    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES,default="-- Select Police Station --")
-    date_of_occurrence = models.DateTimeField(default=timezone.now)
-    date_of_receipt = models.DateTimeField(default=timezone.now)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    date_of_occurrence = models.DateTimeField()
+    date_of_receipt = models.DateTimeField()
     place_of_occurrence = models.CharField(max_length=200)
     diseased = models.CharField(max_length=200, blank=True, null=True)
     missing_person = models.CharField(max_length=200, blank=True, null=True)
@@ -90,3 +91,24 @@ class BNSSMissingCase(models.Model):
 
     def __str__(self):
         return f"{self.case_category} - {self.crime_number}"
+    
+
+class othercases(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    crime_number = models.CharField(max_length=50)
+    police_station = models.CharField(max_length=100)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    date_of_occurrence = models.DateTimeField()
+    date_of_receipt = models.DateTimeField()
+    place_of_occurrence = models.CharField(max_length=200)
+    petitioner = models.CharField(max_length=100)
+    diseased = models.CharField(max_length=200, blank=True, null=True)
+    injured = models.CharField(max_length=200, blank=True, null=True)
+    accused = models.CharField(max_length=200, blank=True, null=True)
+    gist_of_case = models.TextField()
+    io=models.CharField(max_length=100,blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    
+
+    def __str__(self):
+        return self.crime_number

@@ -29,20 +29,17 @@ urlpatterns = [
     #forms main page
     path('forms/', views.forms_view, name='forms_page'),
 
-    #findividual forms
+    #individual forms
     #cases registered forms
     #csr
     path('csr_form/', views.csr_form_view, name='csr_form'),
-    #194bnss
-    #path('194bnss_form/', views.bnss194_form_view, name='194bnss_form'),
+    #194bnss_missing
     path('bnss-missing-form/', views.bnss_missing_form_view, name='bnss_missing_form'),
-
-    #missing
-    path('missing_form/', views.missing_form_view, name='missing_form'),
-    #Maritime act
-    path('maritimeact_form/', views.maritimeact_form_view, name='maritimeact_form'),
     #Other cases
     path('othercases_form/', views.othercases_form, name='othercases_form'),
+
+    #Maritime act
+    path('maritimeact_form/', views.maritimeact_form_view, name='maritimeact_form'),
     #Rescue
     path('rescue_form/', views.rescue_form_view, name='rescue_form'),
     #Seizure
@@ -90,6 +87,14 @@ urlpatterns = [
     path('missing/ajax-search/missing/', views.missing_ajax_search_view, name='missing_cases_ajax_search'),
     path('missing/export-word/', views.missing_export_word_view, name='missing_export_word'),
 
+    #othercases_summary
+    path('othercases/ajax-search/othercases/', views.othercases_ajax_search_view, name='othercases_ajax_search'),
+    path('othercases/export-word/', views.othercases_export_word_view, name='othercases_export_word'),
+    path('othercases/<int:pk>/download/', views.othercases_download_view, name='othercases_download'),
+    path('othercases/<int:pk>/edit/', views.othercases_edit_view, name='othercases_edit'),
+    path('othercases/<int:pk>/delete/', views.othercases_delete_view, name='othercases_delete'),
+
+    
     #rescue_seizure_summary
     path('rescue_seizure_summary/', views.rescue_seizure_summary_view, name='rescue_seizure_summary'),
     #forecast_summary

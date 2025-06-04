@@ -1,0 +1,127 @@
+{% extends 'dsr/user/user_page.html' %}
+{% load static %}
+{% block usercontent %}
+<div class="container mt-4">
+  <h2 class="mb-4">{% if edit_mode %}Edit Other cases {% else %}Other Cases Form{% endif %}</h2>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <label for="{{ form.crime_number.id_for_label }}" class="form-label">Crime Number</label>
+        {{ form.crime_number }}
+        {% for error in form.crime_number.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="{{ form.police_station.id_for_label }}" class="form-label">Police Station</label>
+        {{ form.police_station }}
+        {% for error in form.police_station.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-6">
+        <label for="{{ form.mps_limit.id_for_label }}" class="form-label">MPS Limit</label>
+        {{ form.mps_limit }}
+        {% for error in form.mps_limit.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="{{ form.date_of_occurrence.id_for_label }}" class="form-label">Date of Occurrence</label>
+        {{ form.date_of_occurrence }}
+        {% for error in form.date_of_occurrence.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-6">
+        <label for="{{ form.date_of_receipt.id_for_label }}" class="form-label">Date of Receipt</label>
+        {{ form.date_of_receipt }}
+        {% for error in form.date_of_receipt.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="{{ form.place_of_occurrence.id_for_label }}" class="form-label">Place of Occurrence</label>
+        {{ form.place_of_occurrence }}
+        {% for error in form.place_of_occurrence.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3 col-md-6">
+        <label for="{{ form.petitioner.id_for_label }}" class="form-label">Petitioner</label>
+        {{ form.petitioner }}
+        {% for error in form.petitioner.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3 col-md-6">
+        <label for="{{ form.diseased.id_for_label }}" class="form-label">Diseased</label>
+        {{ form.diseased }}
+        {% for error in form.diseased.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3 col-md-6">
+        <label for="{{ form.injured.id_for_label }}" class="form-label">Injured</label>
+        {{ form.injured }}
+        {% for error in form.injured.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3 col-md-6">
+        <label for="{{ form.accused.id_for_label }}" class="form-label">Accused</label>
+        {{ form.accused }}
+        {% for error in form.accused.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+   <div class="mb-3">
+      <label for="{{ form.io.id_for_label }}" class="form-label">Investigating Officer</label>
+      {{ form.io }}
+      {% for error in form.io.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+
+    <div class="mb-3">
+      <label for="{{ form.gist_of_case.id_for_label }}" class="form-label">Gist of Case</label>
+      {{ form.gist_of_case }}
+      {% for error in form.gist_of_case.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+
+{% endblock %}

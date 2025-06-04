@@ -1,8 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import CSR
-from .models import BNSSMissingCase
+from .models import CASE_CATEGORIES, MPS_CHOICES, CSR,BNSSMissingCase, othercases
 
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
@@ -52,48 +51,48 @@ USER_CHOICES = [
     ('COLACHEL_MPS','COLACHEL_MPS') 
 ]
 
-MPS_CHOICES = [
-    ("MARINA_MPS", "MARINA_MPS"),("ERNAVUR_MPS", "ERNAVUR_MPS"),("PAZHAVERKADU_MPS", "PAZHAVERKADU_MPS"),
-    ("ARAMBAKKAM_MPS", "ARAMBAKKAM_MPS"),
-    ("KOVALAM_MPS", "KOVALAM_MPS"),
-    ("KALPAKKAM_MPS", "KALPAKKAM_MPS"),
-    ("MUTHALIYARKUPPAM_MPS", "MUTHALIYARKUPPAM_MPS"),
-    ("MARAKKANAM_MPS","MARAKKANAM_MPS"),
-    ("PUDUKUPPAM_MPS","PUDUKUPPAM_MPS"),
-    ("DEVANAMPATTINAM _MPS","DEVANAMPATTINAM_MPS"), 
-    ("PARANGIPETTAI_MPS","PARANGIPETTAI_MPS"),
-    ("PUDUPATTINAM_MPS","PUDUPATTINAM_MPS"),
-    ("THIRUMULLAIVASAL_MPS","THIRUMULLAIVASAL_MPS"), 
-    ("POOMBUHAR_MPS","POOMBUHAR_MPS"), 
-    ("THARANGAMBADI_MPS","THARANGAMBADI_MPS"), 
-    ("NAGAPATTINAM_MPS","NAGAPATTINAM_MPS"), 
-    ("VELANKANNI_MPS","VELANKANNI_MPS"), 
-    ("KEELAIYUR_MPS","KEELAIYUR_MPS"), 
-    ("VEDARANYAM_MPS","VEDARANYAM_MPS"), 
-    ("THERKUKADU_MPS","THERKUKADU_MPS"), 
-    ("ADHIRAMAPATTINAM_MPS","ADHIRAMAPATTINAM_MPS"), 
-    ("SETHUBAVACHATIRAM_MPS","SETHUBAVACHATIRAM_MPS"), 
-    ("MANAMELKUDI_MPS","MANAMELKUDI_MPS"), 
-    ("MIMISAL_MPS","MIMISAL_MPS"), 
-    ("THIRUPUNAVASAL_MPS","THIRUPUNAVASAL_MPS"), 
-    ("THONDI_MPS","THONDI_MPS"), 
-    ("DEVIPATTINAM_MPS","DEVIPATTINAM_MPS"), 
-    ("ATTRANKARAI_MPS","ATTRANKARAI_MPS"), 
-    ("MANDAPAM_MPS","MANDAPAM_MPS"), 
-    ("RAMESWARAM_MPS","RAMESWARAM_MPS"), 
-    ("PUDUMADAM_MPS","PUDUMADAM_MPS"), 
-    ("KEELAKARAI_MPS","KEELAKARAI_MPS"), 
-    ("VALINOKKAM_MPS","VALINOKKAM_MPS"),
-    ("VEMBAR_MPS","VEMBAR_MPS"),
-    ("THARUVAIKULAM_MPS","THARUVAIKULAM_MPS"),
-    ("MEENAVAR COLONY_MPS","MEENAVAR COLONY_MPS"),
-    ("THIRUCHENDUR_MPS","THIRUCHENDUR_MPS"),
-    ("KULASEKARAPATTINAM_MPS","KULASEKARAPATTINAM_MPS"),
-    ("UVARI_MPS","UVARI_MPS"),
-    ("KOODANKULAM_MPS","KOODANKULAM_MPS"),
-    ("KANNIYAKUMARI_MPS","KANNIYAKUMARI_MPS"),
-    ("COLACHEL_MPS","COLACHEL_MPS")
-]
+# MPS_CHOICES1 = [
+#     ("MARINA_MPS", "MARINA_MPS"),("ERNAVUR_MPS", "ERNAVUR_MPS"),("PAZHAVERKADU_MPS", "PAZHAVERKADU_MPS"),
+#     ("ARAMBAKKAM_MPS", "ARAMBAKKAM_MPS"),
+#     ("KOVALAM_MPS", "KOVALAM_MPS"),
+#     ("KALPAKKAM_MPS", "KALPAKKAM_MPS"),
+#     ("MUTHALIYARKUPPAM_MPS", "MUTHALIYARKUPPAM_MPS"),
+#     ("MARAKKANAM_MPS","MARAKKANAM_MPS"),
+#     ("PUDUKUPPAM_MPS","PUDUKUPPAM_MPS"),
+#     ("DEVANAMPATTINAM _MPS","DEVANAMPATTINAM_MPS"), 
+#     ("PARANGIPETTAI_MPS","PARANGIPETTAI_MPS"),
+#     ("PUDUPATTINAM_MPS","PUDUPATTINAM_MPS"),
+#     ("THIRUMULLAIVASAL_MPS","THIRUMULLAIVASAL_MPS"), 
+#     ("POOMBUHAR_MPS","POOMBUHAR_MPS"), 
+#     ("THARANGAMBADI_MPS","THARANGAMBADI_MPS"), 
+#     ("NAGAPATTINAM_MPS","NAGAPATTINAM_MPS"), 
+#     ("VELANKANNI_MPS","VELANKANNI_MPS"), 
+#     ("KEELAIYUR_MPS","KEELAIYUR_MPS"), 
+#     ("VEDARANYAM_MPS","VEDARANYAM_MPS"), 
+#     ("THERKUKADU_MPS","THERKUKADU_MPS"), 
+#     ("ADHIRAMAPATTINAM_MPS","ADHIRAMAPATTINAM_MPS"), 
+#     ("SETHUBAVACHATIRAM_MPS","SETHUBAVACHATIRAM_MPS"), 
+#     ("MANAMELKUDI_MPS","MANAMELKUDI_MPS"), 
+#     ("MIMISAL_MPS","MIMISAL_MPS"), 
+#     ("THIRUPUNAVASAL_MPS","THIRUPUNAVASAL_MPS"), 
+#     ("THONDI_MPS","THONDI_MPS"), 
+#     ("DEVIPATTINAM_MPS","DEVIPATTINAM_MPS"), 
+#     ("ATTRANKARAI_MPS","ATTRANKARAI_MPS"), 
+#     ("MANDAPAM_MPS","MANDAPAM_MPS"), 
+#     ("RAMESWARAM_MPS","RAMESWARAM_MPS"), 
+#     ("PUDUMADAM_MPS","PUDUMADAM_MPS"), 
+#     ("KEELAKARAI_MPS","KEELAKARAI_MPS"), 
+#     ("VALINOKKAM_MPS","VALINOKKAM_MPS"),
+#     ("VEMBAR_MPS","VEMBAR_MPS"),
+#     ("THARUVAIKULAM_MPS","THARUVAIKULAM_MPS"),
+#     ("MEENAVAR COLONY_MPS","MEENAVAR COLONY_MPS"),
+#     ("THIRUCHENDUR_MPS","THIRUCHENDUR_MPS"),
+#     ("KULASEKARAPATTINAM_MPS","KULASEKARAPATTINAM_MPS"),
+#     ("UVARI_MPS","UVARI_MPS"),
+#     ("KOODANKULAM_MPS","KOODANKULAM_MPS"),
+#     ("KANNIYAKUMARI_MPS","KANNIYAKUMARI_MPS"),
+#     ("COLACHEL_MPS","COLACHEL_MPS")
+# ]
 
 class CustomSignupForm(forms.ModelForm):
     username = forms.ChoiceField(choices=USER_CHOICES, widget=forms.Select(attrs={"class": "form-select"}))
@@ -146,7 +145,9 @@ class CSRForm(forms.ModelForm):
         widgets = {
             'csr_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 202/2025'}),
             'police_station': forms.Select(attrs={'class': 'form-control'}),
-            'date_of_receipt': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'date_of_receipt': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'),
             'place_of_occurrence': forms.TextInput(attrs={'class': 'form-control'}),
             'petitioner': forms.TextInput(attrs={'class': 'form-control'}),
             'counter_petitioner': forms.TextInput(attrs={'class': 'form-control'}),
@@ -156,11 +157,42 @@ class CSRForm(forms.ModelForm):
 
 
 class BNSSMissingCaseForm(forms.ModelForm):
+    case_category = forms.ChoiceField(
+        choices=[('', 'Select Category')] + CASE_CATEGORIES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = BNSSMissingCase
         exclude = ['submitted_at', 'user']
         widgets = {
-            'case_category': forms.Select(attrs={'class': 'form-control'}),
+            'crime_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Crime Number'}),
+            'police_station': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Police Station'}),
+            'date_of_occurrence': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'date_of_receipt': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'place_of_occurrence': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Occurrence'}),
+            'diseased': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Deceased Name (if any)'}),
+            'missing_person': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Missing Person Name'}),
+            'petitioner': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Petitioner Name'}),
+            'gist_of_case': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Case'}),
+            'io': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Investigation Officer'}),
+        }
+
+class othercasesForm(forms.ModelForm):
+    class Meta:
+        model = othercases
+        exclude = ['submitted_at', 'user']
+        widgets = {
             'crime_number': forms.TextInput(attrs={'class': 'form-control'}),
             'police_station': forms.TextInput(attrs={'class': 'form-control'}),
             'mps_limit': forms.Select(attrs={'class': 'form-control'}),
@@ -173,9 +205,10 @@ class BNSSMissingCaseForm(forms.ModelForm):
                 format='%Y-%m-%dT%H:%M'
             ),
             'place_of_occurrence': forms.TextInput(attrs={'class': 'form-control'}),
-            'diseased': forms.TextInput(attrs={'class': 'form-control'}),
-            'missing_person': forms.TextInput(attrs={'class': 'form-control'}),
             'petitioner': forms.TextInput(attrs={'class': 'form-control'}),
+            'diseased': forms.TextInput(attrs={'class': 'form-control'}),
+            'injured': forms.TextInput(attrs={'class': 'form-control'}),
+            'accused': forms.TextInput(attrs={'class': 'form-control'}),
             'gist_of_case': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'io': forms.TextInput(attrs={'class': 'form-control'}),
         }
