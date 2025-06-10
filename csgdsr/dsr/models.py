@@ -263,3 +263,104 @@ class ArrestOfSLFishermen(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.arrest_id} - {self.date_of_arrest}"
+
+class OnRoadVehicleStatus(models.Model):
+    VEHICLE_TYPE_CHOICES = [('TWO_WHEELER', 'Two Wheeler'),('FOUR_WHEELER', 'Four Wheeler'),('ATV', 'ATV (All-Terrain Vehicle)'),]
+    WORKING_STATUS_CHOICES = [('WORKING', 'Working'),('NOT_WORKING', 'Not Working'),('CONDEMNED', 'Condemned'),]
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    vehicle_type = models.CharField(max_length=20, choices=VEHICLE_TYPE_CHOICES)
+    vehicle_number = models.CharField(max_length=100, unique=True)
+    working_status = models.CharField(max_length=20, choices=WORKING_STATUS_CHOICES)
+    remarks = models.TextField(blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.vehicle_type} - {self.vehicle_number}"
+
+class OnWaterVehicleStatus(models.Model):
+    BOAT_TYPE_CHOICES = [('12_TON_BOAT', '12 Ton Boat'),('5_TON_BOAT', '5 Ton Boat'),('JET_SKI', 'Jet Ski'),('JET_BOAT', 'Jet Boat'),('AMPHIBIOUS_CRAFT', 'Amphibious Craft')]
+    WORKING_STATUS_CHOICES = [('WORKING', 'Working'), ('NOT_WORKING', 'Not Working'), ('CONDEMNED', 'Condemned')]
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    boat_type = models.CharField(max_length=50, choices=BOAT_TYPE_CHOICES)
+    boat_number = models.CharField(max_length=100, unique=True)
+    working_status = models.CharField(max_length=20, choices=WORKING_STATUS_CHOICES)
+    remarks = models.TextField(blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.boat_type} - {self.boat_number}"
+    
+class VVCmeeting(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    vvc_id = models.AutoField(primary_key=True)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    date_of_vvc = models.DateField()
+    village_name = models.CharField(max_length=200)
+    number_of_villagers = models.PositiveIntegerField()
+    vvc_image = models.ImageField(upload_to='vvc_images/', blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'heic'])])
+    vvc_details = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.vvc_id} - {self.mps_limit} - {self.date_of_vvc}"
+
+class BeatDetails(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    date_of_beat = models.DateField()
+    day_beat_count = models.PositiveIntegerField()
+    night_beat_count = models.PositiveIntegerField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.beat_id} - {self.mps_limit} - {self.date_of_beat}"
+
+class Proforma(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    date_of_proforma = models.DateField()
+    mps_visited = models.PositiveIntegerField()
+    check_post_checked = models.PositiveIntegerField()
+    boat_guard_checked = models.PositiveIntegerField()
+    vvc_meeting_conducted = models.PositiveIntegerField()
+    villages_visited = models.PositiveIntegerField()
+    meetings_attended = models.PositiveIntegerField()
+    awareness_programs_conducted = models.PositiveIntegerField()
+    coastal_security_exercises_conducted = models.PositiveIntegerField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.date_of_proforma}"
+    
+class BoatPatrol(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    patrol_officer = models.CharField(max_length=200)
+    boat_type = models.CharField(max_length=50, choices=[('12_TON_BOAT', '12 Ton Boat'), ('5_TON_BOAT', '5 Ton Boat'), ('JET_SKI', 'Jet Ski'), ('JET_BOAT', 'Jet Boat'), ('AMPHIBIOUS_CRAFT', 'Amphibious Craft')])
+    boat_number = models.CharField(max_length=100,blank=True, null=True)
+    date_of_patrol = models.DateField()
+    patrol_start_time = models.TimeField()
+    patrol_end_time = models.TimeField()
+    patrol_place = models.CharField(max_length=200)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    numberof_boats_checked = models.PositiveIntegerField()
+    registration_numberofboats_checked = models.CharField(max_length=200, blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.patrol_officer} - {self.mps_limit} - {self.date_of_patrol}"
+
+class VehicleCheckPost(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    date_of_check = models.DateField()
+    check_post_location = models.CharField(max_length=200)
+    number_of_vehicles_checked = models.PositiveIntegerField()
+    vehicle_details = models.TextField(blank=True, null=True)
+    officer_in_charge = models.CharField(max_length=200)
+    remarks = models.TextField(blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.check_post_id} - {self.mps_limit} - {self.date_of_check}"
