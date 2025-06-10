@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import CASE_CATEGORIES, MPS_CHOICES, CSR,BNSSMissingCase, othercases, maritimeact
+from .models import CASE_CATEGORIES, MPS_CHOICES, Other_Agencies, CSR,BNSSMissingCase, othercases, maritimeact, RescueAtBeach, RescueAtSea, Seizure
 
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
@@ -196,4 +196,75 @@ class MaritimeActForm(forms.ModelForm):
             'accused': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Accused details (if any)'}),
             'gist_of_case': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Case'}),
             'io': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Investigation Officer Name and Rank'}),
+        }
+
+class RescueAtBeachForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    class Meta:
+        model = RescueAtBeach
+        exclude = ['submitted_at', 'user', 'rescue_id']
+        widgets = {
+            'date_of_rescue': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'place_of_rescue': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Rescue'}),
+            'number_of_victims': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Victims Rescued'}),
+            'victim_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Victim Names'}),
+            'rescuer_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Rescuer Names'}),
+            'rescue_beach_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            'rescue_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Rescue Summary'}),
+        }
+
+class RescueAtSeaForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    class Meta:
+        model = RescueAtSea
+        exclude = ['submitted_at', 'user','rescue_id']
+        widgets = {
+            'date_of_rescue': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'place_of_rescue': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Rescue'}),
+            'number_of_victims': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Victims Rescued'}),
+            'number_of_boats_involved': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Rescued'}),
+            'victim_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Victim Names'}),
+            'rescuer_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Rescuer Names'}),
+            'rescue_sea_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            'rescue_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Rescue Summary'}),
+        }
+
+class SeizureForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    handed_over_to = forms.ChoiceField(
+        choices=[('', 'Select Agency')] +  Other_Agencies, widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    class Meta:
+        model = Seizure
+        exclude = ['submitted_at', 'user','seizure_id']
+        widgets = {
+            'seized_item': forms.Select(attrs={'class': 'form-control'}),
+            'quatity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Quantity'}),
+            'date_of_seizure': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'place_of_seizure': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Seizure'}),
+            'latitude': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Latitude'}),
+            'longitude': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Longitude'}),
+            'accused': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Accused Name & Vehicle No (if any)'}),
+            'seized_by': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Seized By Name'}),
+            'seizure_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            'gist_of_seizure': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Seizure'}),
         }
