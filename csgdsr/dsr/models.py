@@ -55,6 +55,30 @@ class SeizedItemCategory(models.Model):
     def __str__(self):
         return self.item_name
 
+class Officer(models.Model):
+    RANK_CHOICES = [
+        ('ADGP', 'Additional Director General of Police (ADGP)'),('IG', 'Inspector General of Police (IG)'),
+        ('DIG', 'Deputy Inspector General (DIG)'),
+        ('SP', 'Superintendent of Police (SP)'),('ASP', 'Assistant Superintendent of Police (ASP)'),('AdSP', 'Additional Superintendent of Police (AdSP)'),
+        ('DSP', 'Deputy Superintendent of Police (DSP)'),
+        ('INS', 'Inspector (INS)'),
+        ('SI', 'Sub-Inspector (SI)'),
+        ('SSI', 'Senior Sub-Inspector (SSI)'),     
+        ('HAV', 'Havildar (HAV)'),
+        ('HC', 'Head Constable (HC)'),
+        ('GrI', 'Grade I Constable (GrI)'),
+        ('PC', 'Police Constable (PC)'),
+        ('TBS SI', 'TBS Sub-Inspector (TBS SI)'),
+        ('TBS HC', 'TBS Head Constable (TBS HC)'),
+    ]
+
+    name = models.CharField(max_length=255)
+    rank = models.CharField(max_length=4, choices=RANK_CHOICES)
+
+    def __str__(self):
+        return f"{self.name} - {self.get_rank_display()}"
+
+
 Other_Agencies = [
     ('Indian Coast Guard', 'Indian Coast Guard'),('Indian Navy', 'Indian Navy'),('Customs Department', 'Customs Department'), ('Fisheries Department', 'Fisheries Department'),('Forest Department', 'Forest Department'),('Civil Supplies CID', 'Civil Supplies CID'),('Revenue Department', 'Revenue Department'),('Local Police Station', 'Local Police Station'),('Marine Enforcement Wing','Marine Enforcement Wing'),('Other', 'Other')]
 
@@ -64,11 +88,17 @@ CASE_CATEGORIES = [
     ('Missing', 'Missing'),
 ]
 
-AttackOnTNFishermen_Choices = [('Sri Lankan Navy', 'Sri Lankan Navy'),('Sri Lankan Fishermen', 'Sri Lankan Fishermen'),('Pirates', 'Pirates'),('Other', 'Other')]
+CHECK_POST_CHOICES = [
+    ('Aakur', 'Aakur'), ('Alapakkam', 'Alapakkam'), ('Arasankarai', 'Arasankarai'), ('Arumugachandi', 'Arumugachandi'), ('Arumuganeri', 'Arumuganeri'), ('Availiankanni', 'Availiankanni'), ('B. Mutloor (Keerapalayam)', 'B. Mutloor (Keerapalayam)'), ('Chinnamuttam', 'Chinnamuttam'), ('Colachal', 'Colachal'), ('Devipattinam', 'Devipattinam'), ('Edampadal', 'Edampadal'), ('Ellai Amman Koil', 'Ellai Amman Koil'), ('Embaikottai', 'Embaikottai'), ('Eranavur', 'Eranavur'), ('Gopalasamudram', 'Gopalasamudram'), ('Goppiar Madam', 'Goppiar Madam'), ('Idaiyathimangalam (Mumpaalai)', 'Idaiyathimangalam (Mumpaalai)'), ('Idinthakarai', 'Idinthakarai'), ('Kadaladi Cross Road Junction (Kadugusanthai)', 'Kadaladi Cross Road Junction (Kadugusanthai)'), ('Kadinnel vayal Road', 'Kadinnel vayal Road'), ('Kalingu', 'Kalingu'), ('Kallar (near Akkaraipetti)', 'Kallar (near Akkaraipetti)'), ('Kameswaram Mariamman Temple ', 'Kameswaram Mariamman Temple '), ('Karaiyur', 'Karaiyur'), ('Karakottai (Krishnajipattinam)', 'Karakottai (Krishnajipattinam)'), ('Karankuda', 'Karankuda'), ('Kattumavadi', 'Kattumavadi'), ('Killai', 'Killai'), ('Kolathur', 'Kolathur'), ('Koonimedu ', 'Koonimedu '), ('Kootampuli', 'Kootampuli'), ('Koothankuzhi Junction', 'Koothankuzhi Junction'), ('Kottaikuppam (Bommiyarpalayam)', 'Kottaikuppam (Bommiyarpalayam)'), ('Kottaipattinam', 'Kottaipattinam'), ('Kovalam', 'Kovalam'), ('Kulasekarapattinam Junction', 'Kulasekarapattinam Junction'), ('Kunthakal', 'Kunthakal'), ('Kuvathur', 'Kuvathur'), ('Mahabalipuram', 'Mahabalipuram'), ('Mahadhanapuram', 'Mahadhanapuram'), ('Manakkudi', 'Manakkudi'), ('Mathavapuram  ', 'Mathavapuram  '), ('Moondram Chatram', 'Moondram Chatram'), ('Muttam', 'Muttam'), ('Muttukkadu', 'Muttukkadu'), ('Olaikuda', 'Olaikuda'), ('Ovari', 'Ovari'), ('Pamban', 'Pamban'), ('Pannerkottagam ', 'Pannerkottagam '), ('Parangipettai ', 'Parangipettai '), ('Paravai Road', 'Paravai Road'), ('Pattinamaruthur ', 'Pattinamaruthur '), ('Periyathazhai', 'Periyathazhai'), ('Pettai', 'Pettai'), ('Pillaiyar Thidal ', 'Pillaiyar Thidal '), ('Pollachiamman Kulam', 'Pollachiamman Kulam'), ('Pooncheri ', 'Pooncheri '), ('Prathaparamapuram Road Junction', 'Prathaparamapuram Road Junction'), ('Puduchatiram', 'Puduchatiram'), ('Pudupattinam', 'Pudupattinam'), ('Punnakayal', 'Punnakayal'), ('Pushpavanam Road Junction ', 'Pushpavanam Road Junction '), ('Raghunathapuram (Periyapattinam)', 'Raghunathapuram (Periyapattinam)'), ('Rajamadam', 'Rajamadam'), ('Ramakrishna Nagar', 'Ramakrishna Nagar'), ('Reddichavadi', 'Reddichavadi'), ('Rendampulikadu', 'Rendampulikadu'), ('Sangumal', 'Sangumal'), ('Sayalkudi', 'Sayalkudi'), ('Semankottai Junction', 'Semankottai Junction'), ('Sengathalai Road', 'Sengathalai Road'), ('Serudur', 'Serudur'), ('Sholinganallur', 'Sholinganallur'), ('Sippikulam Junction ', 'Sippikulam Junction '), ('Thalagnayar Road Vettaikaran irupu', 'Thalagnayar Road Vettaikaran irupu'), ('Thalankadu', 'Thalankadu'), ('Thambikottai', 'Thambikottai'), ('Theerthandanthanam', 'Theerthandanthanam'), ('Thengaipattinam', 'Thengaipattinam'), ('Thennadur', 'Thennadur'), ('Thillaivilagam', 'Thillaivilagam'), ('Thirukadaiyur', 'Thirukadaiyur'), ('Thirupulani', 'Thirupulani'), ('Thondi', 'Thondi'), ('Thopputhurai ', 'Thopputhurai '), ('Underkadu', 'Underkadu'), ('Uppur', 'Uppur'), ('Vaipar', 'Vaipar'), ('Valinokam ', 'Valinokam '), ('Vallampadugai', 'Vallampadugai'), ('Valuthalaikudi', 'Valuthalaikudi'), ('Vattanam', 'Vattanam'), ('Vayalur', 'Vayalur'), ('Veechur Road ', 'Veechur Road '), ('Veerasangili Madam', 'Veerasangili Madam'), ('Vellapatti', 'Vellapatti'), ('Vembar', 'Vembar'), ('Vengambakkam village', 'Vengambakkam village'), ('Vilankulam', 'Vilankulam'), ('Vizhudamvadi', 'Vizhudamvadi')]
 
-ArrestOfTNFishermen_Choices = [('Sri Lankan Navy', 'Sri Lankan Navy'),('other country Navy', 'Other Country Navy')]
+AttackOnTNFishermen_Choices = [
+    ('Sri Lankan Navy', 'Sri Lankan Navy'),('Sri Lankan Fishermen', 'Sri Lankan Fishermen'),('Pirates', 'Pirates'),('Other', 'Other')]
 
-ArrestOfSLFishermen_Choices = [('Indian Navy', 'Indian Navy'),('Indian Coast Guard', 'Indian Coast Guard'), ('Coastal Security Group','Coastal Security Group'),('Other', 'Other')]
+ArrestOfTNFishermen_Choices = [
+    ('Sri Lankan Navy', 'Sri Lankan Navy'),('other country Navy', 'Other Country Navy')]
+
+ArrestOfSLFishermen_Choices = [
+    ('Indian Navy', 'Indian Navy'),('Indian Coast Guard', 'Indian Coast Guard'), ('Coastal Security Group','Coastal Security Group'),('Other', 'Other')]
 
 class CSR(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -344,23 +374,56 @@ class BoatPatrol(models.Model):
     patrol_place = models.CharField(max_length=200)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
     numberof_boats_checked = models.PositiveIntegerField()
-    registration_numberofboats_checked = models.CharField(max_length=200, blank=True, null=True)
+    registration_numberofboats_checked = models.TextField(max_length=200, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.patrol_officer} - {self.mps_limit} - {self.date_of_patrol}"
 
-class VehicleCheckPost(models.Model):
+class Atvpatrol(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    patrol_officer = models.CharField(max_length=200)
+    atv_number = models.CharField(max_length=100,blank=True, null=True)
+    date_of_patrol = models.DateField()
+    patrol_start_time = models.TimeField()
+    patrol_end_time = models.TimeField()
+    patrol_place = models.CharField(max_length=200)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
-    date_of_check = models.DateField()
-    check_post_location = models.CharField(max_length=200)
-    number_of_vehicles_checked = models.PositiveIntegerField()
-    vehicle_details = models.TextField(blank=True, null=True)
-    officer_in_charge = models.CharField(max_length=200)
     remarks = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.check_post_id} - {self.mps_limit} - {self.date_of_check}"
+        return f"{self.patrol_officer} - {self.atv_number} - {self.date_of_patrol}"
+
+class VehicleCheckPost(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    officer = models.ForeignKey('Officer', on_delete=models.CASCADE)
+    date_of_check = models.DateField()
+    vehicle_check_start_time = models.TimeField()
+    vehicle_check_end_time = models.TimeField()
+    check_post_name = models.CharField(max_length=200, choices=CHECK_POST_CHOICES)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    number_of_vehicles_checked = models.PositiveIntegerField()
+    registration_numberofvehicle_checked = models.TextField(blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.check_post_name} - {self.mps_limit} - {self.date_of_check}"
+
+class VehicleCheckothers(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    officer = models.ForeignKey('Officer', on_delete=models.CASCADE)
+    date_of_check = models.DateField()
+    vehicle_check_start_time = models.TimeField()
+    vehicle_check_end_time = models.TimeField()
+    place_of_check = models.CharField(max_length=200)
+    mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
+    number_of_vehicles_checked = models.PositiveIntegerField()
+    registration_numberofvehicle_checked = models.TextField(blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Vehicle Check by {self.officer} on {self.date_of_check}"
