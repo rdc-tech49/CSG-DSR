@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import CASE_CATEGORIES, MPS_CHOICES, Other_Agencies, CSR,BNSSMissingCase, othercases, maritimeact, RescueAtBeach, RescueAtSea, Seizure
+from .models import CASE_CATEGORIES, MPS_CHOICES, Other_Agencies,Other_Agencies,CHECK_POST_CHOICES,AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, othercases, maritimeact, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers
 
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
@@ -48,7 +48,7 @@ USER_CHOICES = [
     ('UVARI_MPS','UVARI_MPS'),
     ('KOODANKULAM_MPS','KOODANKULAM_MPS'),
     ('KANNIYAKUMARI_MPS','KANNIYAKUMARI_MPS'),
-    ('COLACHEL_MPS','COLACHEL_MPS') 
+    ('COLACHEL_MPS','COLACHEL_MPS'),('CONTROL_ROOM', 'CONTROL_ROOM'),('TBS', 'TBS'),('SI_TECH', 'SI_TECH'),
 ]
 
 
@@ -123,6 +123,11 @@ class BNSSMissingCaseForm(forms.ModelForm):
         choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+    io = forms.ModelChoiceField(
+        queryset=Officer.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Investigation Officer"
+    )
 
     class Meta:
         model = BNSSMissingCase
@@ -143,17 +148,24 @@ class BNSSMissingCaseForm(forms.ModelForm):
             'missing_person': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Missing Person Name'}),
             'petitioner': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Petitioner Name'}),
             'gist_of_case': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Case'}),
-            'io': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Investigation Officer'}),
         }
 
 class othercasesForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    io = forms.ModelChoiceField(
+        queryset=Officer.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Investigation Officer"
+    )
     class Meta:
         model = othercases
         exclude = ['submitted_at', 'user']
         widgets = {
             'crime_number': forms.TextInput(attrs={'class': 'form-control','placeholder': 'Enter Crime Number'}),
             'police_station': forms.TextInput(attrs={'class': 'form-control','placeholder': 'Enter Police Station'}),
-            'mps_limit': forms.Select(attrs={'class': 'form-control'}),
             'date_of_occurrence': forms.DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-control'},
                 format='%Y-%m-%dT%H:%M'
@@ -168,13 +180,17 @@ class othercasesForm(forms.ModelForm):
             'injured': forms.TextInput(attrs={'class': 'form-control','placeholder': 'Enter injured person details (if any)'}),
             'accused': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Accused details (if any)'}),
             'gist_of_case': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Case'}),
-            'io': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Investigation Officer Name and Rank'}),
         }
 
 class MaritimeActForm(forms.ModelForm):
     mps_limit = forms.ChoiceField(
         choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    io = forms.ModelChoiceField(
+        queryset=Officer.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Investigation Officer"
     )
 
     class Meta:
@@ -195,7 +211,6 @@ class MaritimeActForm(forms.ModelForm):
             'petitioner': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Petitioner Name'}),
             'accused': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Accused details (if any)'}),
             'gist_of_case': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Case'}),
-            'io': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Investigation Officer Name and Rank'}),
         }
 
 class RescueAtBeachForm(forms.ModelForm):
@@ -205,7 +220,7 @@ class RescueAtBeachForm(forms.ModelForm):
     )
     class Meta:
         model = RescueAtBeach
-        exclude = ['submitted_at', 'user', 'rescue_id']
+        exclude = ['submitted_at', 'user']
         widgets = {
             'date_of_rescue': forms.DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-control'},
@@ -216,7 +231,7 @@ class RescueAtBeachForm(forms.ModelForm):
             'victim_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Victim Names'}),
             'rescuer_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Rescuer Names'}),
             'rescue_beach_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-            'rescue_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Rescue Summary'}),
+            'gist_of_rescue': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Rescue details'}),
         }
 
 class RescueAtSeaForm(forms.ModelForm):
@@ -227,7 +242,7 @@ class RescueAtSeaForm(forms.ModelForm):
     
     class Meta:
         model = RescueAtSea
-        exclude = ['submitted_at', 'user','rescue_id']
+        exclude = ['submitted_at', 'user']
         widgets = {
             'date_of_rescue': forms.DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-control'},
@@ -235,11 +250,11 @@ class RescueAtSeaForm(forms.ModelForm):
             ),
             'place_of_rescue': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Rescue'}),
             'number_of_victims': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Victims Rescued'}),
-            'number_of_boats_involved': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Rescued'}),
+            'number_of_boats_rescued': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Rescued'}),
             'victim_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Victim Names'}),
             'rescuer_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Rescuer Names'}),
             'rescue_sea_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-            'rescue_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Rescue Summary'}),
+            'gist_of_rescue': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Rescue Summary'}),
         }
 
 class SeizureForm(forms.ModelForm):
@@ -252,10 +267,10 @@ class SeizureForm(forms.ModelForm):
     )
     class Meta:
         model = Seizure
-        exclude = ['submitted_at', 'user','seizure_id']
+        exclude = ['submitted_at', 'user']
         widgets = {
             'seized_item': forms.Select(attrs={'class': 'form-control'}),
-            'quatity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Quantity'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Quantity'}),
             'date_of_seizure': forms.DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-control'},
                 format='%Y-%m-%dT%H:%M'
@@ -263,8 +278,333 @@ class SeizureForm(forms.ModelForm):
             'place_of_seizure': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Seizure'}),
             'latitude': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Latitude'}),
             'longitude': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Longitude'}),
-            'accused': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Accused Name & Vehicle No (if any)'}),
+            'accused': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Accused Name details & Vehicle No (if any)'}),
             'seized_by': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Seized By Name'}),
             'seizure_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
             'gist_of_seizure': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Seizure'}),
+        }
+
+class ForecastForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    class Meta:
+        model = Forecast
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'date_of_forecast': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'place_of_forecast': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Forecast'}),
+            'forecast_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Forecast Details'}),
+        }
+    
+class AttackOnTNFishermenForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    attacked_by = forms.ChoiceField(
+        choices=AttackOnTNFishermen_Choices,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    class Meta:
+        model = AttackOnTNFishermen
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'date_of_attack': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'place_of_attack': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Attack'}),
+            'latitude': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Latitude'}),
+            'longitude': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Longitude'}),
+            'number_of_TNFishermen_injured': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of TN Fishermen Injured'}),
+            'number_of_TNFishermen_died': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of TN Fishermen died'}),
+            'number_of_TNFishermen_missing': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of TN Fishermen Missing'}),
+            'victim_names': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Victim Names'}),
+            'attacker_details': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Attacker Details'}),
+            'items_looted': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Items Looted (if any)'}),
+            'gist_of_attack': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Attack'}),
+        }
+
+class ArrestOfTNFishermenForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    arrested_by = forms.ChoiceField(
+        choices=ArrestOfTNFishermen_Choices,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = ArrestOfTNFishermen
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'date_of_arrest': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'place_of_arrest': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Arrest'}),
+            'number_of_TNFishermen_arrested': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of TN Fishermen Arrested'}),
+            'arrested_Fishermen_names': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arrested Fishermen Names'}),
+            'no_of_boats_seized': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Seized'}),
+            'boat_details': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Boat Details'}),
+            'gist_of_arrest': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Arrest'}),
+            'number_of_TNFishermen_released': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of TN Fishermen Released'}),
+            'no_of_boats_released': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Released'}),
+        }
+
+class ArrestOfSLFishermenForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    arrested_by = forms.ChoiceField(
+        choices=ArrestOfSLFishermen_Choices,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = ArrestOfSLFishermen
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'date_of_arrest': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'place_of_arrest': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Arrest'}),
+            'police_station': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Police Station'}),
+            'number_of_SLFishermen_arrested': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of SL Fishermen Arrested'}),
+            'arrested_Fishermen_names': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arrested Fishermen Names'}),
+            'no_of_boats_seized': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Seized'}),
+            'boat_details': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Boat Details'}),
+            'gist_of_arrest': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Arrest'}),
+            'number_of_SLFishermen_released': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of SL Fishermen Released'}),
+            'no_of_boats_released': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Released'}),
+        }
+
+class OnRoadVehicleStatusForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+
+    class Meta:
+        model = OnRoadVehicleStatus
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'vehicle_type': forms.Select(attrs={'class': 'form-control'}),
+            'vehicle_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Vehicle Number of vehicle checked'}),
+            'working_status': forms.Select(attrs={'class': 'form-control'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
+        }
+
+class OnWaterVehicleStatusForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = OnWaterVehicleStatus
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'boat_type': forms.Select(attrs={'class': 'form-control'}),
+            'boat_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Boat Number of boat checked'}),
+            'working_status': forms.Select(attrs={'class': 'form-control'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
+        }
+
+class VVCmeetingForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    class Meta:
+        model = VVCmeeting
+        exclude = ['submitted_at', 'user']
+        widgets = { 
+            'date_of_vvc': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%d'),
+            'village_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Village Name'}),
+            'number_of_villagers': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no. of Villagersattended meeting'}),
+            'conducted_by': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Officer Conducted VVC'}),
+            'vvc_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            'vvc_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter VVC Details (if any)'}),
+        }
+
+class BeatDetailsForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    class Meta:
+        model = BeatDetails
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'date_of_beat': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'day_beat_count': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Day Beat Count'}),
+            'night_beat_count': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Night Beat Count'})
+        }
+
+class ProformaForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    class Meta:
+        model = Proforma
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'date_of_proforma': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'mps_visited': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no. of MPS Visited'}),
+            'check_post_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no.of Check Post Checked'}),
+            'boat_guard_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no.of Boat Guard Checked'}),
+            'vvc_meeting_conducted': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no.of VVC Meeting Conducted'}),
+            'villages_visited': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no.of Villages Visited'}),
+            'meetings_attended': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no.of Meetings Attended'}),
+            'awareness_programs_conducted': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no.of Awareness Programs Conducted'}),
+            'coastal_security_exercises_conducted': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no.of Coastal Security Exercises Conducted'})           
+        }
+
+
+class BoatPatrolForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    patrol_officer = forms.ModelChoiceField(
+        queryset=Officer.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Patrol Officer"
+    )
+    
+    class Meta:
+        model = BoatPatrol
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'boat_type': forms.Select(attrs={'class': 'form-control'}),
+            'boat_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Boat Number'}),
+            'date_of_patrol': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'patrol_start_time': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
+            'patrol_end_time': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
+            'number_of_boats_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Checked'}),
+            'registration_numberofboats_checked': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Registration Number of Boats Checked'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
+        }
+
+class AtvpatrolForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    patrol_officer = forms.ModelChoiceField(
+        queryset=Officer.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Patrol Officer"
+    )
+    
+    class Meta:
+        model = Atvpatrol
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'atv_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter ATV Number'}),
+            'date_of_patrol': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'patrol_start_time': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
+            'patrol_end_time': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
+            'patrol_place': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Patrol Place'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
+        }
+
+class VehicleCheckPostForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    check_post_name = forms.ChoiceField(
+        choices= [('', 'Select check post')] + CHECK_POST_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    officer = forms.ModelChoiceField(
+        queryset=Officer.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Officer"
+    )
+    
+    class Meta:
+        model = VehicleCheckPost
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'date_of_check': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'vehicle_check_start_time': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
+            'vehicle_check_end_time': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
+            'number_of_vehicles_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Vehicles Checked'}),
+            'registration_number_of_vehicles_checked': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Registration Number of Vehicles Checked'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
+        }
+
+class VehicleCheckothersForm(forms.ModelForm):
+    mps_limit = forms.ChoiceField(
+        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    officer = forms.ModelChoiceField(
+        queryset=Officer.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Officer"
+    )
+    
+    class Meta:
+        model = VehicleCheckothers
+        exclude = ['submitted_at', 'user']
+        widgets = {
+            'date_of_check': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'vehicle_check_start_time': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
+            'vehicle_check_end_time': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
+            'place_of_check': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Check'}),
+            'number_of_vehicles_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Vehicles Checked'}),
+            'registration_number_of_vehicles_checked': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Registration Number of Vehicles Checked'}),
+            'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
         }
