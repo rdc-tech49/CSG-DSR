@@ -3,14 +3,15 @@ from django.http import HttpResponse
 from docx import Document
 from docx.shared import Inches
 from django import forms
-from .forms import CustomSignupForm, UpdateUserForm,CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm
+from .models import CheckPost, CSR, BNSSMissingCase, othercases, maritimeact,Other_Agencies
+
+from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import CSR, BNSSMissingCase, othercases, maritimeact
 
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -19,7 +20,88 @@ from django.db.models import Q
 
 from django.template.loader import render_to_string
 
-# dsr/views.py
+#add add checkppost view
+@login_required
+def add_checkpost(request):
+    if request.method == 'POST':
+        form = CheckPostForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "New checkpost added successfully!")
+            return redirect('add_checkpost')  # redirect to the same form or elsewhere
+    else:
+        form = CheckPostForm()
+    
+    return render(request, 'dsr/admin.add_checkpost.html', {'form': form})
+
+#Other_AgenciesForm view
+@login_required
+def other_agencies_form_view(request):
+    if request.method == 'POST':
+        form = Other_AgenciesForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Other agency added successfully!")
+            return redirect('other_agencies_form')
+    else:
+        form = Other_AgenciesForm()
+    return render(request, 'dsr/admin.other_agencies_form.html', {'form': form})
+
+def arrest_of_sl_fishermen_choices_form_view(request):
+    return HttpResponse("<h2>Arrest of SL Fishermen - Form: No page created yet.</h2>")
+
+def officer_form_view(request):
+    return HttpResponse("<h2>Arrest of SL Fishermen - Form: No page created yet.</h2>")
+
+def seized_item_category_form_view(request):
+    return HttpResponse("<h2>Seized Item Category - Form: No page created yet.</h2>")
+
+def attack_on_tnfishermen_choices_form_view(request):
+    return HttpResponse("<h2>Attack on TN Fishermen - Form: No page created yet.</h2>")
+
+def tnfishermen_arrest_choices_form_view(request):
+    return HttpResponse("<h2>TN Fishermen Arrest - Form: No page created yet.</h2>")
+
+def arrest_of_sl_fishermen_choices_form_view(request):
+    return HttpResponse("<h2>Arrest of SL Fishermen - Form: No page created yet.</h2>")
+
+def rescue_at_beach_form_view(request):
+    return HttpResponse("<h2>Rescue at Beach - Form: No page created yet.</h2>")
+
+def rescue_at_sea_form_view(request):
+    return HttpResponse("<h2>Rescue at Sea - Form: No page created yet.</h2>")
+
+def attack_on_tnfishermen_view(request):
+    return HttpResponse("<h2>Attack on TN Fishermen - Form: No page created yet.</h2>")
+
+def tnfishermen_arrest_form_view(request):  
+    return HttpResponse("<h2>TN Fishermen Arrest - Form: No page created yet.</h2>")
+
+def arrest_of_sl_fishermen_form_view(request):
+    return HttpResponse("<h2>Arrest of SL Fishermen - Form: No page created yet.</h2>")
+
+def onroad_vehicle_status_form_view(request):   
+    return HttpResponse("<h2>On Road Vehicle Status - Form: No page created yet.</h2>")
+
+def onwater_vehicle_status_form_view(request):
+    return HttpResponse("<h2>On Water Vehicle Status - Form: No page created yet.</h2>")
+
+def vvc_meeting_form_view(request): 
+    return HttpResponse("<h2>VVC Meeting - Form: No page created yet.</h2>")
+
+def beat_details_form_view(request):    
+    return HttpResponse("<h2>Beat Details - Form: No page created yet.</h2>")
+
+def atv_patrol_form_view(request):
+    return HttpResponse("<h2>ATV Patrol - Form: No page created yet.</h2>")
+
+def vehicle_checkpost_form_view(request):
+    return HttpResponse("<h2>Vehicle Checkpost - Form: No page created yet.</h2>")
+
+def vehicle_check_others_form_view(request):
+    return HttpResponse("<h2>Vehicle Check Others - Form: No page created yet.</h2>")
+
+
 def home_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')

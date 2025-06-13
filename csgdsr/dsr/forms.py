@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import CASE_CATEGORIES, MPS_CHOICES, Other_Agencies,Other_Agencies,CHECK_POST_CHOICES,AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, othercases, maritimeact, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers
+from .models import CASE_CATEGORIES, MPS_CHOICES, AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, MaritimeAct, OtherCases, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers,CheckPost,Other_Agencies
 
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
@@ -79,12 +79,64 @@ class CustomSignupForm(forms.ModelForm):
             user.save()
         return user
 
-
-
 class UpdateUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email']
+
+class OfficerForm(forms.ModelForm):
+    rank = forms.ChoiceField(
+        choices=[('', 'Select Rank')] + Officer.RANK_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = Officer
+        fields = ['name', 'rank']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Officer Name'}),
+        }
+
+class CheckPostForm(forms.ModelForm):
+    class Meta:
+        model = CheckPost
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Checkpost Name'}),
+        }
+
+class Other_AgenciesForm(forms.ModelForm):
+    class Meta:
+        model = Other_Agencies
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Other Agency Name'}),
+        }
+
+class AttackOnTNFishermen_ChoicesForm(forms.ModelForm):
+    class Meta:
+        model = AttackOnTNFishermen_Choices
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Attacker Name'}),
+        }
+
+class ArrestOfTNFishermen_ChoicesForm(forms.ModelForm):
+    class Meta:
+        model = ArrestOfTNFishermen_Choices
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arresting Authority Name'}),
+        }
+
+class ArrestOfSLFishermen_ChoicesForm(forms.ModelForm):
+    class Meta:
+        model = ArrestOfSLFishermen_Choices
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arresting Authority Name'}),
+        }
+
 
 class CSRForm(forms.ModelForm):
     class Meta:
@@ -161,7 +213,7 @@ class othercasesForm(forms.ModelForm):
         empty_label="Select Investigation Officer"
     )
     class Meta:
-        model = othercases
+        model = OtherCases
         exclude = ['submitted_at', 'user']
         widgets = {
             'crime_number': forms.TextInput(attrs={'class': 'form-control','placeholder': 'Enter Crime Number'}),
@@ -194,7 +246,7 @@ class MaritimeActForm(forms.ModelForm):
     )
 
     class Meta:
-        model = maritimeact
+        model = MaritimeAct
         exclude = ['submitted_at', 'user']
         widgets = {
             'crime_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Crime Number'}),
@@ -262,9 +314,12 @@ class SeizureForm(forms.ModelForm):
         choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    handed_over_to = forms.ChoiceField(
-        choices=[('', 'Select Agency')] +  Other_Agencies, widget=forms.Select(attrs={'class': 'form-control'})
+    handed_over_to = forms.ModelChoiceField(
+        queryset=Other_Agencies.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Handed Over Agency"
     )
+
     class Meta:
         model = Seizure
         exclude = ['submitted_at', 'user']
@@ -551,9 +606,10 @@ class VehicleCheckPostForm(forms.ModelForm):
         choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    check_post_name = forms.ChoiceField(
-        choices= [('', 'Select check post')] + CHECK_POST_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'})
+    check_post = forms.ModelChoiceField(
+    queryset=CheckPost.objects.all(),
+    widget=forms.Select(attrs={'class': 'form-control'}),
+    empty_label="Select Checkpost"
     )
     officer = forms.ModelChoiceField(
         queryset=Officer.objects.all(),
@@ -575,7 +631,7 @@ class VehicleCheckPostForm(forms.ModelForm):
                 format='%H:%M'
             ),
             'number_of_vehicles_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Vehicles Checked'}),
-            'registration_number_of_vehicles_checked': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Registration Number of Vehicles Checked'}),
+            'registration_numbers': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Registration Number of Vehicles Checked'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
         }
 
@@ -605,6 +661,6 @@ class VehicleCheckothersForm(forms.ModelForm):
             ),
             'place_of_check': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Check'}),
             'number_of_vehicles_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Vehicles Checked'}),
-            'registration_number_of_vehicles_checked': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Registration Number of Vehicles Checked'}),
+            'registration_numbers': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Registration Number of Vehicles Checked'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
         }

@@ -29,6 +29,22 @@ urlpatterns = [
     #forms main page
     path('forms/', views.forms_view, name='forms_page'),
 
+    #categories forms
+    #Officer
+    path('officer_form/', views.officer_form_view, name='officer_form'),
+    #Seized Item Category
+    path('seized_item_category_form/', views.seized_item_category_form_view, name='seized_item_category_form'),
+    #checkpost
+    path('add_checkpost/', views.add_checkpost, name='add_checkpost'),
+    #Other_Agencies
+    path('other_agencies_form/', views.other_agencies_form_view, name='other_agencies_form'),
+    #AttackOnTNFishermen_ChoicesForm
+    path('attack_on_tnfishermen_choices_form/', views.attack_on_tnfishermen_choices_form_view, name='attack_on_tnfishermen_choices_form'),
+    #TNFishermenArrest_ChoicesForm
+    path('tnfishermen_arrest_choices_form/', views.tnfishermen_arrest_choices_form_view, name='tnfishermen_arrest_choices_form'),
+    #ArrestOfSLFishermen_ChoicesForm
+    path('arrest_of_sl_fishermen_choices_form/', views.arrest_of_sl_fishermen_choices_form_view, name='arrest_of_sl_fishermen_choices_form'),
+
     #individual forms
     #cases registered forms
     #csr
@@ -39,30 +55,40 @@ urlpatterns = [
     path('othercases_form/', views.othercases_form, name='othercases_form'),
     #Maritime act
     path('maritimeact_form/', views.maritimeact_form_view, name='maritimeact_form'),
-
-    #Rescue
-    path('rescue_form/', views.rescue_form_view, name='rescue_form'),
+    #Rescue at beach
+    path('rescue_at_beach_form/', views.rescue_at_beach_form_view, name='rescue_at_beach_form'),
+    #Rescue at sea
+    path('rescue_at_sea_form/', views.rescue_at_sea_form_view, name='rescue_at_sea_form'),
     #Seizure
     path('seizure_form/', views.seizure_form_view, name='seizure_form'),
     #forecast 
     path('forecast_form/', views.forecast_form_view, name='forecast_form'),
-    #fishermen_attack
-    path('fishermen_attack_form/', views.fishermen_attack_form_view, name='fishermen_attack_form'),
-    #fishermen_arrest
-    path('fishermen_arrest_form/', views.fishermen_arrest_form_view, name='fishermen_arrest_form'),
-    #boat_vehicle_status
-    path('boat_vehicle_status_form/', views.boat_vehicle_status_form_view, name='boat_vehicle_status_form'),
-    #vvc
-    path('vvc_form/', views.vvc_form_view, name='vvc_form'),
-    #beat
-    path('beat_form/', views.beat_form_view, name='beat_form'),
-    #proforma
+    #attack on TN fishermen 
+    path('attack_on_tnfishermen/', views.attack_on_tnfishermen_view, name='attack_on_tnfishermen_form'),
+    #TN fishermen_arrest
+    path('tnfishermen_arrest_form/', views.tnfishermen_arrest_form_view, name='tnfishermen_arrest_form'),
+    #Arrest Of SL Fishermen
+    path('arrest_of_sl_fishermen_form/', views.arrest_of_sl_fishermen_form_view, name='arrest_of_sl_fishermen_form'),
+    #On Road Vehicle Status
+    path('onroad_vehicle_status_form/', views.onroad_vehicle_status_form_view, name='onroad_vehicle_status_form'),
+    #On Water Vehicle  Status
+    path('onwater_vehicle_status_form/', views.onwater_vehicle_status_form_view, name='onwater_vehicle_status_form'),
+    #VVC meeting
+    path('vvc_meeting_form/', views.vvc_meeting_form_view, name='vvc_meeting_form'),
+    #Beat   Details
+    path('beat_details_form/', views.beat_details_form_view, name='beat_details_form'),
+    #Proforma
     path('proforma_form/', views.proforma_form_view, name='proforma_form'),
-    #boat_patrol
+    #Boat Patrol
     path('boat_patrol_form/', views.boat_patrol_form_view, name='boat_patrol_form'),
-    #vehicle_check
-    path('vehicle_check_form/', views.vehicle_check_form_view, name='vehicle_check_form'),
+    #Atv patrol
+    path('atv_patrol_form/', views.atv_patrol_form_view, name='atv_patrol_form'),
+    #Vehicle CheckPost
+    path('vehicle_checkpost_form/', views.vehicle_checkpost_form_view, name='vehicle_checkpost_form'),
+    #Vehicle Check others
+    path('vehicle_check_others_form/', views.vehicle_check_others_form_view, name='vehicle_check_others_form'),
 
+    
 
     #submitted forms summary
     #cases_registered_summary

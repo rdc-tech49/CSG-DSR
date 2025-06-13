@@ -1,6 +1,5 @@
 
 from django.db import models
-from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.utils import timezone
@@ -73,14 +72,10 @@ class Officer(models.Model):
     ]
 
     name = models.CharField(max_length=255)
-    rank = models.CharField(max_length=4, choices=RANK_CHOICES)
+    rank = models.CharField(max_length=10, choices=RANK_CHOICES)
 
     def __str__(self):
         return f"{self.name} - {self.rank}"
-
-
-Other_Agencies = [
-    ('Indian Coast Guard', 'Indian Coast Guard'),('Indian Navy', 'Indian Navy'),('Customs Department', 'Customs Department'), ('Fisheries Department', 'Fisheries Department'),('Forest Department', 'Forest Department'),('Civil Supplies CID', 'Civil Supplies CID'),('Revenue Department', 'Revenue Department'),('Local Police Station', 'Local Police Station'),('Marine Enforcement Wing','Marine Enforcement Wing'),('Other', 'Other')]
 
 CASE_CATEGORIES = [
     
@@ -88,17 +83,32 @@ CASE_CATEGORIES = [
     ('Missing', 'Missing'),
 ]
 
-CHECK_POST_CHOICES = [
-    ('Aakur', 'Aakur'), ('Alapakkam', 'Alapakkam'), ('Arasankarai', 'Arasankarai'), ('Arumugachandi', 'Arumugachandi'), ('Arumuganeri', 'Arumuganeri'), ('Availiankanni', 'Availiankanni'), ('B. Mutloor (Keerapalayam)', 'B. Mutloor (Keerapalayam)'), ('Chinnamuttam', 'Chinnamuttam'), ('Colachal', 'Colachal'), ('Devipattinam', 'Devipattinam'), ('Edampadal', 'Edampadal'), ('Ellai Amman Koil', 'Ellai Amman Koil'), ('Embaikottai', 'Embaikottai'), ('Eranavur', 'Eranavur'), ('Gopalasamudram', 'Gopalasamudram'), ('Goppiar Madam', 'Goppiar Madam'), ('Idaiyathimangalam (Mumpaalai)', 'Idaiyathimangalam (Mumpaalai)'), ('Idinthakarai', 'Idinthakarai'), ('Kadaladi Cross Road Junction (Kadugusanthai)', 'Kadaladi Cross Road Junction (Kadugusanthai)'), ('Kadinnel vayal Road', 'Kadinnel vayal Road'), ('Kalingu', 'Kalingu'), ('Kallar (near Akkaraipetti)', 'Kallar (near Akkaraipetti)'), ('Kameswaram Mariamman Temple ', 'Kameswaram Mariamman Temple '), ('Karaiyur', 'Karaiyur'), ('Karakottai (Krishnajipattinam)', 'Karakottai (Krishnajipattinam)'), ('Karankuda', 'Karankuda'), ('Kattumavadi', 'Kattumavadi'), ('Killai', 'Killai'), ('Kolathur', 'Kolathur'), ('Koonimedu ', 'Koonimedu '), ('Kootampuli', 'Kootampuli'), ('Koothankuzhi Junction', 'Koothankuzhi Junction'), ('Kottaikuppam (Bommiyarpalayam)', 'Kottaikuppam (Bommiyarpalayam)'), ('Kottaipattinam', 'Kottaipattinam'), ('Kovalam', 'Kovalam'), ('Kulasekarapattinam Junction', 'Kulasekarapattinam Junction'), ('Kunthakal', 'Kunthakal'), ('Kuvathur', 'Kuvathur'), ('Mahabalipuram', 'Mahabalipuram'), ('Mahadhanapuram', 'Mahadhanapuram'), ('Manakkudi', 'Manakkudi'), ('Mathavapuram  ', 'Mathavapuram  '), ('Moondram Chatram', 'Moondram Chatram'), ('Muttam', 'Muttam'), ('Muttukkadu', 'Muttukkadu'), ('Olaikuda', 'Olaikuda'), ('Ovari', 'Ovari'), ('Pamban', 'Pamban'), ('Pannerkottagam ', 'Pannerkottagam '), ('Parangipettai ', 'Parangipettai '), ('Paravai Road', 'Paravai Road'), ('Pattinamaruthur ', 'Pattinamaruthur '), ('Periyathazhai', 'Periyathazhai'), ('Pettai', 'Pettai'), ('Pillaiyar Thidal ', 'Pillaiyar Thidal '), ('Pollachiamman Kulam', 'Pollachiamman Kulam'), ('Pooncheri ', 'Pooncheri '), ('Prathaparamapuram Road Junction', 'Prathaparamapuram Road Junction'), ('Puduchatiram', 'Puduchatiram'), ('Pudupattinam', 'Pudupattinam'), ('Punnakayal', 'Punnakayal'), ('Pushpavanam Road Junction ', 'Pushpavanam Road Junction '), ('Raghunathapuram (Periyapattinam)', 'Raghunathapuram (Periyapattinam)'), ('Rajamadam', 'Rajamadam'), ('Ramakrishna Nagar', 'Ramakrishna Nagar'), ('Reddichavadi', 'Reddichavadi'), ('Rendampulikadu', 'Rendampulikadu'), ('Sangumal', 'Sangumal'), ('Sayalkudi', 'Sayalkudi'), ('Semankottai Junction', 'Semankottai Junction'), ('Sengathalai Road', 'Sengathalai Road'), ('Serudur', 'Serudur'), ('Sholinganallur', 'Sholinganallur'), ('Sippikulam Junction ', 'Sippikulam Junction '), ('Thalagnayar Road Vettaikaran irupu', 'Thalagnayar Road Vettaikaran irupu'), ('Thalankadu', 'Thalankadu'), ('Thambikottai', 'Thambikottai'), ('Theerthandanthanam', 'Theerthandanthanam'), ('Thengaipattinam', 'Thengaipattinam'), ('Thennadur', 'Thennadur'), ('Thillaivilagam', 'Thillaivilagam'), ('Thirukadaiyur', 'Thirukadaiyur'), ('Thirupulani', 'Thirupulani'), ('Thondi', 'Thondi'), ('Thopputhurai ', 'Thopputhurai '), ('Underkadu', 'Underkadu'), ('Uppur', 'Uppur'), ('Vaipar', 'Vaipar'), ('Valinokam ', 'Valinokam '), ('Vallampadugai', 'Vallampadugai'), ('Valuthalaikudi', 'Valuthalaikudi'), ('Vattanam', 'Vattanam'), ('Vayalur', 'Vayalur'), ('Veechur Road ', 'Veechur Road '), ('Veerasangili Madam', 'Veerasangili Madam'), ('Vellapatti', 'Vellapatti'), ('Vembar', 'Vembar'), ('Vengambakkam village', 'Vengambakkam village'), ('Vilankulam', 'Vilankulam'), ('Vizhudamvadi', 'Vizhudamvadi')]
+class CheckPost(models.Model):
+    name = models.CharField(max_length=200, unique=True)
 
-AttackOnTNFishermen_Choices = [
-    ('Sri Lankan Navy', 'Sri Lankan Navy'),('Sri Lankan Fishermen', 'Sri Lankan Fishermen'),('Pirates', 'Pirates'),('Other', 'Other')]
+    def __str__(self):
+        return self.name
 
-ArrestOfTNFishermen_Choices = [
-    ('Sri Lankan Navy', 'Sri Lankan Navy'),('other country Navy', 'Other Country Navy')]
+class Other_Agencies(models.Model):
+    agency_name = models.CharField(max_length=100, unique=True)
 
-ArrestOfSLFishermen_Choices = [
-    ('Indian Navy', 'Indian Navy'),('Indian Coast Guard', 'Indian Coast Guard'), ('Coastal Security Group','Coastal Security Group'),('Other', 'Other')]
+    def __str__(self):
+        return self.agency_name
+
+class AttackOnTNFishermen_Choices(models.Model):
+    attacker_name=models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.attacker_name
+
+class ArrestOfTNFishermen_Choices(models.Model):
+    arrested_by=models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.arrested_by
+
+class ArrestOfSLFishermen_Choices(models.Model):
+    arrested_by=models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.arrested_by
 
 class CSR(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -136,7 +146,7 @@ class BNSSMissingCase(models.Model):
         return f"{self.case_category} - {self.crime_number} - {self.mps_limit}"
     
 
-class othercases(models.Model):
+class OtherCases(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
     crime_number = models.CharField(max_length=50)
     police_station = models.CharField(max_length=100)
@@ -155,7 +165,7 @@ class othercases(models.Model):
     def __str__(self):
         return f"{self.crime_number} - {self.mps_limit}"
 
-class maritimeact(models.Model):
+class MaritimeAct(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
     crime_number = models.CharField(max_length=50)
     police_station = models.CharField(max_length=100)
@@ -214,13 +224,14 @@ class Seizure(models.Model):
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
     accused = models.CharField(max_length=200, blank=True, null=True)
     seized_by = models.CharField(max_length=200)
-    handed_over_to = models.CharField(max_length=200, choices=Other_Agencies, blank=True, null=True)
+    handed_over_to = models.ForeignKey(Other_Agencies, on_delete=models.CASCADE, blank=True, null=True)  
     seizure_image = models.ImageField(upload_to='seizure_images/', blank=True, null=True,validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'heic'])])
     gist_of_seizure = models.TextField()
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.date_of_seizure} - {self.place_of_seizure} - {self.seized_item.item_name} - {self.quantity} {self.seized_item.quantity_type}"
+        return f"{self.date_of_seizure} - {self.place_of_seizure} - {self.seized_item.item_name if self.seized_item else ''} - {self.quantity} {self.seized_item.quantity_type if self.seized_item else ''}"
+
     
 class Forecast(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
@@ -235,7 +246,7 @@ class Forecast(models.Model):
 
 class AttackOnTNFishermen(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
-    attacked_by = models.CharField(max_length=200, choices=AttackOnTNFishermen_Choices)
+    attacked_by = models.ForeignKey(AttackOnTNFishermen_Choices, on_delete=models.CASCADE)
     date_of_attack = models.DateTimeField()
     place_of_attack = models.CharField(max_length=200)
     latitude = models.DecimalField(max_digits=9, decimal_places=6,blank=True, null=True)
@@ -258,7 +269,7 @@ class ArrestOfTNFishermen(models.Model):
     date_of_arrest = models.DateTimeField()
     place_of_arrest = models.CharField(max_length=200)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
-    arrested_by = models.CharField(max_length=200, choices=ArrestOfTNFishermen_Choices)
+    arrested_by = models.ForeignKey(ArrestOfTNFishermen_Choices, on_delete=models.CASCADE)
     number_of_TNFishermen_arrested = models.PositiveIntegerField()
     arrested_Fishermen_names = models.CharField(max_length=200)
     no_of_boats_seized = models.PositiveIntegerField(blank=True, null=True)
@@ -276,7 +287,7 @@ class ArrestOfSLFishermen(models.Model):
     place_of_arrest = models.CharField(max_length=200)
     police_station = models.CharField(max_length=200)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
-    arrested_by = models.CharField(max_length=200, choices=ArrestOfSLFishermen_Choices)
+    arrested_by = models.ForeignKey(ArrestOfSLFishermen_Choices, on_delete=models.CASCADE)
     number_of_SLFishermen_arrested = models.PositiveIntegerField()
     arrested_Fishermen_name = models.CharField(max_length=200)
     no_of_boats_seized = models.PositiveIntegerField(blank=True, null=True)
@@ -339,7 +350,7 @@ class BeatDetails(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.beat_id} - {self.mps_limit} - {self.date_of_beat}"
+        return f"{self.mps_limit} - {self.date_of_beat}"
 
 class Proforma(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
@@ -396,15 +407,15 @@ class VehicleCheckPost(models.Model):
     date_of_check = models.DateField()
     vehicle_check_start_time = models.TimeField()
     vehicle_check_end_time = models.TimeField()
-    check_post_name = models.CharField(max_length=200, choices=CHECK_POST_CHOICES)
+    check_post = models.ForeignKey('CheckPost', on_delete=models.CASCADE)  
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
     number_of_vehicles_checked = models.PositiveIntegerField()
-    registration_numberofvehicle_checked = models.TextField(blank=True, null=True)
+    registration_numbers  = models.TextField(blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.check_post_name} - {self.mps_limit} - {self.date_of_check}"
+        return f"{self.check_post} - {self.mps_limit} - {self.date_of_check}"
 
 class VehicleCheckothers(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
@@ -415,7 +426,7 @@ class VehicleCheckothers(models.Model):
     place_of_check = models.CharField(max_length=200)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
     number_of_vehicles_checked = models.PositiveIntegerField()
-    registration_numberofvehicle_checked = models.TextField(blank=True, null=True)
+    registration_numbers = models.TextField(blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
