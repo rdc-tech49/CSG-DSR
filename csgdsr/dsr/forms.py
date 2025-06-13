@@ -108,33 +108,33 @@ class CheckPostForm(forms.ModelForm):
 class Other_AgenciesForm(forms.ModelForm):
     class Meta:
         model = Other_Agencies
-        fields = ['name']
+        fields = ['agency_name']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Other Agency Name'}),
+            'agency_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Other Agency Name'}),
         }
 
 class AttackOnTNFishermen_ChoicesForm(forms.ModelForm):
     class Meta:
         model = AttackOnTNFishermen_Choices
-        fields = ['name']
+        fields = ['attacker_name']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Attacker Name'}),
+            'attacker_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Attacker Name'}),
         }
 
 class ArrestOfTNFishermen_ChoicesForm(forms.ModelForm):
     class Meta:
         model = ArrestOfTNFishermen_Choices
-        fields = ['name']
+        fields = ['arrested_by']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arresting Authority Name'}),
+            'arrested_by': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arresting Authority Name'}),
         }
 
 class ArrestOfSLFishermen_ChoicesForm(forms.ModelForm):
     class Meta:
         model = ArrestOfSLFishermen_Choices
-        fields = ['name']
+        fields = ['arrested_by']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arresting Authority Name'}),
+            'arrested_by': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arresting Authority Name'}),
         }
 
 
@@ -361,9 +361,10 @@ class AttackOnTNFishermenForm(forms.ModelForm):
         choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    attacked_by = forms.ChoiceField(
-        choices=AttackOnTNFishermen_Choices,
-        widget=forms.Select(attrs={'class': 'form-control'})
+    attacked_by = forms.ModelChoiceField(
+    queryset=AttackOnTNFishermen_Choices.objects.all(),
+    widget=forms.Select(attrs={'class': 'form-control'}),
+    empty_label="Select Attacker"
     )
     
     class Meta:
@@ -391,10 +392,11 @@ class ArrestOfTNFishermenForm(forms.ModelForm):
         choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    arrested_by = forms.ChoiceField(
-        choices=ArrestOfTNFishermen_Choices,
-        widget=forms.Select(attrs={'class': 'form-control'})
+    arrested_by = forms.ModelChoiceField(
+        queryset=ArrestOfTNFishermen_Choices.objects.all(),widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Attacker"
     )
+    
 
     class Meta:
         model = ArrestOfTNFishermen
@@ -419,9 +421,9 @@ class ArrestOfSLFishermenForm(forms.ModelForm):
         choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    arrested_by = forms.ChoiceField(
-        choices=ArrestOfSLFishermen_Choices,
-        widget=forms.Select(attrs={'class': 'form-control'})
+    arrested_by = forms.ModelChoiceField(
+        queryset=ArrestOfSLFishermen_Choices.objects.all(),widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Attacker"
     )
 
     class Meta:
@@ -485,9 +487,7 @@ class VVCmeetingForm(forms.ModelForm):
         model = VVCmeeting
         exclude = ['submitted_at', 'user']
         widgets = { 
-            'date_of_vvc': forms.DateTimeInput(
-                attrs={'type': 'datetime-local', 'class': 'form-control'},
-                format='%Y-%m-%d'),
+            'date_of_vvc': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'village_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Village Name'}),
             'number_of_villagers': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no. of Villagersattended meeting'}),
             'conducted_by': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Officer Conducted VVC'}),
@@ -514,11 +514,6 @@ class BeatDetailsForm(forms.ModelForm):
         }
 
 class ProformaForm(forms.ModelForm):
-    mps_limit = forms.ChoiceField(
-        choices=[('', 'Select MPS Limit')] + MPS_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    
     class Meta:
         model = Proforma
         exclude = ['submitted_at', 'user']
