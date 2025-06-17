@@ -505,10 +505,8 @@ class BeatDetailsForm(forms.ModelForm):
         model = BeatDetails
         exclude = ['submitted_at', 'user']
         widgets = {
-            'date_of_beat': forms.DateTimeInput(
-                attrs={'type': 'datetime-local', 'class': 'form-control'},
-                format='%Y-%m-%dT%H:%M'
-            ),
+            'date_of_beat': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+,
             'day_beat_count': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Day Beat Count'}),
             'night_beat_count': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Night Beat Count'})
         }
@@ -518,10 +516,7 @@ class ProformaForm(forms.ModelForm):
         model = Proforma
         exclude = ['submitted_at', 'user']
         widgets = {
-            'date_of_proforma': forms.DateTimeInput(
-                attrs={'type': 'datetime-local', 'class': 'form-control'},
-                format='%Y-%m-%dT%H:%M'
-            ),
+            'date_of_proforma': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'mps_visited': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no. of MPS Visited'}),
             'check_post_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no.of Check Post Checked'}),
             'boat_guard_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter no.of Boat Guard Checked'}),
@@ -550,12 +545,10 @@ class BoatPatrolForm(forms.ModelForm):
         widgets = {
             'boat_type': forms.Select(attrs={'class': 'form-control'}),
             'boat_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Boat Number'}),
-            'date_of_patrol': forms.DateTimeInput(
-                attrs={'type': 'datetime-local', 'class': 'form-control'},
-                format='%Y-%m-%dT%H:%M'
-            ),
+            'date_of_patrol': forms.DateInput(
+                attrs={'type': 'date', 'class': 'form-control'}),
             'patrol_start_time': forms.TimeInput(
-                attrs={'type': 'time', 'class': 'form-control'},
+            attrs={'type': 'time', 'class': 'form-control'},
                 format='%H:%M'
             ),
             'patrol_end_time': forms.TimeInput(

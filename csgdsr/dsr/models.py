@@ -139,7 +139,7 @@ class BNSSMissingCase(models.Model):
     diseased = models.CharField(max_length=200, blank=True, null=True)
     missing_person = models.CharField(max_length=200, blank=True, null=True)
     gist_of_case = models.TextField()
-    io=models.ForeignKey('Officer', on_delete=models.CASCADE)
+    io=models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -159,7 +159,7 @@ class OtherCases(models.Model):
     injured = models.CharField(max_length=200, blank=True, null=True)
     accused = models.CharField(max_length=200, blank=True, null=True)
     gist_of_case = models.TextField()
-    io=models.ForeignKey('Officer', on_delete=models.CASCADE)
+    io=models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -176,7 +176,7 @@ class MaritimeAct(models.Model):
     petitioner = models.CharField(max_length=100)
     accused = models.CharField(max_length=200, blank=True, null=True)
     gist_of_case = models.TextField()
-    io=models.ForeignKey('Officer', on_delete=models.CASCADE)
+    io=models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -370,7 +370,7 @@ class Proforma(models.Model):
     
 class BoatPatrol(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
-    patrol_officer = models.ForeignKey('Officer', on_delete=models.CASCADE)
+    patrol_officer = models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     boat_type = models.CharField(max_length=50, choices=[('12_TON_BOAT', '12 Ton Boat'), ('5_TON_BOAT', '5 Ton Boat'), ('JET_SKI', 'Jet Ski'), ('JET_BOAT', 'Jet Boat'), ('AMPHIBIOUS_CRAFT', 'Amphibious Craft')])
     boat_number = models.CharField(max_length=100,blank=True, null=True)
     date_of_patrol = models.DateField()
@@ -403,7 +403,7 @@ class Atvpatrol(models.Model):
 
 class VehicleCheckPost(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
-    officer = models.ForeignKey('Officer', on_delete=models.CASCADE)
+    officer = models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     date_of_check = models.DateField()
     vehicle_check_start_time = models.TimeField()
     vehicle_check_end_time = models.TimeField()
@@ -419,7 +419,7 @@ class VehicleCheckPost(models.Model):
 
 class VehicleCheckothers(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
-    officer = models.ForeignKey('Officer', on_delete=models.CASCADE)
+    officer = models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     date_of_check = models.DateField()
     vehicle_check_start_time = models.TimeField()
     vehicle_check_end_time = models.TimeField()
