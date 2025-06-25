@@ -3,7 +3,7 @@
 
 <section class="d-flex flex-nowrap" id="sidebar">
   <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 250px;">
-    <a href="{% url 'user_dashboard' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+    <a href="{% url 'admin_dashboard' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
       <img src="{% static 'dsr/images/tnp.png' %}" alt="Logo" width="40" height="40" class="me-4">
       <span class="fs-4">CSG DSR</span>
     </a>
@@ -11,62 +11,45 @@
 
     <ul class="nav nav-pills flex-column mb-auto">
       <li>
-        <a href="{% url 'user_dashboard' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'user_dashboard' %}active{% else %}text-white{% endif %}">
+        <a href="{% url 'admin_dashboard' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% else %}text-white{% endif %}">
           <i class="bi bi-speedometer2"></i>
           <span class="ms-2">Dashboard</span>
         </a>
       </li>
 
       <li>
-        <a href="{% url 'forms_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'forms_page' %}active{% else %}text-white{% endif %}">
+        <a href="{% url 'admin_users_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_users_page' %}active{% else %}text-white{% endif %}">
           <i class="bi bi-ui-checks"></i>
-          <span class="ms-2">Forms</span>
+          <span class="ms-2">Create/ Update Users</span>
         </a>
       </li>
 
-      <!-- Home Dropdown Menu -->
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-house-door"></i>
-          <span class="ms-2">Home</span>
+      <li>
+        <a href="{% url 'admin_officers_strength_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_officers_strength_page' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-ui-checks"></i>
+          <span class="ms-2">Strength Particulars</span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-          <li>
-            <a class="dropdown-item d-flex align-items-center" href="{% url 'cases_summary' %}">
-              <i class="bi bi-journal-text me-2"></i> Cases Registered
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center" href="{% url 'rescue_seizure_summary' %}">
-              <i class="bi bi-shield-plus me-2"></i> Rescue & Seizure
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center" href="{% url 'forecast_summary' %}">
-              <i class="bi bi-cloud-sun me-2"></i> Forecast
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center" href="{% url 'fishermen_attack_arrest_summary' %}">
-              <i class="bi bi-people-fill me-2"></i> Fishermen Attack & Arrest
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center" href="{% url 'vehicle_status_summary' %}">
-              <i class="bi bi-truck-front me-2"></i> Vehicle Status
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center" href="{% url 'vvc_beat_proforma_summary' %}">
-              <i class="bi bi-clipboard-data me-2"></i> VVC, Beat & Proforma
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item d-flex align-items-center" href="{% url 'patrol_vehicle_check_summary' %}">
-              <i class="bi bi-search me-2"></i> Patrol & Vehicle Check
-            </a>
-          </li>
-        </ul>
+      </li>
+
+      <li>
+        <a href="{% url 'admin_MPS_buildings_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_MPS_buildings_page' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-ui-checks"></i>
+          <span class="ms-2">MPS & Buildings</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="{% url 'admin_other_agencies_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_other_agencies_page' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-ui-checks"></i>
+          <span class="ms-2">Other Agencies</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="{% url 'admin_seizure_items_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_seizure_items_page' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-ui-checks"></i>
+          <span class="ms-2">Seizure Items</span>
+        </a>
       </li>
     </ul>
 

@@ -1,0 +1,76 @@
+{% extends 'dsr/admin/admin_page.html' %}
+{% load static %}
+
+{% block admincontent %}
+
+<div class="container mt-4">
+  <h2 class="mb-4">Seized Item Categories</h2>
+
+  {% if messages %}
+    <div id="message-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_mode %} Edit Seized Item {% else %} Add Seized Item {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_mode %}{% url 'edit_seizure_item' item_id %}{% else %}{% url 'admin_seizure_items_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">{% if edit_mode %}Update{% else %}Add{% endif %} Item</button>
+        {% if edit_mode %}
+          <a href="{% url 'admin_seizure_items_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <h4>Existing Items</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Item Name</th>
+          <th>Quantity Type</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.item_name }}</td>
+            <td>{{ item.get_quantity_type_display }}</td>
+            <td>
+              <a href="{% url 'edit_seizure_item' item.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="text-center">No items found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+setTimeout(function() {
+  const alertBox = document.querySelector('#message-container .alert');
+  if (alertBox) {
+    alertBox.classList.remove('show');
+    alertBox.classList.add('hide');
+    setTimeout(() => alertBox.remove(), 500);
+  }
+}, 5000);
+</script>
+
+{% endblock %}

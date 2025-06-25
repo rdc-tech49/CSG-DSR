@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import CASE_CATEGORIES, MPS_CHOICES, AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, MaritimeAct, OtherCases, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers,CheckPost,Other_Agencies
+from .models import CASE_CATEGORIES, MPS_CHOICES, AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, MaritimeAct, OtherCases, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers,CheckPost,Other_Agencies,MPS
 
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
@@ -52,6 +52,9 @@ USER_CHOICES = [
 ]
 
 
+
+# admin interface forms 
+
 class CustomSignupForm(forms.ModelForm):
     username = forms.ChoiceField(choices=USER_CHOICES, widget=forms.Select(attrs={"class": "form-select"}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-control"}))
@@ -84,6 +87,7 @@ class UpdateUserForm(forms.ModelForm):
         model = User
         fields = ['username', 'email']
 
+
 class OfficerForm(forms.ModelForm):
     rank = forms.ChoiceField(
         choices=[('', 'Select Rank')] + Officer.RANK_CHOICES,
@@ -95,6 +99,14 @@ class OfficerForm(forms.ModelForm):
         fields = ['name', 'rank']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Officer Name'}),
+        }
+
+class MPSForm(forms.ModelForm):
+    class Meta:
+        model = MPS
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter MPS Name'}),
         }
 
 class CheckPostForm(forms.ModelForm):
@@ -137,7 +149,16 @@ class ArrestOfSLFishermen_ChoicesForm(forms.ModelForm):
             'arrested_by': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arresting Authority Name'}),
         }
 
-
+class SeizedItemCategoryForm(forms.ModelForm):
+    class Meta:
+        model = SeizedItemCategory
+        fields = ['item_name', 'quantity_type']
+        widgets = {
+            'item_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Item Name'}),
+            'quantity_type': forms.Select(attrs={'class': 'form-control'}),
+        }
+        
+# user interface forms 
 class CSRForm(forms.ModelForm):
     class Meta:
         model = CSR

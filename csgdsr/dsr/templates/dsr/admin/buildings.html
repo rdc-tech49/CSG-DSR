@@ -1,0 +1,128 @@
+{% extends 'dsr/admin/admin_page.html' %}
+{% load static %}
+
+{% block admincontent %}
+
+<div class="container mt-4">
+
+  <h2 class="mb-4">MPS & Checkpost Management</h2>
+
+  {% if messages %}
+    <div id="message-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- MPS Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_mps %} Edit MPS {% else %} Add MPS {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_mps %}{% url 'edit_mps' mps_id %}{% else %}{% url 'admin_MPS_buildings_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ mps_form.as_p }}
+        <button type="submit" name="mps_submit" class="btn btn-primary">{% if edit_mps %}Update{% else %}Add{% endif %} MPS</button>
+        {% if edit_mps %}
+          <a href="{% url 'admin_MPS_buildings_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- MPS Table -->
+  <h4>MPS List</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mps in mps_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ mps.name }}</td>
+            <td>
+              <a href="{% url 'edit_mps' mps.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No MPS entries found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- CheckPost Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_checkpost %} Edit Checkpost {% else %} Add Checkpost {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_checkpost %}{% url 'edit_checkpost' checkpost_id %}{% else %}{% url 'admin_MPS_buildings_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ checkpost_form.as_p }}
+        <button type="submit" name="checkpost_submit" class="btn btn-primary">{% if edit_checkpost %}Update{% else %}Add{% endif %} Checkpost</button>
+        {% if edit_checkpost %}
+          <a href="{% url 'admin_MPS_buildings_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- CheckPost Table -->
+  <h4>Checkpost List</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for checkpost in checkpost_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ checkpost.name }}</td>
+            <td>
+              <a href="{% url 'edit_checkpost' checkpost.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No Checkpost entries found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+setTimeout(function() {
+  const alertBox = document.querySelector('#message-container .alert');
+  if (alertBox) {
+    alertBox.classList.remove('show');
+    alertBox.classList.add('hide');
+    setTimeout(() => alertBox.remove(), 500);
+  }
+}, 5000);
+</script>
+
+{% endblock %}

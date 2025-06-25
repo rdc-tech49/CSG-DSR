@@ -3,9 +3,9 @@ from django.http import HttpResponse
 from docx import Document
 from docx.shared import Inches
 from django import forms
-from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct
+from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory
 
-from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm
+from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -19,6 +19,247 @@ from django.http import JsonResponse
 from django.db.models import Q
 
 from django.template.loader import render_to_string
+
+#home page
+def home_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        remember = request.POST.get('remember')
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            if not remember:
+                request.session.set_expiry(0)  # session expires on browser close
+            if user.is_superuser:
+                return redirect('admin_dashboard')  # URL name for admin dashboard
+            else:
+                return redirect('user_dashboard')
+
+        else:
+            messages.error(request, 'Invalid username or password')
+
+    return render(request, 'dsr/home.html')
+
+# admin views
+@login_required
+def admin_dashboard_view(request):
+    return render(request, 'dsr/admin/admin_dashboard.html')
+
+@login_required
+def admin_users_view(request):
+    return HttpResponse("<h2>Users Page : No page created yet.</h2>")
+
+@login_required
+def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None):
+    mps_list = MPS.objects.all().order_by('name')
+    checkpost_list = CheckPost.objects.all().order_by('name')
+
+    mps_instance = get_object_or_404(MPS, id=mps_id) if mps_id else None
+    checkpost_instance = get_object_or_404(CheckPost, id=checkpost_id) if checkpost_id else None
+
+    if request.method == 'POST':
+        
+        # Handle MPS Form
+        if 'mps_submit' in request.POST:
+            mps_form = MPSForm(request.POST, instance=mps_instance)
+            if mps_form.is_valid():
+                mps_form.save()
+                if mps_instance:
+                    messages.success(request, "MPS updated successfully.")
+                else:
+                    messages.success(request, "MPS added successfully.")
+                return redirect('admin_MPS_buildings_page')
+            else:
+                messages.error(request, "Please correct the MPS form errors.")
+            checkpost_form = CheckPostForm()  # Empty Checkpost form
+
+        # Handle CheckPost Form
+        elif 'checkpost_submit' in request.POST:
+            checkpost_form = CheckPostForm(request.POST, instance=checkpost_instance)
+            if checkpost_form.is_valid():
+                checkpost_form.save()
+                if checkpost_instance:
+                    messages.success(request, "Checkpost updated successfully.")
+                else:
+                    messages.success(request, "Checkpost added successfully.")
+                return redirect('admin_MPS_buildings_page')
+            else:
+                messages.error(request, "Please correct the Checkpost form errors.")
+            mps_form = MPSForm()  # Empty MPS form
+
+    else:
+        mps_form = MPSForm(instance=mps_instance)
+        checkpost_form = CheckPostForm(instance=checkpost_instance)
+
+    context = {
+        'mps_form': mps_form,
+        'checkpost_form': checkpost_form,
+        'mps_list': mps_list,
+        'checkpost_list': checkpost_list,
+        'edit_mps': mps_instance is not None,
+        'edit_checkpost': checkpost_instance is not None,
+        'mps_id': mps_instance.id if mps_instance else '',
+        'checkpost_id': checkpost_instance.id if checkpost_instance else '',
+    }
+    return render(request, 'dsr/admin/buildings.html', context)
+
+@login_required
+def admin_officers_strength_view(request, officer_id=None):
+    officers = Officer.objects.all().order_by('rank')
+    if officer_id:
+        officer_instance = get_object_or_404(Officer, id=officer_id)
+    else:
+        officer_instance = None
+
+    if request.method == 'POST':
+        if officer_instance:
+            form = OfficerForm(request.POST, instance=officer_instance)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Officer details updated successfully!")
+                return redirect('admin_officers_strength_page')
+            else:
+                messages.error(request, "Please correct the errors below.")
+        else:
+            form = OfficerForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Officer added successfully!")
+                return redirect('admin_officers_strength_page')
+            else:
+                messages.error(request, "Please correct the errors below.")
+    else:
+        form = OfficerForm(instance=officer_instance)
+
+    context = {
+        'form': form,
+        'officers': officers,
+        'edit_mode': officer_instance is not None,
+        'officer_id': officer_instance.id if officer_instance else '',
+    }
+    return render(request, 'dsr/admin/officers_details.html', context)
+
+@login_required
+def admin_other_agencies_view(request, agency_id=None, attacker_id=None, arrest_tn_id=None, arrest_sl_id=None):
+    
+    agencies = Other_Agencies.objects.all().order_by('agency_name')
+    attackers = AttackOnTNFishermen_Choices.objects.all().order_by('attacker_name')
+    arrest_tn = ArrestOfTNFishermen_Choices.objects.all().order_by('arrested_by')
+    arrest_sl = ArrestOfSLFishermen_Choices.objects.all().order_by('arrested_by')
+
+    agency_instance = get_object_or_404(Other_Agencies, id=agency_id) if agency_id else None
+    attacker_instance = get_object_or_404(AttackOnTNFishermen_Choices, id=attacker_id) if attacker_id else None
+    arrest_tn_instance = get_object_or_404(ArrestOfTNFishermen_Choices, id=arrest_tn_id) if arrest_tn_id else None
+    arrest_sl_instance = get_object_or_404(ArrestOfSLFishermen_Choices, id=arrest_sl_id) if arrest_sl_id else None
+
+    if request.method == 'POST':
+        
+        # Other Agencies
+        if 'agency_submit' in request.POST:
+            form = Other_AgenciesForm(request.POST, instance=agency_instance)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Other Agency saved successfully.")
+                return redirect('admin_other_agencies_page')
+            else:
+                messages.error(request, "Please correct the errors in Other Agency form.")
+            attacker_form = AttackOnTNFishermen_ChoicesForm()
+            arrest_tn_form = ArrestOfTNFishermen_ChoicesForm()
+            arrest_sl_form = ArrestOfSLFishermen_ChoicesForm()
+
+        # Attack on TN Fishermen
+        elif 'attacker_submit' in request.POST:
+            attacker_form = AttackOnTNFishermen_ChoicesForm(request.POST, instance=attacker_instance)
+            if attacker_form.is_valid():
+                attacker_form.save()
+                messages.success(request, "Attacker name saved successfully.")
+                return redirect('admin_other_agencies_page')
+            else:
+                messages.error(request, "Please correct the errors in Attacker form.")
+            form = Other_AgenciesForm()
+            arrest_tn_form = ArrestOfTNFishermen_ChoicesForm()
+            arrest_sl_form = ArrestOfSLFishermen_ChoicesForm()
+
+        # Arrest of TN Fishermen
+        elif 'arrest_tn_submit' in request.POST:
+            arrest_tn_form = ArrestOfTNFishermen_ChoicesForm(request.POST, instance=arrest_tn_instance)
+            if arrest_tn_form.is_valid():
+                arrest_tn_form.save()
+                messages.success(request, "Arresting Authority (TN) saved successfully.")
+                return redirect('admin_other_agencies_page')
+            else:
+                messages.error(request, "Please correct the errors in Arresting Authority (TN) form.")
+            form = Other_AgenciesForm()
+            attacker_form = AttackOnTNFishermen_ChoicesForm()
+            arrest_sl_form = ArrestOfSLFishermen_ChoicesForm()
+
+        # Arrest of SL Fishermen
+        elif 'arrest_sl_submit' in request.POST:
+            arrest_sl_form = ArrestOfSLFishermen_ChoicesForm(request.POST, instance=arrest_sl_instance)
+            if arrest_sl_form.is_valid():
+                arrest_sl_form.save()
+                messages.success(request, "Arresting Authority (SL) saved successfully.")
+                return redirect('admin_other_agencies_page')
+            else:
+                messages.error(request, "Please correct the errors in Arresting Authority (SL) form.")
+            form = Other_AgenciesForm()
+            attacker_form = AttackOnTNFishermen_ChoicesForm()
+            arrest_tn_form = ArrestOfTNFishermen_ChoicesForm()
+
+    else:
+        form = Other_AgenciesForm(instance=agency_instance)
+        attacker_form = AttackOnTNFishermen_ChoicesForm(instance=attacker_instance)
+        arrest_tn_form = ArrestOfTNFishermen_ChoicesForm(instance=arrest_tn_instance)
+        arrest_sl_form = ArrestOfSLFishermen_ChoicesForm(instance=arrest_sl_instance)
+
+    context = {
+        'form': form,
+        'attacker_form': attacker_form,
+        'arrest_tn_form': arrest_tn_form,
+        'arrest_sl_form': arrest_sl_form,
+        'agencies': agencies,
+        'attackers': attackers,
+        'arrest_tn': arrest_tn,
+        'arrest_sl': arrest_sl,
+        'edit_agency': agency_instance is not None,
+        'edit_attacker': attacker_instance is not None,
+        'edit_arrest_tn': arrest_tn_instance is not None,
+        'edit_arrest_sl': arrest_sl_instance is not None,
+        'agency_id': agency_instance.id if agency_instance else '',
+        'attacker_id': attacker_instance.id if attacker_instance else '',
+        'arrest_tn_id': arrest_tn_instance.id if arrest_tn_instance else '',
+        'arrest_sl_id': arrest_sl_instance.id if arrest_sl_instance else '',
+    }
+    return render(request, 'dsr/admin/other_agencies.html', context)
+
+@login_required
+def admin_seizure_items_view(request, item_id=None):
+    items = SeizedItemCategory.objects.all().order_by('item_name')
+    item_instance = get_object_or_404(SeizedItemCategory, id=item_id) if item_id else None
+
+    if request.method == 'POST':
+        form = SeizedItemCategoryForm(request.POST, instance=item_instance)
+        if form.is_valid():
+            form.save()
+            if item_instance:
+                messages.success(request, "Seized Item updated successfully.")
+            else:
+                messages.success(request, "Seized Item added successfully.")
+            return redirect('admin_seizure_items_page')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = SeizedItemCategoryForm(instance=item_instance)
+
+    context = {
+        'form': form,
+        'items': items,
+        'edit_mode': item_instance is not None,
+        'item_id': item_instance.id if item_instance else '',
+    }
+    return render(request, 'dsr/admin/seizure_items.html', context)
 
 #add add checkppost view
 @login_required
@@ -102,24 +343,10 @@ def vehicle_check_others_form_view(request):
     return HttpResponse("<h2>Vehicle Check Others - Form: No page created yet.</h2>")
 
 
-def home_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        remember = request.POST.get('remember')
 
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
 
-            if not remember:
-                request.session.set_expiry(0)  # session expires on browser close
 
-            return redirect('user_dashboard')  # or wherever you want to redirect after login
-        else:
-            messages.error(request, 'Invalid username or password')
 
-    return render(request, 'dsr/home.html')
 
 def signup_view(request):
     if request.method == 'POST':
@@ -172,17 +399,17 @@ def forms_view(request):
         {"title": "Missing", "url_name": "bnss_missing_form", "icon": "bi-person-dash", "color": "#dc3545"},
         {"title": "Maritime Act", "url_name": "maritimeact_form", "icon": "bi-globe", "color": "#20c997"},
         {"title": "Other Cases", "url_name": "othercases_form", "icon": "bi-briefcase", "color": "#6f42c1"},
-        {"title": "Rescue", "url_name": "rescue_form", "icon": "bi-life-preserver", "color": "#fd7e14"},
+        {"title": "Rescue", "url_name": "rescue_at_beach_form", "icon": "bi-life-preserver", "color": "#fd7e14"},
         {"title": "Seizure", "url_name": "seizure_form", "icon": "bi-shield-check", "color": "#198754"},
         {"title": "Forecast", "url_name": "forecast_form", "icon": "bi-cloud-sun", "color": "#0dcaf0"},
-        {"title": "Attack on TN Fishermen", "url_name": "fishermen_attack_form", "icon": "bi-person-x", "color": "#ffc107"},
-        {"title": "TN Fishermen Arrest", "url_name": "fishermen_arrest_form", "icon": "bi-handcuffs", "color": "#dc3545"},
-        {"title": "Vehicle & Boat Status", "url_name": "boat_vehicle_status_form", "icon": "bi-truck", "color": "#6c757d"},
-        {"title": "VVC", "url_name": "vvc_form", "icon": "bi-folder2-open", "color": "#20c997"},
-        {"title": "Beat", "url_name": "beat_form", "icon": "bi-compass", "color": "#0d6efd"},
+        {"title": "Attack on TN Fishermen", "url_name": "attack_on_tnfishermen_form", "icon": "bi-person-x", "color": "#ffc107"},
+        {"title": "TN Fishermen Arrest", "url_name": "tnfishermen_arrest_form", "icon": "bi-handcuffs", "color": "#dc3545"},
+        {"title": "Vehicle & Boat Status", "url_name": "onwater_vehicle_status_form", "icon": "bi-truck", "color": "#6c757d"},
+        {"title": "VVC", "url_name": "vvc_meeting_form", "icon": "bi-folder2-open", "color": "#20c997"},
+        {"title": "Beat", "url_name": "beat_details_form", "icon": "bi-compass", "color": "#0d6efd"},
         {"title": "Proforma", "url_name": "proforma_form", "icon": "bi-ui-checks", "color": "#198754"},
         {"title": "Boat Patrol", "url_name": "boat_patrol_form", "icon": "bi-ship", "color": "#0dcaf0"},
-        {"title": "Vehicle Check", "url_name": "vehicle_check_form", "icon": "bi-search", "color": "#6f42c1"},
+        {"title": "Vehicle Check", "url_name": "vehicle_checkpost_form", "icon": "bi-search", "color": "#6f42c1"},
     ]
     return render(request, 'dsr/user/forms_page.html', {'cards': cards})
 

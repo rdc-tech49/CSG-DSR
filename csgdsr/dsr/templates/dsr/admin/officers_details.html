@@ -1,0 +1,77 @@
+{% extends 'dsr/admin/admin_page.html' %}
+{% load static %}
+
+{% block admincontent %}
+
+<div class="container mt-4">
+  <h2 class="mb-4">Officer Details</h2>
+
+  {% if messages %}
+    <div id="message-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Officer Form -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="POST" action="{% if edit_mode %}{% url 'edit-officer' officer_id %}{% else %}{% url 'admin_officers_strength_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">{% if edit_mode %}Update Officer{% else %}Add Officer{% endif %}</button>
+        {% if edit_mode %}
+          <a href="{% url 'admin_officers_strength_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- Officer List -->
+  <h4>Existing Officers</h4>
+  <div style="max-height: 260px; overflow-y: auto;"> <!-- Adjust height as needed for 5 rows -->
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Rank</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for officer in officers %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ officer.name }}</td>
+            <td>{{ officer.get_rank_display }}</td>
+            <td>
+              <a href="{% url 'edit-officer' officer.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4" class="text-center">No officers added yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+setTimeout(function() {
+  const alertBox = document.querySelector('#message-container .alert');
+  if (alertBox) {
+    alertBox.classList.remove('show');
+    alertBox.classList.add('hide');
+    setTimeout(() => alertBox.remove(), 500);
+  }
+}, 5000);
+</script>
+
+{% endblock %}

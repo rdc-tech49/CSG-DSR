@@ -1,0 +1,212 @@
+{% extends 'dsr/admin/admin_page.html' %}
+{% load static %}
+
+{% block admincontent %}
+
+<div class="container mt-4">
+  <h2 class="mb-4">Other Agencies & Related Choices</h2>
+
+  {% if messages %}
+    <div id="message-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Other Agencies Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_agency %} Edit Other Agency {% else %} Add Other Agency {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_agency %}{% url 'edit_agency' agency_id %}{% else %}{% url 'admin_other_agencies_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="agency_submit" class="btn btn-primary">{% if edit_agency %}Update{% else %}Add{% endif %}</button>
+        {% if edit_agency %}
+          <a href="{% url 'admin_other_agencies_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- Other Agencies Table -->
+  <h5>Other Agencies</h5>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Agency Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in agencies %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.agency_name }}</td>
+            <td>
+              <a href="{% url 'edit_agency' item.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-center">No records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- Attack on TN Fishermen Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_attacker %} Edit Attacker {% else %} Add Attacker {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_attacker %}{% url 'edit_attacker' attacker_id %}{% else %}{% url 'admin_other_agencies_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ attacker_form.as_p }}
+        <button type="submit" name="attacker_submit" class="btn btn-primary">{% if edit_attacker %}Update{% else %}Add{% endif %}</button>
+        {% if edit_attacker %}
+          <a href="{% url 'admin_other_agencies_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <h5>Attackers</h5>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Attacker Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in attackers %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.attacker_name }}</td>
+            <td>
+              <a href="{% url 'edit_attacker' item.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-center">No records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- Arrest of TN Fishermen Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_arrest_tn %} Edit Arresting Authority (TN) {% else %} Add Arresting Authority (TN) {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_arrest_tn %}{% url 'edit_arrest_tn' arrest_tn_id %}{% else %}{% url 'admin_other_agencies_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ arrest_tn_form.as_p }}
+        <button type="submit" name="arrest_tn_submit" class="btn btn-primary">{% if edit_arrest_tn %}Update{% else %}Add{% endif %}</button>
+        {% if edit_arrest_tn %}
+          <a href="{% url 'admin_other_agencies_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <h5>Arresting Authorities (TN)</h5>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Authority Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in arrest_tn %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.arrested_by }}</td>
+            <td>
+              <a href="{% url 'edit_arrest_tn' item.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-center">No records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- Arrest of SL Fishermen Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_arrest_sl %} Edit Arresting Authority (SL) {% else %} Add Arresting Authority (SL) {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_arrest_sl %}{% url 'edit_arrest_sl' arrest_sl_id %}{% else %}{% url 'admin_other_agencies_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ arrest_sl_form.as_p }}
+        <button type="submit" name="arrest_sl_submit" class="btn btn-primary">{% if edit_arrest_sl %}Update{% else %}Add{% endif %}</button>
+        {% if edit_arrest_sl %}
+          <a href="{% url 'admin_other_agencies_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <h5>Arresting Authorities (SL)</h5>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Authority Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in arrest_sl %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.arrested_by }}</td>
+            <td>
+              <a href="{% url 'edit_arrest_sl' item.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-center">No records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+setTimeout(function() {
+  const alertBox = document.querySelector('#message-container .alert');
+  if (alertBox) {
+    alertBox.classList.remove('show');
+    alertBox.classList.add('hide');
+    setTimeout(() => alertBox.remove(), 500);
+  }
+}, 5000);
+</script>
+
+{% endblock %}

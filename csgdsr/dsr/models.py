@@ -48,11 +48,6 @@ MPS_CHOICES = [
     ("COLACHEL MPS","COLACHEL MPS")
 ]
 
-class SeizedItemCategory(models.Model):
-    item_name = models.CharField(max_length=100, unique=True)
-    quantity_type = models.CharField(max_length=50, choices=[('kg', 'Kilograms'), ('liters', 'Liters'), ('nos', 'Numbers')])
-    def __str__(self):
-        return f"{self.item_name} - {self.quantity_type}"
 
 class Officer(models.Model):
     RANK_CHOICES = [
@@ -83,12 +78,18 @@ CASE_CATEGORIES = [
     ('Missing', 'Missing'),
 ]
 
+class MPS(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+
+    def __str__(self):
+        return self.name
+    
 class CheckPost(models.Model):
     name = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.name
-
+    
 class Other_Agencies(models.Model):
     agency_name = models.CharField(max_length=100, unique=True)
 
@@ -109,6 +110,13 @@ class ArrestOfSLFishermen_Choices(models.Model):
     arrested_by=models.CharField(max_length=100, unique=True)
     def __str__(self):
         return self.arrested_by
+
+class SeizedItemCategory(models.Model):
+    item_name = models.CharField(max_length=100, unique=True)
+    quantity_type = models.CharField(max_length=50, choices=[('kg', 'Kilograms'), ('liters', 'Liters'), ('nos', 'Numbers')])
+    def __str__(self):
+        return f"{self.item_name} - {self.quantity_type}"
+
 
 class CSR(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
