@@ -71,7 +71,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'csgdsr.urls'
-
+AUTH_USER_MODEL = 'dsr.CustomUser'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

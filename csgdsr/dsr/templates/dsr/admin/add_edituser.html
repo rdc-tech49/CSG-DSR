@@ -1,0 +1,80 @@
+{% extends 'dsr/admin/admin_page.html' %}
+{% load static %}
+
+{% block admincontent %}
+
+<div class="container mt-4">
+  <h2 class="mb-4">User Management</h2>
+
+  {% if messages %}
+    <div id="message-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- User Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_mode %} Edit User {% else %} Create User {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_mode %}{% url 'edit_user' user_id %}{% else %}{% url 'admin_users_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">{% if edit_mode %}Update{% else %}Create{% endif %} User</button>
+        {% if edit_mode %}
+          <a href="{% url 'admin_users_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- User Table -->
+  <h4>Existing Users</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+              <a href="{% url 'edit_user' user.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center">No users found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+setTimeout(function() {
+  const alertBox = document.querySelector('#message-container .alert');
+  if (alertBox) {
+    alertBox.classList.remove('show');
+    alertBox.classList.add('hide');
+    setTimeout(() => alertBox.remove(), 500);
+  }
+}, 5000);
+</script>
+
+{% endblock %}

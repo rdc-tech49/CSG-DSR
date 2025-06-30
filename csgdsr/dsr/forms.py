@@ -1,8 +1,10 @@
 from django import forms
-from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from .models import CASE_CATEGORIES, MPS_CHOICES, AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, MaritimeAct, OtherCases, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers,CheckPost,Other_Agencies,MPS
 
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from .models import CASE_CATEGORIES, MPS_CHOICES, AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, MaritimeAct, OtherCases, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers,CheckPost,Other_Agencies,MPS, CustomUser
+from django.core.exceptions import ValidationError
+User = get_user_model()
 USER_CHOICES = [
     ('ADGP', 'ADGP'),('DIG', 'DIG'),
     ('SP_Nagapattinam', 'SP_Nagapattinam'),('SP_Ramnad', 'SP_Ramnad'),
@@ -58,12 +60,16 @@ USER_CHOICES = [
 class CustomSignupForm(forms.ModelForm):
     username = forms.ChoiceField(choices=USER_CHOICES, widget=forms.Select(attrs={"class": "form-select"}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-control"}))
+    role = forms.ChoiceField(
+        choices=[('', 'Select Role')] + User.ROLE_CHOICES,
+        widget=forms.Select(attrs={"class": "form-select"})
+    )
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={"class": "form-control"}))
     password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput(attrs={"class": "form-control"}))
 
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'role']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -72,7 +78,7 @@ class CustomSignupForm(forms.ModelForm):
 
         if password1 != password2:
             raise ValidationError("Passwords do not match.")
-
+        
         return cleaned_data
 
     def save(self, commit=True):
@@ -81,7 +87,7 @@ class CustomSignupForm(forms.ModelForm):
         if commit:
             user.save()
         return user
-
+      
 class UpdateUserForm(forms.ModelForm):
     class Meta:
         model = User

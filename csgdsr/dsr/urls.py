@@ -26,7 +26,10 @@ urlpatterns = [
     #admin page
     #dashboard
     path('admin-dashboard/', views.admin_dashboard_view, name='admin_dashboard'),
+
+    #admin users
     path('admin_users/', views.admin_users_view, name='admin_users_page'),
+    path('admin_users/edit/<int:user_id>/', views.admin_users_view, name='edit_user'),
 
     # admin strength
     path('admin_officers_strength/', views.admin_officers_strength_view, name='admin_officers_strength_page'),
@@ -40,9 +43,9 @@ urlpatterns = [
     # admin other agencies 
     path('admin_other_agencies/', views.admin_other_agencies_view, name='admin_other_agencies_page'),
     path('admin_other_agencies/agency/edit/<int:agency_id>/', views.admin_other_agencies_view, name='edit_agency'),
-    path('admin_other_agencies/attacker/edit/<int:attacker_id>/', views.admin_other_agencies_view, name='edit_attacker'),
-    path('admin_other_agencies/arrest_tn/edit/<int:arrest_tn_id>/', views.admin_other_agencies_view, name='edit_arrest_tn'),
-    path('admin_other_agencies/arrest_sl/edit/<int:arrest_sl_id>/', views.admin_other_agencies_view, name='edit_arrest_sl'),
+    # path('admin_other_agencies/attacker/edit/<int:attacker_id>/', views.admin_other_agencies_view, name='edit_attacker'),
+    # path('admin_other_agencies/arrest_tn/edit/<int:arrest_tn_id>/', views.admin_other_agencies_view, name='edit_arrest_tn'),
+    # path('admin_other_agencies/arrest_sl/edit/<int:arrest_sl_id>/', views.admin_other_agencies_view, name='edit_arrest_sl'),
 
     # admin seizure
     path('admin_seizure_items/', views.admin_seizure_items_view, name='admin_seizure_items_page'),

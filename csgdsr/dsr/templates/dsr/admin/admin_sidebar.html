@@ -17,40 +17,55 @@
         </a>
       </li>
 
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-house-door"></i>
+          <span class="ms-2">Forms</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+          <li>
+            <a href="{% url 'admin_users_page' %}" class="dropdown-item  d-flex align-items-center {% if request.resolver_match.url_name == 'admin_users_page' %}active{% else %}text-white{% endif %}">
+              <i class="bi bi-ui-checks"></i>
+              <span class="ms-2">Create/ Update Users</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url 'admin_officers_strength_page' %}" class="dropdown-item  d-flex align-items-center {% if request.resolver_match.url_name == 'admin_officers_strength_page' %}active{% else %}text-white{% endif %}">
+              <i class="bi bi-ui-checks"></i>
+              <span class="ms-2">Strength Particulars</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url 'admin_MPS_buildings_page' %}" class="dropdown-item d-flex align-items-center {% if request.resolver_match.url_name == 'admin_MPS_buildings_page' %}active{% else %}text-white{% endif %}">
+              <i class="bi bi-ui-checks"></i>
+              <span class="ms-2">MPS & Buildings</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url 'admin_other_agencies_page' %}" class="dropdown-item  d-flex align-items-center {% if request.resolver_match.url_name == 'admin_other_agencies_page' %}active{% else %}text-white{% endif %}">
+              <i class="bi bi-ui-checks"></i>
+              <span class="ms-2">Other Agencies</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url 'admin_seizure_items_page' %}" class="dropdown-item  d-flex align-items-center {% if request.resolver_match.url_name == 'admin_seizure_items_page' %}active{% else %}text-white{% endif %}">
+              <i class="bi bi-ui-checks"></i>
+              <span class="ms-2">Seizure Items</span>
+            </a>
+          </li>
+        </ul>
+      </li>
       <li>
-        <a href="{% url 'admin_users_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_users_page' %}active{% else %}text-white{% endif %}">
+        <a href="{% url 'forms_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'forms_page' %}active{% else %}text-white{% endif %}">
           <i class="bi bi-ui-checks"></i>
-          <span class="ms-2">Create/ Update Users</span>
+          <span class="ms-2">Reports</span>
         </a>
       </li>
 
-      <li>
-        <a href="{% url 'admin_officers_strength_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_officers_strength_page' %}active{% else %}text-white{% endif %}">
-          <i class="bi bi-ui-checks"></i>
-          <span class="ms-2">Strength Particulars</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="{% url 'admin_MPS_buildings_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_MPS_buildings_page' %}active{% else %}text-white{% endif %}">
-          <i class="bi bi-ui-checks"></i>
-          <span class="ms-2">MPS & Buildings</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="{% url 'admin_other_agencies_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_other_agencies_page' %}active{% else %}text-white{% endif %}">
-          <i class="bi bi-ui-checks"></i>
-          <span class="ms-2">Other Agencies</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="{% url 'admin_seizure_items_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_seizure_items_page' %}active{% else %}text-white{% endif %}">
-          <i class="bi bi-ui-checks"></i>
-          <span class="ms-2">Seizure Items</span>
-        </a>
-      </li>
     </ul>
 
     <hr>

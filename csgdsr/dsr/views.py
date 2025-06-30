@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from docx import Document
 from docx.shared import Inches
 from django import forms
-from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory
+from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser
 
 from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm
 from django.contrib import messages
@@ -48,8 +48,67 @@ def admin_dashboard_view(request):
     return render(request, 'dsr/admin/admin_dashboard.html')
 
 @login_required
-def admin_users_view(request):
-    return HttpResponse("<h2>Users Page : No page created yet.</h2>")
+def admin_users_view(request, user_id=None):
+    users = CustomUser.objects.all().order_by('username')
+    user_instance = get_object_or_404(CustomUser, id=user_id) if user_id else None
+
+    if request.method == 'POST':
+        form = CustomSignupForm(request.POST, instance=user_instance)
+        if form.is_valid():
+            form.save()
+            if user_instance:
+                messages.success(request, "User updated successfully.")
+            else:
+                messages.success(request, "User created successfully.")
+            return redirect('admin_users_page')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = CustomSignupForm(instance=user_instance)
+
+    context = {
+        'form': form,
+        'users': users,
+        'edit_mode': user_instance is not None,
+        'user_id': user_instance.id if user_instance else '',
+    }
+    return render(request, 'dsr/admin/add_edituser.html', context)
+
+@login_required
+def admin_officers_strength_view(request, officer_id=None):
+    officers = Officer.objects.all().order_by('rank')
+    if officer_id:
+        officer_instance = get_object_or_404(Officer, id=officer_id)
+    else:
+        officer_instance = None
+
+    if request.method == 'POST':
+        if officer_instance:
+            form = OfficerForm(request.POST, instance=officer_instance)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Officer details updated successfully!")
+                return redirect('admin_officers_strength_page')
+            else:
+                messages.error(request, "Please correct the errors below.")
+        else:
+            form = OfficerForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Officer added successfully!")
+                return redirect('admin_officers_strength_page')
+            else:
+                messages.error(request, "Please correct the errors below.")
+    else:
+        form = OfficerForm(instance=officer_instance)
+
+    context = {
+        'form': form,
+        'officers': officers,
+        'edit_mode': officer_instance is not None,
+        'officer_id': officer_instance.id if officer_instance else '',
+    }
+    return render(request, 'dsr/admin/officers_details.html', context)
 
 @login_required
 def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None):
@@ -106,53 +165,17 @@ def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None):
     return render(request, 'dsr/admin/buildings.html', context)
 
 @login_required
-def admin_officers_strength_view(request, officer_id=None):
-    officers = Officer.objects.all().order_by('rank')
-    if officer_id:
-        officer_instance = get_object_or_404(Officer, id=officer_id)
-    else:
-        officer_instance = None
-
-    if request.method == 'POST':
-        if officer_instance:
-            form = OfficerForm(request.POST, instance=officer_instance)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Officer details updated successfully!")
-                return redirect('admin_officers_strength_page')
-            else:
-                messages.error(request, "Please correct the errors below.")
-        else:
-            form = OfficerForm(request.POST)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Officer added successfully!")
-                return redirect('admin_officers_strength_page')
-            else:
-                messages.error(request, "Please correct the errors below.")
-    else:
-        form = OfficerForm(instance=officer_instance)
-
-    context = {
-        'form': form,
-        'officers': officers,
-        'edit_mode': officer_instance is not None,
-        'officer_id': officer_instance.id if officer_instance else '',
-    }
-    return render(request, 'dsr/admin/officers_details.html', context)
-
-@login_required
 def admin_other_agencies_view(request, agency_id=None, attacker_id=None, arrest_tn_id=None, arrest_sl_id=None):
     
     agencies = Other_Agencies.objects.all().order_by('agency_name')
-    attackers = AttackOnTNFishermen_Choices.objects.all().order_by('attacker_name')
-    arrest_tn = ArrestOfTNFishermen_Choices.objects.all().order_by('arrested_by')
-    arrest_sl = ArrestOfSLFishermen_Choices.objects.all().order_by('arrested_by')
+    # attackers = AttackOnTNFishermen_Choices.objects.all().order_by('attacker_name')
+    # arrest_tn = ArrestOfTNFishermen_Choices.objects.all().order_by('arrested_by')
+    # arrest_sl = ArrestOfSLFishermen_Choices.objects.all().order_by('arrested_by')
 
     agency_instance = get_object_or_404(Other_Agencies, id=agency_id) if agency_id else None
-    attacker_instance = get_object_or_404(AttackOnTNFishermen_Choices, id=attacker_id) if attacker_id else None
-    arrest_tn_instance = get_object_or_404(ArrestOfTNFishermen_Choices, id=arrest_tn_id) if arrest_tn_id else None
-    arrest_sl_instance = get_object_or_404(ArrestOfSLFishermen_Choices, id=arrest_sl_id) if arrest_sl_id else None
+    # attacker_instance = get_object_or_404(AttackOnTNFishermen_Choices, id=attacker_id) if attacker_id else None
+    # arrest_tn_instance = get_object_or_404(ArrestOfTNFishermen_Choices, id=arrest_tn_id) if arrest_tn_id else None
+    # arrest_sl_instance = get_object_or_404(ArrestOfSLFishermen_Choices, id=arrest_sl_id) if arrest_sl_id else None
 
     if request.method == 'POST':
         
@@ -170,67 +193,67 @@ def admin_other_agencies_view(request, agency_id=None, attacker_id=None, arrest_
             arrest_sl_form = ArrestOfSLFishermen_ChoicesForm()
 
         # Attack on TN Fishermen
-        elif 'attacker_submit' in request.POST:
-            attacker_form = AttackOnTNFishermen_ChoicesForm(request.POST, instance=attacker_instance)
-            if attacker_form.is_valid():
-                attacker_form.save()
-                messages.success(request, "Attacker name saved successfully.")
-                return redirect('admin_other_agencies_page')
-            else:
-                messages.error(request, "Please correct the errors in Attacker form.")
-            form = Other_AgenciesForm()
-            arrest_tn_form = ArrestOfTNFishermen_ChoicesForm()
-            arrest_sl_form = ArrestOfSLFishermen_ChoicesForm()
+        # elif 'attacker_submit' in request.POST:
+        #     attacker_form = AttackOnTNFishermen_ChoicesForm(request.POST, instance=attacker_instance)
+        #     if attacker_form.is_valid():
+        #         attacker_form.save()
+        #         messages.success(request, "Attacker name saved successfully.")
+        #         return redirect('admin_other_agencies_page')
+        #     else:
+        #         messages.error(request, "Please correct the errors in Attacker form.")
+        #     form = Other_AgenciesForm()
+        #     arrest_tn_form = ArrestOfTNFishermen_ChoicesForm()
+        #     arrest_sl_form = ArrestOfSLFishermen_ChoicesForm()
 
-        # Arrest of TN Fishermen
-        elif 'arrest_tn_submit' in request.POST:
-            arrest_tn_form = ArrestOfTNFishermen_ChoicesForm(request.POST, instance=arrest_tn_instance)
-            if arrest_tn_form.is_valid():
-                arrest_tn_form.save()
-                messages.success(request, "Arresting Authority (TN) saved successfully.")
-                return redirect('admin_other_agencies_page')
-            else:
-                messages.error(request, "Please correct the errors in Arresting Authority (TN) form.")
-            form = Other_AgenciesForm()
-            attacker_form = AttackOnTNFishermen_ChoicesForm()
-            arrest_sl_form = ArrestOfSLFishermen_ChoicesForm()
+        # # Arrest of TN Fishermen
+        # elif 'arrest_tn_submit' in request.POST:
+        #     arrest_tn_form = ArrestOfTNFishermen_ChoicesForm(request.POST, instance=arrest_tn_instance)
+        #     if arrest_tn_form.is_valid():
+        #         arrest_tn_form.save()
+        #         messages.success(request, "Arresting Authority (TN) saved successfully.")
+        #         return redirect('admin_other_agencies_page')
+        #     else:
+        #         messages.error(request, "Please correct the errors in Arresting Authority (TN) form.")
+        #     form = Other_AgenciesForm()
+        #     attacker_form = AttackOnTNFishermen_ChoicesForm()
+        #     arrest_sl_form = ArrestOfSLFishermen_ChoicesForm()
 
-        # Arrest of SL Fishermen
-        elif 'arrest_sl_submit' in request.POST:
-            arrest_sl_form = ArrestOfSLFishermen_ChoicesForm(request.POST, instance=arrest_sl_instance)
-            if arrest_sl_form.is_valid():
-                arrest_sl_form.save()
-                messages.success(request, "Arresting Authority (SL) saved successfully.")
-                return redirect('admin_other_agencies_page')
-            else:
-                messages.error(request, "Please correct the errors in Arresting Authority (SL) form.")
-            form = Other_AgenciesForm()
-            attacker_form = AttackOnTNFishermen_ChoicesForm()
-            arrest_tn_form = ArrestOfTNFishermen_ChoicesForm()
+        # # Arrest of SL Fishermen
+        # elif 'arrest_sl_submit' in request.POST:
+        #     arrest_sl_form = ArrestOfSLFishermen_ChoicesForm(request.POST, instance=arrest_sl_instance)
+        #     if arrest_sl_form.is_valid():
+        #         arrest_sl_form.save()
+        #         messages.success(request, "Arresting Authority (SL) saved successfully.")
+        #         return redirect('admin_other_agencies_page')
+        #     else:
+        #         messages.error(request, "Please correct the errors in Arresting Authority (SL) form.")
+        #     form = Other_AgenciesForm()
+        #     attacker_form = AttackOnTNFishermen_ChoicesForm()
+        #     arrest_tn_form = ArrestOfTNFishermen_ChoicesForm()
 
     else:
         form = Other_AgenciesForm(instance=agency_instance)
-        attacker_form = AttackOnTNFishermen_ChoicesForm(instance=attacker_instance)
-        arrest_tn_form = ArrestOfTNFishermen_ChoicesForm(instance=arrest_tn_instance)
-        arrest_sl_form = ArrestOfSLFishermen_ChoicesForm(instance=arrest_sl_instance)
+        # attacker_form = AttackOnTNFishermen_ChoicesForm(instance=attacker_instance)
+        # arrest_tn_form = ArrestOfTNFishermen_ChoicesForm(instance=arrest_tn_instance)
+        # arrest_sl_form = ArrestOfSLFishermen_ChoicesForm(instance=arrest_sl_instance)
 
     context = {
         'form': form,
-        'attacker_form': attacker_form,
-        'arrest_tn_form': arrest_tn_form,
-        'arrest_sl_form': arrest_sl_form,
+        # 'attacker_form': attacker_form,
+        # 'arrest_tn_form': arrest_tn_form,
+        # 'arrest_sl_form': arrest_sl_form,
         'agencies': agencies,
-        'attackers': attackers,
-        'arrest_tn': arrest_tn,
-        'arrest_sl': arrest_sl,
+        # 'attackers': attackers,
+        # 'arrest_tn': arrest_tn,
+        # 'arrest_sl': arrest_sl,
         'edit_agency': agency_instance is not None,
-        'edit_attacker': attacker_instance is not None,
-        'edit_arrest_tn': arrest_tn_instance is not None,
-        'edit_arrest_sl': arrest_sl_instance is not None,
+        # 'edit_attacker': attacker_instance is not None,
+        # 'edit_arrest_tn': arrest_tn_instance is not None,
+        # 'edit_arrest_sl': arrest_sl_instance is not None,
         'agency_id': agency_instance.id if agency_instance else '',
-        'attacker_id': attacker_instance.id if attacker_instance else '',
-        'arrest_tn_id': arrest_tn_instance.id if arrest_tn_instance else '',
-        'arrest_sl_id': arrest_sl_instance.id if arrest_sl_instance else '',
+        # 'attacker_id': attacker_instance.id if attacker_instance else '',
+        # 'arrest_tn_id': arrest_tn_instance.id if arrest_tn_instance else '',
+        # 'arrest_sl_id': arrest_sl_instance.id if arrest_sl_instance else '',
     }
     return render(request, 'dsr/admin/other_agencies.html', context)
 

@@ -5,7 +5,9 @@
 
 <div class="container mt-4">
 
-  <h2 class="mb-4">MPS & Checkpost Management</h2>
+  <h1 class="mb-4">MPS & Checkpost Management</h1>
+  <hr class="my-4">
+
 
   {% if messages %}
     <div id="message-container">
@@ -19,6 +21,7 @@
   {% endif %}
 
   <!-- MPS Form -->
+  <h2 class="mb-4">MPS Management</h2>
   <div class="card mb-4">
     <div class="card-header bg-primary text-white">
       {% if edit_mps %} Edit MPS {% else %} Add MPS {% endif %}
@@ -67,6 +70,7 @@
   <hr class="my-4">
 
   <!-- CheckPost Form -->
+   <h2 class="mb-4">Check post Management</h2>
   <div class="card mb-4">
     <div class="card-header bg-primary text-white">
       {% if edit_checkpost %} Edit Checkpost {% else %} Add Checkpost {% endif %}
@@ -111,6 +115,7 @@
       </tbody>
     </table>
   </div>
+  
 
 </div>
 

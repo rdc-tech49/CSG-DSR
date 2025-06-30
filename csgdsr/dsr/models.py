@@ -1,9 +1,8 @@
 
-from django.db import models
-from django.contrib.auth import get_user_model
-User = get_user_model()
 from django.utils import timezone
 from django.core.validators import FileExtensionValidator
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 MPS_CHOICES = [
     ("MARINA MPS", "MARINA MPS"),("ERNAVUR MPS", "ERNAVUR MPS"),("PAZHAVERKADU MPS", "PAZHAVERKADU MPS"),
@@ -48,7 +47,17 @@ MPS_CHOICES = [
     ("COLACHEL MPS","COLACHEL MPS")
 ]
 
+class CustomUser(AbstractUser):
+    ROLE_CHOICES = [
+        ('Admin', 'Admin'),
+        ('User', 'User'),
+    ]
+    
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='User')
 
+    def __str__(self):
+        return f"{self.username} ({self.role})"
+    
 class Officer(models.Model):
     RANK_CHOICES = [
         ('ADGP', 'Additional Director General of Police (ADGP)'),('IG', 'Inspector General of Police (IG)'),
@@ -119,7 +128,7 @@ class SeizedItemCategory(models.Model):
 
 
 class CSR(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     csr_number = models.CharField(max_length=20)
     police_station = models.CharField(max_length=50, choices=MPS_CHOICES)
     date_of_receipt = models.DateTimeField()
@@ -135,7 +144,7 @@ class CSR(models.Model):
         return f"{self.csr_number} - {self.police_station}"
 
 class BNSSMissingCase(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     case_category = models.CharField(max_length=20, choices=CASE_CATEGORIES)
     crime_number = models.CharField(max_length=50)
     police_station = models.CharField(max_length=100)
@@ -155,7 +164,7 @@ class BNSSMissingCase(models.Model):
     
 
 class OtherCases(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     crime_number = models.CharField(max_length=50)
     police_station = models.CharField(max_length=100)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
@@ -174,7 +183,7 @@ class OtherCases(models.Model):
         return f"{self.crime_number} - {self.mps_limit}"
 
 class MaritimeAct(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     crime_number = models.CharField(max_length=50)
     police_station = models.CharField(max_length=100)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
@@ -191,7 +200,7 @@ class MaritimeAct(models.Model):
         return f"{self.crime_number} - {self.mps_limit}"
 
 class RescueAtBeach(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_rescue = models.DateTimeField()
     place_of_rescue = models.CharField(max_length=200)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
@@ -206,7 +215,7 @@ class RescueAtBeach(models.Model):
         return f"{self.date_of_rescue} - {self.place_of_rescue} - {self.number_of_victims} Victims"
     
 class RescueAtSea(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_rescue = models.DateTimeField()
     place_of_rescue = models.CharField(max_length=200)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
@@ -222,7 +231,7 @@ class RescueAtSea(models.Model):
         return f"{self.date_of_rescue} - {self.place_of_rescue} - {self.number_of_victims} Victims - {self.number_of_boats_rescued} Boats Rescued"
     
 class Seizure(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     seized_item = models.ForeignKey(SeizedItemCategory, on_delete=models.CASCADE)
     quantity = models.FloatField(help_text="Enter quantity in selected unit")
     date_of_seizure = models.DateTimeField()
@@ -242,7 +251,7 @@ class Seizure(models.Model):
 
     
 class Forecast(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
     date_of_forecast = models.DateField()
     place_of_forecast = models.CharField(max_length=200)
@@ -253,7 +262,7 @@ class Forecast(models.Model):
         return f"{self.date_of_forecast} - {self.place_of_forecast} - {self.mps_limit}"
 
 class AttackOnTNFishermen(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     attacked_by = models.ForeignKey(AttackOnTNFishermen_Choices, on_delete=models.CASCADE)
     date_of_attack = models.DateTimeField()
     place_of_attack = models.CharField(max_length=200)
@@ -273,7 +282,7 @@ class AttackOnTNFishermen(models.Model):
         return f"{self.attacked_by} - {self.date_of_attack}"
 
 class ArrestOfTNFishermen(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_arrest = models.DateTimeField()
     place_of_arrest = models.CharField(max_length=200)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
@@ -290,7 +299,7 @@ class ArrestOfTNFishermen(models.Model):
         return f"{self.number_of_TNFishermen_arrested} - {self.date_of_arrest}"
 
 class ArrestOfSLFishermen(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_arrest = models.DateTimeField()
     place_of_arrest = models.CharField(max_length=200)
     police_station = models.CharField(max_length=200)
@@ -310,7 +319,7 @@ class ArrestOfSLFishermen(models.Model):
 class OnRoadVehicleStatus(models.Model):
     VEHICLE_TYPE_CHOICES = [('TWO_WHEELER', 'Two Wheeler'),('FOUR_WHEELER', 'Four Wheeler'),('ATV', 'ATV (All-Terrain Vehicle)'),]
     WORKING_STATUS_CHOICES = [('WORKING', 'Working'),('NOT_WORKING', 'Not Working'),('CONDEMNED', 'Condemned'),('Other', 'Other')]
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
     vehicle_type = models.CharField(max_length=20, choices=VEHICLE_TYPE_CHOICES)
     vehicle_number = models.CharField(max_length=100, unique=True)
@@ -324,7 +333,7 @@ class OnRoadVehicleStatus(models.Model):
 class OnWaterVehicleStatus(models.Model):
     BOAT_TYPE_CHOICES = [('12_TON_BOAT', '12 Ton Boat'),('5_TON_BOAT', '5 Ton Boat'),('JET_SKI', 'Jet Ski'),('JET_BOAT', 'Jet Boat'),('AMPHIBIOUS_CRAFT', 'Amphibious Craft')]
     WORKING_STATUS_CHOICES = [('WORKING', 'Working'), ('NOT_WORKING', 'Not Working'), ('CONDEMNED', 'Condemned'),('Other', 'Other')]
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
     boat_type = models.CharField(max_length=50, choices=BOAT_TYPE_CHOICES)
     boat_number = models.CharField(max_length=100, unique=True, null=True, blank=True)
@@ -336,7 +345,7 @@ class OnWaterVehicleStatus(models.Model):
         return f"{self.boat_type} - {self.boat_number}"
     
 class VVCmeeting(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
     date_of_vvc = models.DateField()
     village_name = models.CharField(max_length=200)
@@ -350,7 +359,7 @@ class VVCmeeting(models.Model):
         return f"{self.date_of_vvc} - {self.village_name} - {self.number_of_villagers} Villagers"
 
 class BeatDetails(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     mps_limit = models.CharField(max_length=100, choices=MPS_CHOICES)
     date_of_beat = models.DateField()
     day_beat_count = models.PositiveIntegerField()
@@ -361,7 +370,7 @@ class BeatDetails(models.Model):
         return f"{self.mps_limit} - {self.date_of_beat}"
 
 class Proforma(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_proforma = models.DateField()
     mps_visited = models.PositiveIntegerField()
     check_post_checked = models.PositiveIntegerField()
@@ -377,7 +386,7 @@ class Proforma(models.Model):
         return f"{self.user} - {self.date_of_proforma}"
     
 class BoatPatrol(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     patrol_officer = models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     boat_type = models.CharField(max_length=50, choices=[('12_TON_BOAT', '12 Ton Boat'), ('5_TON_BOAT', '5 Ton Boat'), ('JET_SKI', 'Jet Ski'), ('JET_BOAT', 'Jet Boat'), ('AMPHIBIOUS_CRAFT', 'Amphibious Craft')])
     boat_number = models.CharField(max_length=100,blank=True, null=True)
@@ -395,7 +404,7 @@ class BoatPatrol(models.Model):
         return f"{self.patrol_officer} - {self.mps_limit} - {self.date_of_patrol}"
 
 class Atvpatrol(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     patrol_officer = models.CharField(max_length=200)
     atv_number = models.CharField(max_length=100,blank=True, null=True)
     date_of_patrol = models.DateField()
@@ -410,7 +419,7 @@ class Atvpatrol(models.Model):
         return f"{self.patrol_officer} - {self.atv_number} - {self.date_of_patrol}"
 
 class VehicleCheckPost(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     officer = models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     date_of_check = models.DateField()
     vehicle_check_start_time = models.TimeField()
@@ -426,7 +435,7 @@ class VehicleCheckPost(models.Model):
         return f"{self.check_post} - {self.mps_limit} - {self.date_of_check}"
 
 class VehicleCheckothers(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     officer = models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     date_of_check = models.DateField()
     vehicle_check_start_time = models.TimeField()
