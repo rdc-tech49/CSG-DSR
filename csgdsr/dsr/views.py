@@ -3,9 +3,9 @@ from django.http import HttpResponse
 from docx import Document
 from docx.shared import Inches
 from django import forms
-from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser
+from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser, SeizedItemCategory, PS
 
-from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm
+from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm,PSForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -111,13 +111,14 @@ def admin_officers_strength_view(request, officer_id=None):
     return render(request, 'dsr/admin/officers_details.html', context)
 
 @login_required
-def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None):
+def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None,ps_id=None):
     mps_list = MPS.objects.all().order_by('name')
     checkpost_list = CheckPost.objects.all().order_by('name')
+    ps_list = PS.objects.all().order_by('name')
 
     mps_instance = get_object_or_404(MPS, id=mps_id) if mps_id else None
     checkpost_instance = get_object_or_404(CheckPost, id=checkpost_id) if checkpost_id else None
-
+    ps_instance = get_object_or_404(PS, id=ps_id) if ps_id else None
     if request.method == 'POST':
         
         # Handle MPS Form
@@ -147,20 +148,37 @@ def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None):
             else:
                 messages.error(request, "Please correct the Checkpost form errors.")
             mps_form = MPSForm()  # Empty MPS form
+        # Handle PS Form
+        elif 'ps_submit' in request.POST:
+            ps_form = PSForm(request.POST, instance=ps_instance)
+            if ps_form.is_valid():
+                ps_form.save()
+                if ps_instance:
+                    messages.success(request, "PS updated successfully.")
+                else:
+                    messages.success(request, "PS added successfully.")
+                return redirect('admin_MPS_buildings_page')
+            else:
+                messages.error(request, "Please correct the PS form errors.")
+            mps_form = MPSForm()
 
     else:
         mps_form = MPSForm(instance=mps_instance)
         checkpost_form = CheckPostForm(instance=checkpost_instance)
-
+        ps_form = PSForm(instance=ps_instance)
     context = {
         'mps_form': mps_form,
         'checkpost_form': checkpost_form,
+        'ps_form': ps_form,
         'mps_list': mps_list,
         'checkpost_list': checkpost_list,
+        'ps_list': ps_list,
         'edit_mps': mps_instance is not None,
         'edit_checkpost': checkpost_instance is not None,
+        'edit_ps': ps_instance is not None,
         'mps_id': mps_instance.id if mps_instance else '',
         'checkpost_id': checkpost_instance.id if checkpost_instance else '',
+        'ps_id': ps_instance.id if ps_instance else '',
     }
     return render(request, 'dsr/admin/buildings.html', context)
 
@@ -382,37 +400,14 @@ def signup_view(request):
         form = CustomSignupForm()
     return render(request, 'dsr/signup.html', {'form': form})
 
-
+# users 
 def user_dashboard_view(request):
     return render(request, 'dsr/user/user_dashboard.html')
-
-class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
-    template_name = 'dsr/registration/password_change.html'
-    success_url = reverse_lazy('home')
-
-    def form_valid(self, form):
-        messages.success(self.request, "Your password is successfully updated.")
-        return super().form_valid(form)
-
-@login_required
-def update_user_view(request): 
-    if request.method == 'POST':
-        form = UpdateUserForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Your account has been updated. Please log in again.")
-            logout(request)  # Log the user out after updating
-            return redirect('home')  # Replace 'home' with your desired URL name
-    else:
-        form = UpdateUserForm(instance=request.user)
-    return render(request, 'dsr/registration/update_user.html', {'form': form})
-
 
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out.")
     return redirect('home')  # Replace 'login' with the name or path to your login page
-
 
 @login_required
 def forms_view(request):
@@ -449,6 +444,33 @@ def csr_form_view(request):
     else:
         form = CSRForm()
     return render(request, 'dsr/user/forms/csr_form.html', {'form': form})
+
+
+
+
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    template_name = 'dsr/registration/password_change.html'
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your password is successfully updated.")
+        return super().form_valid(form)
+
+@login_required
+def update_user_view(request): 
+    if request.method == 'POST':
+        form = UpdateUserForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your account has been updated. Please log in again.")
+            logout(request)  # Log the user out after updating
+            return redirect('home')  # Replace 'home' with your desired URL name
+    else:
+        form = UpdateUserForm(instance=request.user)
+    return render(request, 'dsr/registration/update_user.html', {'form': form})
+
+
+
 
 
 @login_required
@@ -553,8 +575,8 @@ def cases_registered_summary_view(request):
     csr_list = CSR.objects.filter(user=request.user).order_by('-date_of_receipt')
     bnss_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='194 BNSS').order_by('-date_of_receipt')
     missing_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='Missing').order_by('-date_of_receipt')
-    other_cases = othercases.objects.filter(user=request.user).order_by('-date_of_receipt')
-    maritime_cases= maritimeact.objects.filter(user=request.user).order_by('-date_of_receipt')
+    other_cases = OtherCases.objects.filter(user=request.user).order_by('-date_of_receipt')
+    maritime_cases= MaritimeAct.objects.filter(user=request.user).order_by('-date_of_receipt')
     
     return render(request, 'dsr/user/submitted_forms/cases_registered_summary.html', {
         'csr_list': csr_list,

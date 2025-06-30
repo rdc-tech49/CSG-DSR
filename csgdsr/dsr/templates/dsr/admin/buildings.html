@@ -115,6 +115,54 @@
       </tbody>
     </table>
   </div>
+
+  <hr class="my-4">
+  <!-- MPS Form -->
+  <h2 class="mb-4">PS Management</h2>
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_ps %} Edit PS {% else %} Add PS {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_ps %}{% url 'edit_ps' ps_id %}{% else %}{% url 'admin_MPS_buildings_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ ps_form.as_p }}
+        <button type="submit" name="ps_submit" class="btn btn-primary">{% if edit_ps %}Update{% else %}Add{% endif %} PS</button>
+        {% if edit_ps %}
+          <a href="{% url 'admin_MPS_buildings_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+  <!-- PS Table -->
+  <h4>PS List</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ps in ps_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ ps.name }}</td>
+            <td>
+              <a href="{% url 'edit_ps' ps.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No PS entries found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
   
 
 </div>

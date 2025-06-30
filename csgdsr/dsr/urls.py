@@ -39,6 +39,7 @@ urlpatterns = [
     path('admin_MPS_buildings/', views.admin_MPS_buildings_view, name='admin_MPS_buildings_page'),
     path('admin_MPS_buildings/mps/edit/<int:mps_id>/', views.admin_MPS_buildings_view, name='edit_mps'),
     path('admin_MPS_buildings/checkpost/edit/<int:checkpost_id>/', views.admin_MPS_buildings_view, name='edit_checkpost'),
+    path('admin_MPS_buildings/ps/edit/<int:ps_id>/', views.admin_MPS_buildings_view, name='edit_ps'),
 
     # admin other agencies 
     path('admin_other_agencies/', views.admin_other_agencies_view, name='admin_other_agencies_page'),

@@ -2,7 +2,7 @@ from django import forms
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from .models import CASE_CATEGORIES, MPS_CHOICES, AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, MaritimeAct, OtherCases, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers,CheckPost,Other_Agencies,MPS, CustomUser
+from .models import CASE_CATEGORIES, MPS_CHOICES, AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, MaritimeAct, OtherCases, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers,CheckPost,Other_Agencies,MPS, CustomUser, PS
 from django.core.exceptions import ValidationError
 User = get_user_model()
 USER_CHOICES = [
@@ -115,6 +115,14 @@ class MPSForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter MPS Name'}),
         }
 
+class PSForm(forms.ModelForm):
+    class Meta:
+        model = PS
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter PS Name'}),
+        }
+
 class CheckPostForm(forms.ModelForm):
     class Meta:
         model = CheckPost
@@ -178,6 +186,7 @@ class CSRForm(forms.ModelForm):
             'counter_petitioner': 'Counter Petitioner',
             'nature_of_petition': 'Nature of Petition',
             'gist_of_petition': 'Gist of Petition',
+            'transfered_to': 'Transferred To',
         }
         widgets = {
             'csr_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 202/2025'}),
@@ -189,6 +198,7 @@ class CSRForm(forms.ModelForm):
             'petitioner': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Petitioner details'}),
             'counter_petitioner': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Counter Petitioner details (if any)'}),
             'nature_of_petition': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Nature of Petition'}),
+            'transfered_to': forms.Select(attrs={'class': 'form-control'}),
             'gist_of_petition': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Petition'}),
         }
 
