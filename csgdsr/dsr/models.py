@@ -79,7 +79,7 @@ class Officer(models.Model):
     rank = models.CharField(max_length=10, choices=RANK_CHOICES)
 
     def __str__(self):
-        return f"{self.name} - {self.rank}"
+        return f"{self.rank} - {self.name}"
 
 CASE_CATEGORIES = [
     
@@ -136,14 +136,14 @@ class SeizedItemCategory(models.Model):
 class CSR(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     csr_number = models.CharField(max_length=20)
-    police_station = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
+    mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     date_of_receipt = models.DateTimeField()
     place_of_occurrence = models.CharField(max_length=255)
     petitioner = models.CharField(max_length=255)
     counter_petitioner = models.CharField(max_length=255, blank=True, null=True)
     nature_of_petition = models.TextField(null=True)
     gist_of_petition = models.TextField()
-    transfered_to = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
+    io=models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
       # stores the logged-in user
  
@@ -154,7 +154,7 @@ class BNSSMissingCase(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     case_category = models.CharField(max_length=20, choices=CASE_CATEGORIES)
     crime_number = models.CharField(max_length=50)
-    police_station = models.CharField(max_length=100)
+    ps_limit = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     date_of_occurrence = models.DateTimeField()
     date_of_receipt = models.DateTimeField()
@@ -164,7 +164,7 @@ class BNSSMissingCase(models.Model):
     missing_person = models.CharField(max_length=200, blank=True, null=True)
     gist_of_case = models.TextField()
     io=models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
-    transfered_to = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
+    transfered_to = models.ForeignKey(Other_Agencies, on_delete=models.SET_NULL, null=True, blank=True)
 
     submitted_at = models.DateTimeField(auto_now_add=True)
     
@@ -175,7 +175,7 @@ class BNSSMissingCase(models.Model):
 class OtherCases(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     crime_number = models.CharField(max_length=50)
-    police_station = models.CharField(max_length=100)
+    ps_limit = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     date_of_occurrence = models.DateTimeField()
     date_of_receipt = models.DateTimeField()
@@ -186,7 +186,7 @@ class OtherCases(models.Model):
     accused = models.CharField(max_length=200, blank=True, null=True)
     gist_of_case = models.TextField()
     io=models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
-    transfered_to = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
+    transfered_to = models.ForeignKey(Other_Agencies, on_delete=models.SET_NULL, null=True, blank=True)
 
     submitted_at = models.DateTimeField(auto_now_add=True)
     
@@ -196,7 +196,7 @@ class OtherCases(models.Model):
 class MaritimeAct(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     crime_number = models.CharField(max_length=50)
-    police_station = models.CharField(max_length=100)
+    ps_limit = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     date_of_occurrence = models.DateTimeField()
     date_of_receipt = models.DateTimeField()
@@ -205,7 +205,7 @@ class MaritimeAct(models.Model):
     accused = models.CharField(max_length=200, blank=True, null=True)
     gist_of_case = models.TextField()
     io=models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
-    transfered_to = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
+    transfered_to = models.ForeignKey(Other_Agencies, on_delete=models.SET_NULL, null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -216,12 +216,12 @@ class RescueAtBeach(models.Model):
     date_of_rescue = models.DateTimeField()
     place_of_rescue = models.CharField(max_length=200)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
+    ps_limit = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
     number_of_victims = models.PositiveIntegerField()
     victim_name = models.CharField(max_length=200)
     rescuer_name = models.CharField(max_length=200)
     rescue_beach_image = models.ImageField(upload_to='rescue__beach_images/', blank=True, null=True,validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'heic'])])
     gist_of_rescue = models.TextField()
-    transfered_to = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -255,7 +255,7 @@ class Seizure(models.Model):
     ps_limit = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
     accused = models.CharField(max_length=200, blank=True, null=True)
     seized_by = models.CharField(max_length=200)
-    handed_over_to = models.ForeignKey(Other_Agencies, on_delete=models.CASCADE, blank=True, null=True)  
+    handed_over_to = models.ForeignKey(Other_Agencies, on_delete=models.SET_NULL, null=True, blank=True) 
     seizure_image = models.ImageField(upload_to='seizure_images/', blank=True, null=True,validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'heic'])])
     gist_of_seizure = models.TextField()
     submitted_at = models.DateTimeField(auto_now_add=True)
@@ -300,6 +300,8 @@ class ArrestOfTNFishermen(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_arrest = models.DateTimeField()
     place_of_arrest = models.CharField(max_length=200)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6,blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     arrested_by = models.ForeignKey(Other_Agencies, on_delete=models.CASCADE, blank=True, null=True)
     number_of_TNFishermen_arrested = models.PositiveIntegerField()
@@ -318,7 +320,7 @@ class ArrestOfSLFishermen(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_arrest = models.DateTimeField()
     place_of_arrest = models.CharField(max_length=200)
-    police_station = models.CharField(max_length=200)
+    ps_limit = models.CharField(max_length=200)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     arrested_by = models.ForeignKey(Other_Agencies, on_delete=models.CASCADE, blank=True, null=True)
     number_of_SLFishermen_arrested = models.PositiveIntegerField()
@@ -328,7 +330,6 @@ class ArrestOfSLFishermen(models.Model):
     gist_of_arrest = models.TextField()
     number_of_SLFishermen_released = models.PositiveIntegerField(blank=True, null=True)
     no_of_boats_released = models.PositiveIntegerField(blank=True, null=True)
-    transfered_to = models.ForeignKey(PS, on_delete=models.SET_NULL, null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.number_of_SLFishermen_arrested} - {self.date_of_arrest}"
@@ -336,7 +337,6 @@ class ArrestOfSLFishermen(models.Model):
 class OnRoadVehicleStatus(models.Model):
     VEHICLE_TYPE_CHOICES = [('TWO_WHEELER', 'Two Wheeler'),('FOUR_WHEELER', 'Four Wheeler'),('ATV', 'ATV (All-Terrain Vehicle)'),]
     WORKING_STATUS_CHOICES = [('WORKING', 'Working'),('NOT_WORKING', 'Not Working'),('CONDEMNED', 'Condemned'),('Other', 'Other')]
-    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     vehicle_type = models.CharField(max_length=20, choices=VEHICLE_TYPE_CHOICES)
     vehicle_number = models.CharField(max_length=100, unique=True)
@@ -350,7 +350,6 @@ class OnRoadVehicleStatus(models.Model):
 class OnWaterVehicleStatus(models.Model):
     BOAT_TYPE_CHOICES = [('12_TON_BOAT', '12 Ton Boat'),('5_TON_BOAT', '5 Ton Boat'),('JET_SKI', 'Jet Ski'),('JET_BOAT', 'Jet Boat'),('AMPHIBIOUS_CRAFT', 'Amphibious Craft')]
     WORKING_STATUS_CHOICES = [('WORKING', 'Working'), ('NOT_WORKING', 'Not Working'), ('CONDEMNED', 'Condemned'),('Other', 'Other')]
-    user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     boat_type = models.CharField(max_length=50, choices=BOAT_TYPE_CHOICES)
     boat_number = models.CharField(max_length=100, unique=True, null=True, blank=True)
@@ -379,8 +378,8 @@ class BeatDetails(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     date_of_beat = models.DateField()
-    day_beat_count = models.PositiveIntegerField()
-    night_beat_count = models.PositiveIntegerField()
+    day_beat_count = models.IntegerField(default=0)
+    night_beat_count = models.IntegerField(default=0)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -389,14 +388,14 @@ class BeatDetails(models.Model):
 class Proforma(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_proforma = models.DateField()
-    mps_visited = models.PositiveIntegerField()
-    check_post_checked = models.PositiveIntegerField()
-    boat_guard_checked = models.PositiveIntegerField()
-    vvc_meeting_conducted = models.PositiveIntegerField()
-    villages_visited = models.PositiveIntegerField()
-    meetings_attended = models.PositiveIntegerField()
-    awareness_programs_conducted = models.PositiveIntegerField()
-    coastal_security_exercises_conducted = models.PositiveIntegerField()
+    mps_visited = models.IntegerField(default=0)
+    check_post_checked = models.IntegerField(default=0)
+    boat_guard_checked = models.IntegerField(default=0)
+    vvc_meeting_conducted = models.IntegerField(default=0)
+    villages_visited = models.IntegerField(default=0)
+    meetings_attended = models.IntegerField(default=0)
+    awareness_programs_conducted = models.IntegerField(default=0)
+    coastal_security_exercises_conducted = models.IntegerField(default=0)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

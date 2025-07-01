@@ -409,6 +409,27 @@ def logout_view(request):
     messages.success(request, "You have been logged out.")
     return redirect('home')  # Replace 'login' with the name or path to your login page
 
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    template_name = 'dsr/registration/password_change.html'
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your password is successfully updated.")
+        return super().form_valid(form)
+
+@login_required
+def update_user_view(request): 
+    if request.method == 'POST':
+        form = UpdateUserForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your account has been updated. Please log in again.")
+            logout(request)  # Log the user out after updating
+            return redirect('home')  # Replace 'home' with your desired URL name
+    else:
+        form = UpdateUserForm(instance=request.user)
+    return render(request, 'dsr/registration/update_user.html', {'form': form})
+
 @login_required
 def forms_view(request):
     cards = [
@@ -444,34 +465,6 @@ def csr_form_view(request):
     else:
         form = CSRForm()
     return render(request, 'dsr/user/forms/csr_form.html', {'form': form})
-
-
-
-
-class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
-    template_name = 'dsr/registration/password_change.html'
-    success_url = reverse_lazy('home')
-
-    def form_valid(self, form):
-        messages.success(self.request, "Your password is successfully updated.")
-        return super().form_valid(form)
-
-@login_required
-def update_user_view(request): 
-    if request.method == 'POST':
-        form = UpdateUserForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Your account has been updated. Please log in again.")
-            logout(request)  # Log the user out after updating
-            return redirect('home')  # Replace 'home' with your desired URL name
-    else:
-        form = UpdateUserForm(instance=request.user)
-    return render(request, 'dsr/registration/update_user.html', {'form': form})
-
-
-
-
 
 @login_required
 def bnss_missing_form_view(request):
@@ -596,7 +589,8 @@ def csr_ajax_search_view(request):
     if query:
         csr_list = csr_list.filter(
             Q(csr_number__icontains=query) |
-            Q(petitioner__icontains=query)
+            Q(petitioner__icontains=query) |
+            Q(io_icontains=query) 
         )
 
     data = [
@@ -605,8 +599,130 @@ def csr_ajax_search_view(request):
             'csr_number': csr.csr_number,
             'date_of_receipt': csr.date_of_receipt.strftime('%Y-%m-%d'),
             'petitioner': csr.petitioner,
+            'io': csr.io,
         }
         for csr in csr_list
+    ]
+    return JsonResponse(data, safe=False)
+
+#bnss search
+@login_required
+def bnss194_cases_ajax_search_view(request):
+    query = request.GET.get('q', '').strip()
+    cases = BNSSMissingCase.objects.filter(case_category='194 BNSS', user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(crime_number__icontains=query) |
+            Q(date_of_occurrence__icontains=query) |
+            Q(date_of_receipt__icontains=query) |
+            Q(ps_limit__icontains=query) |
+            Q(io__icontains=query) |
+            Q(transfered_to__icontains=query)
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'crime_number': case.crime_number,
+            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
+            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
+            'ps_limit': case.ps_limit,
+            'io': case.io,
+            'transfered_to': case.transfered_to,
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for missing cases
+@login_required
+def missing_ajax_search_view(request):
+    query = request.GET.get('q', '').strip()
+    cases = BNSSMissingCase.objects.filter(case_category='Missing', user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(crime_number__icontains=query) |
+            Q(date_of_occurrence__icontains=query) |
+            Q(date_of_receipt__icontains=query) |
+            Q(ps_limit__icontains=query) |
+            Q(io__icontains=query) |
+            Q(transfered_to__icontains=query)
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'crime_number': case.crime_number,
+            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
+            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
+            'ps_limit': case.ps_limit,
+            'io': case.io,
+            'transfered_to': case.transfered_to,
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for other cases
+@login_required
+def othercases_ajax_search_view(request):
+    query = request.GET.get('q', '').strip()
+    cases = OtherCases.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(crime_number__icontains=query) |
+            Q(date_of_occurrence__icontains=query) |
+            Q(date_of_receipt__icontains=query) |
+            Q(ps_limit__icontains=query) |
+            Q(io__icontains=query) |
+            Q(transfered_to__icontains=query)
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'crime_number': case.crime_number,
+            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
+            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
+            'ps_limit': case.ps_limit,
+            'io': case.io,
+            'transfered_to': case.transfered_to,
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for maritime act cases
+@login_required
+def maritimeact_ajax_search_view(request):
+    query = request.GET.get('q', '').strip()
+    cases = MaritimeAct.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(crime_number__icontains=query) |
+            Q(date_of_occurrence__icontains=query) |
+            Q(date_of_receipt__icontains=query) |
+            Q(ps_limit__icontains=query) |
+            Q(io__icontains=query) |
+            Q(transfered_to__icontains=query)
+            
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'crime_number': case.crime_number,
+            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
+            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
+            'ps_limit': case.ps_limit,
+            'io': case.io,
+            'transfered_to': case.transfered_to,
+        }
+        for case in cases
     ]
     return JsonResponse(data, safe=False)
 
@@ -623,13 +739,14 @@ def csr_export_word_view(request):
         # Fields to include in the Word document
         fields = [
             ("CSR No.", csr.csr_number),
-            ("Police Station", csr.police_station),  # Directly use it as string
+            ("MPS Limit ", csr.mps_limit),  # Directly use it as string
             ("Date of Receipt", csr.date_of_receipt.strftime('%Y-%m-%d') if csr.date_of_receipt else ''),
             ("Place of Occurrence", csr.place_of_occurrence),
             ("Petitioner", csr.petitioner),
             ("Counter Petitioner", csr.counter_petitioner),
             ("Nature of Petition", csr.nature_of_petition),
             ("Gist of Petition", csr.gist_of_petition),
+            ("IO", csr.io)
         ]
 
         for label, value in fields:
@@ -644,6 +761,162 @@ def csr_export_word_view(request):
     response['Content-Disposition'] = 'attachment; filename="CSR_Export.docx"'
     doc.save(response)
     return response
+
+#export 194 BNSS cases to Word document
+@login_required
+def bnss_194_export_word_view(request):
+    bnsss = BNSSMissingCase.objects.filter(case_category='194 BNSS').order_by('date_of_receipt')
+    doc = Document()
+
+    for bnss in bnsss:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        # Fields to include in the Word document
+        fields = [
+            ("Crime No.", bnss.crime_number),
+            ("Police Station Limit", bnss.ps_limit),  # Directly use it as string
+            ("MPS Limit", bnss.mps_limit),
+            ("Date of Occurrence", bnss.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if bnss.date_of_occurrence else ''),
+            ("Date of Receipt", bnss.date_of_receipt.strftime('%Y-%m-%d') if bnss.date_of_receipt else ''),
+            ("Place of Occurrence", bnss.place_of_occurrence),
+            ("Petitioner", bnss.petitioner),
+            ("Diseased", bnss.diseased if bnss.case_category == '194 BNSS' else ''),
+            ("Missing Person", bnss.missing_person if bnss.case_category == 'Missing' else ''),
+            ("Gist of Case", bnss.gist_of_case),
+            ("IO", bnss.io),
+            ("Transfered To", bnss.transfered_to),
+            
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()  # Empty line
+        doc.add_paragraph()  # Second empty line
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="BNSS194_Export.docx"'
+    doc.save(response)
+    return response
+
+#export missing cases to Word document
+@login_required
+def missing_export_word_view(request):
+    missings = BNSSMissingCase.objects.filter(case_category='Missing').order_by('date_of_receipt')
+    doc = Document()
+
+    for missing in missings:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        # Fields to include in the Word document
+        fields = [
+            ("Crime No.", missing.crime_number),
+            ("Police Station Limit", missing.ps_limit),  # Directly use it as string
+            ("MPS Limit", missing.mps_limit),
+            ("Date of Occurrence", missing.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if missing.date_of_occurrence else ''),
+            ("Date of Receipt", missing.date_of_receipt.strftime('%Y-%m-%d') if missing.date_of_receipt else ''),
+            ("Place of Occurrence", missing.place_of_occurrence),
+            ("Petitioner", missing.petitioner),
+            ("Diseased", missing.diseased if missing.case_category == '194 BNSS' else ''),
+            ("Missing Person", missing.missing_person if missing.case_category == 'Missing' else ''),
+            ("Gist of Case", missing.gist_of_case),
+            ("IO", missing.io),
+            ("Transfered To", missing.transfered_to),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()  # Empty line
+        doc.add_paragraph()  # Second empty line
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Missing_Export.docx"'
+    doc.save(response)
+    return response
+
+#export other cases to Word document
+@login_required
+def othercases_export_word_view(request):
+    other_cases = OtherCases.objects.filter(user=request.user).order_by('date_of_receipt')
+    doc = Document()
+
+    for case in other_cases:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        # Fields to include in the Word document
+        fields = [
+            ("Crime No.", case.crime_number),
+            ("Police Station Limit", case.ps_limit),  # Directly use it as string
+            ("MPS Limit", case.mps_limit),
+            ("Date of Occurrence", case.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if case.date_of_occurrence else ''),
+            ("Date of Receipt", case.date_of_receipt.strftime('%Y-%m-%d') if case.date_of_receipt else ''),
+            ("Place of Occurrence", case.place_of_occurrence),
+            ("Petitioner", case.petitioner),
+            ("Diseased", case.diseased if case.diseased else ''),
+            ("Injured", case.injured if case.injured else ''),
+            ("Accused", case.accused if case.accused else ''),
+            ("Gist of Case", case.gist_of_case),
+            ("IO", case.io),
+            ("Transfered To", case.transfered_to),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()  # Second empty line
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Other_Cases_Export.docx"'
+    doc.save(response)
+    return response
+
+#export maritime act cases to Word document
+@login_required
+def maritimeact_export_word_view(request):
+    maritime_cases = MaritimeAct.objects.filter(user=request.user).order_by('date_of_receipt')
+    doc = Document()
+
+    for case in maritime_cases:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        # Fields to include in the Word document
+        fields = [
+            ("Crime No.", case.crime_number),
+            ("Police Station Limit", case.ps_limit),  # Directly use it as string
+            ("MPS Limit", case.mps_limit),
+            ("Date of Occurrence", case.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if case.date_of_occurrence else ''),
+            ("Date of Receipt", case.date_of_receipt.strftime('%Y-%m-%d') if case.date_of_receipt else ''),
+            ("Place of Occurrence", case.place_of_occurrence),
+            ("Petitioner", case.petitioner),
+            ("Accused", case.accused if case.accused else ''),
+            ("Gist of Case", case.gist_of_case),
+            ("IO", case.io),
+            ("Transfered To", case.transfered_to)
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()  # Second empty line
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Maritime_Cases_Export.docx"'
+    doc.save(response)
+    return response
+
 
 #export individual CSR
 @login_required
@@ -666,12 +939,14 @@ def csr_download_view(request, pk):
 
     # Add CSR details to the table
     add_row('CSR Number', csr.csr_number)
-    add_row('Police Station', str(csr.police_station))
+    add_row('MPS Limit ', str(csr.mps_limit))
     add_row('Date of Receipt', csr.date_of_receipt.strftime('%Y-%m-%d'))
+    add_row('Place of Occurrence', csr.place_of_occurrence)
     add_row('Petitioner', csr.petitioner)
     add_row('Counter Petitioner', csr.counter_petitioner)
     add_row('Nature of Petition', csr.nature_of_petition)
     add_row('Gist of Petition', csr.gist_of_petition)
+    add_row('IO', csr.io)
 
     # Prepare HTTP response with docx content
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
@@ -680,160 +955,7 @@ def csr_download_view(request, pk):
     doc.save(response)
     return response
 
-# CSR edit view
-@login_required
-def csr_edit_view(request, pk):
-    csr = get_object_or_404(CSR, pk=pk)
-    if request.method == 'POST':
-        form = CSRForm(request.POST, instance=csr)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'CSR updated successfully!')
-            return redirect('cases_summary')
-    else:
-        form = CSRForm(instance=csr)
-
-    return render(request, 'dsr/user/forms/csr_form.html', {'form': form, 'edit_mode': True}) 
-
-#CSR delete view
-@login_required
-def csr_delete_view(request, pk):
-    csr = get_object_or_404(CSR, pk=pk)
-    csr.delete()
-    messages.success(request, 'CSR entry deleted successfully!')
-    return redirect('cases_summary')  # Adjust this to your summary view name
-
-
-@login_required
-def bnss194_cases_ajax_search_view(request):
-    query = request.GET.get('q', '').strip()
-    cases = BNSSMissingCase.objects.filter(case_category='194 BNSS', user=request.user)
-
-    if query:
-        cases = cases.filter(
-            Q(crime_number__icontains=query) |
-            Q(petitioner__icontains=query) |
-            Q(police_station__icontains=query) |
-            Q(date_of_occurrence__icontains=query) |
-            Q(date_of_receipt__icontains=query)
-        )
-
-    data = [
-        {
-            'id': case.id,
-            'crime_number': case.crime_number,
-            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
-            'police_station': case.police_station,
-            'mps_limit': case.mps_limit,
-            'petitioner': case.petitioner,
-        }
-        for case in cases
-    ]
-    return JsonResponse(data, safe=False)
-
-@login_required
-def missing_ajax_search_view(request):
-    query = request.GET.get('q', '').strip()
-    cases = BNSSMissingCase.objects.filter(case_category='Missing', user=request.user)
-
-    if query:
-        cases = cases.filter(
-            Q(crime_number__icontains=query) |
-            Q(petitioner__icontains=query) |
-            Q(police_station__icontains=query) |
-            Q(date_of_occurrence__icontains=query) |
-            Q(date_of_receipt__icontains=query)
-        )
-
-    data = [
-        {
-            'id': case.id,
-            'crime_number': case.crime_number,
-            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
-            'police_station': case.police_station,
-            'mps_limit': case.mps_limit,
-            'petitioner': case.petitioner,
-        }
-        for case in cases
-    ]
-    return JsonResponse(data, safe=False)
-
-@login_required
-def bnss_194_export_word_view(request):
-    bnsss = BNSSMissingCase.objects.filter(case_category='194 BNSS').order_by('date_of_receipt')
-    doc = Document()
-
-    for bnss in bnsss:
-        table = doc.add_table(rows=0, cols=2)
-        table.style = 'Table Grid'
-
-        # Fields to include in the Word document
-        fields = [
-            ("Crime No.", bnss.crime_number),
-            ("Police Station", bnss.police_station),  # Directly use it as string
-            ("MPS Limit", bnss.mps_limit),
-            ("Date of Occurrence", bnss.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if bnss.date_of_occurrence else ''),
-            ("Date of Receipt", bnss.date_of_receipt.strftime('%Y-%m-%d') if bnss.date_of_receipt else ''),
-            ("Place of Occurrence", bnss.place_of_occurrence),
-            ("Petitioner", bnss.petitioner),
-            ("Diseased", bnss.diseased if bnss.case_category == '194 BNSS' else ''),
-            ("Missing Person", bnss.missing_person if bnss.case_category == 'Missing' else ''),
-            ("IO", bnss.io),
-            ("Gist of Case", bnss.gist_of_case),
-        ]
-
-        for label, value in fields:
-            row = table.add_row().cells
-            row[0].text = label
-            row[1].text = str(value)
-
-        doc.add_paragraph()  # Empty line
-        doc.add_paragraph()  # Second empty line
-
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    response['Content-Disposition'] = 'attachment; filename="BNSS194_Export.docx"'
-    doc.save(response)
-    return response
-
-@login_required
-def missing_export_word_view(request):
-    missings = BNSSMissingCase.objects.filter(case_category='Missing').order_by('date_of_receipt')
-    doc = Document()
-
-    for missing in missings:
-        table = doc.add_table(rows=0, cols=2)
-        table.style = 'Table Grid'
-
-        # Fields to include in the Word document
-        fields = [
-            ("Crime No.", missing.crime_number),
-            ("Police Station", missing.police_station),  # Directly use it as string
-            ("MPS Limit", missing.mps_limit),
-            ("Date of Occurrence", missing.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if missing.date_of_occurrence else ''),
-            ("Date of Receipt", missing.date_of_receipt.strftime('%Y-%m-%d') if missing.date_of_receipt else ''),
-            ("Place of Occurrence", missing.place_of_occurrence),
-            ("Petitioner", missing.petitioner),
-            ("Diseased", missing.diseased if missing.case_category == '194 BNSS' else ''),
-            ("Missing Person", missing.missing_person if missing.case_category == 'Missing' else ''),
-            ("IO", missing.io),
-            ("Gist of Case", missing.gist_of_case),
-        ]
-
-        for label, value in fields:
-            row = table.add_row().cells
-            row[0].text = label
-            row[1].text = str(value)
-
-        doc.add_paragraph()  # Empty line
-        doc.add_paragraph()  # Second empty line
-
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    response['Content-Disposition'] = 'attachment; filename="Missing_Export.docx"'
-    doc.save(response)
-    return response
-
+#export individual BNSS194 case
 @login_required
 def bnss194_download_view(request, pk):
     case = get_object_or_404(BNSSMissingCase, pk=pk)
@@ -853,7 +975,7 @@ def bnss194_download_view(request, pk):
     # Add data
     add_row('Crime Number', case.crime_number)
     add_row('Case Category', case.case_category)
-    add_row('Police Station', case.police_station)
+    add_row('Police Station Limit', case.ps_limit)
     add_row('MPS Limit', case.mps_limit)
     add_row('Date of Occurrence', case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_occurrence else '')
     add_row('Date of Receipt', case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_receipt else '')
@@ -862,10 +984,10 @@ def bnss194_download_view(request, pk):
         add_row('Diseased', case.diseased)
     elif case.case_category == 'Missing':
         add_row('Missing Person', case.missing_person)
-
     add_row('Petitioner', case.petitioner)
-    add_row('IO', case.io)
     add_row('Gist of Case', case.gist_of_case)
+    add_row('IO', case.io)
+    add_row('Transfered To', case.transfered_to)
 
     # Prepare response
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
@@ -874,92 +996,10 @@ def bnss194_download_view(request, pk):
     doc.save(response)
     return response
 
-@login_required
-def bnss_missing_edit_view(request, pk):
-    case = get_object_or_404(BNSSMissingCase, pk=pk, user=request.user)
-    if request.method == 'POST':
-        form = BNSSMissingCaseForm(request.POST, instance=case)
-        if form.is_valid():
-            form.save()
-            return redirect('cases_summary')
-    else:
-        form = BNSSMissingCaseForm(instance=case)
-    return render(request, 'dsr/user/forms/194bnss_missing_form.html', {'form': form, 'edit_mode': True})
-
-@login_required
-def bnss_missing_delete_view(request, pk):
-    case = get_object_or_404(BNSSMissingCase, pk=pk, user=request.user)
-    case.delete()
-    return redirect('cases_summary')
-
-@login_required
-def othercases_ajax_search_view(request):
-    query = request.GET.get('q', '').strip()
-    cases = othercases.objects.filter(user=request.user)
-
-    if query:
-        cases = cases.filter(
-            Q(crime_number__icontains=query) |
-            Q(petitioner__icontains=query) |
-            Q(police_station__icontains=query) |
-            Q(date_of_occurrence__icontains=query) |
-            Q(date_of_receipt__icontains=query)
-        )
-
-    data = [
-        {
-            'id': case.id,
-            'crime_number': case.crime_number,
-            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
-            'police_station': case.police_station,
-            'mps_limit': case.mps_limit,
-            'petitioner': case.petitioner,
-        }
-        for case in cases
-    ]
-    return JsonResponse(data, safe=False)
-
-@login_required
-def othercases_export_word_view(request):
-    other_cases = othercases.objects.filter(user=request.user).order_by('date_of_receipt')
-    doc = Document()
-
-    for case in other_cases:
-        table = doc.add_table(rows=0, cols=2)
-        table.style = 'Table Grid'
-
-        # Fields to include in the Word document
-        fields = [
-            ("Crime No.", case.crime_number),
-            ("Police Station", case.police_station),  # Directly use it as string
-            ("MPS Limit", case.mps_limit),
-            ("Date of Occurrence", case.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if case.date_of_occurrence else ''),
-            ("Date of Receipt", case.date_of_receipt.strftime('%Y-%m-%d') if case.date_of_receipt else ''),
-            ("Place of Occurrence", case.place_of_occurrence),
-            ("Petitioner", case.petitioner),
-            ("Diseased", case.diseased if case.diseased else ''),
-            ("Injured", case.injured if case.injured else ''),
-            ("Accused", case.accused if case.accused else ''),
-            ("IO", case.io),
-            ("Gist of Case", case.gist_of_case),
-        ]
-
-        for label, value in fields:
-            row = table.add_row().cells
-            row[0].text = label
-            row[1].text = str(value)
-
-        doc.add_paragraph()
-        doc.add_paragraph()  # Second empty line
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    response['Content-Disposition'] = 'attachment; filename="Other_Cases_Export.docx"'
-    doc.save(response)
-    return response
-
+#export individual missing case
 @login_required
 def othercases_download_view(request, pk):
-    case = get_object_or_404(othercases, pk=pk, user=request.user)
+    case = get_object_or_404(OtherCases, pk=pk, user=request.user)
 
     doc = Document()
     doc.add_heading('Other Cases Details', level=1)
@@ -975,7 +1015,7 @@ def othercases_download_view(request, pk):
 
     # Add data
     add_row('Crime Number', case.crime_number)
-    add_row('Police Station', case.police_station)
+    add_row('Police Station Limit', case.ps_limit)
     add_row('MPS Limit', case.mps_limit)
     add_row('Date of Occurrence', case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_occurrence else '')
     add_row('Date of Receipt', case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_receipt else '')
@@ -984,8 +1024,9 @@ def othercases_download_view(request, pk):
     add_row('Diseased', case.diseased if case.diseased else '')
     add_row('Injured', case.injured if case.injured else '')
     add_row('Accused', case.accused if case.accused else '')
-    add_row('IO', case.io)
     add_row('Gist of Case', case.gist_of_case)
+    add_row('IO', case.io)
+    add_row('Transfered To', case.transfered_to)
 
     # Prepare response
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
@@ -994,93 +1035,10 @@ def othercases_download_view(request, pk):
     doc.save(response)
     return response
 
-@login_required
-def othercases_edit_view(request, pk):
-    case = get_object_or_404(othercases, pk=pk, user=request.user)
-    if request.method == 'POST':
-        form = othercasesForm(request.POST, instance=case)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Other case updated successfully!')
-            return redirect('cases_summary')
-    else:
-        form = othercasesForm(instance=case)
-
-    return render(request, 'dsr/user/forms/othercases_form.html', {'form': form, 'edit_mode': True})
-
-@login_required
-def othercases_delete_view(request, pk):
-    case = get_object_or_404(othercases, pk=pk, user=request.user)
-    case.delete()
-    messages.success(request, 'Other case entry deleted successfully!')
-    return redirect('cases_summary')
-
-@login_required
-def maritimeact_ajax_search_view(request):
-    query = request.GET.get('q', '').strip()
-    cases = maritimeact.objects.filter(user=request.user)
-
-    if query:
-        cases = cases.filter(
-            Q(crime_number__icontains=query) |
-            Q(petitioner__icontains=query) |
-            Q(police_station__icontains=query) |
-            Q(date_of_occurrence__icontains=query) |
-            Q(date_of_receipt__icontains=query)
-        )
-
-    data = [
-        {
-            'id': case.id,
-            'crime_number': case.crime_number,
-            'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
-            'police_station': case.police_station,
-            'mps_limit': case.mps_limit,
-            'petitioner': case.petitioner,
-        }
-        for case in cases
-    ]
-    return JsonResponse(data, safe=False)
-
-@login_required
-def maritimeact_export_word_view(request):
-    maritime_cases = maritimeact.objects.filter(user=request.user).order_by('date_of_receipt')
-    doc = Document()
-
-    for case in maritime_cases:
-        table = doc.add_table(rows=0, cols=2)
-        table.style = 'Table Grid'
-
-        # Fields to include in the Word document
-        fields = [
-            ("Crime No.", case.crime_number),
-            ("Police Station", case.police_station),  # Directly use it as string
-            ("MPS Limit", case.mps_limit),
-            ("Date of Occurrence", case.date_of_occurrence.strftime('%Y-%m-%d %H:%M') if case.date_of_occurrence else ''),
-            ("Date of Receipt", case.date_of_receipt.strftime('%Y-%m-%d') if case.date_of_receipt else ''),
-            ("Place of Occurrence", case.place_of_occurrence),
-            ("Petitioner", case.petitioner),
-            ("Accused", case.accused if case.accused else ''),
-            ("IO", case.io),
-            ("Gist of Case", case.gist_of_case),
-        ]
-
-        for label, value in fields:
-            row = table.add_row().cells
-            row[0].text = label
-            row[1].text = str(value)
-
-        doc.add_paragraph()
-        doc.add_paragraph()  # Second empty line
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    response['Content-Disposition'] = 'attachment; filename="Maritime_Cases_Export.docx"'
-    doc.save(response)
-    return response
-
+#export individual maritime act case
 @login_required
 def maritimeact_download_view(request, pk):
-    case = get_object_or_404(maritimeact, pk=pk, user=request.user)
+    case = get_object_or_404(MaritimeAct, pk=pk, user=request.user)
 
     doc = Document()
     doc.add_heading('Maritime Act Case Details', level=1)
@@ -1096,15 +1054,16 @@ def maritimeact_download_view(request, pk):
 
     # Add data
     add_row('Crime Number', case.crime_number)
-    add_row('Police Station', case.police_station)
+    add_row('Police Station Limit', case.ps_limit)
     add_row('MPS Limit', case.mps_limit)
     add_row('Date of Occurrence', case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_occurrence else '')
     add_row('Date of Receipt', case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs') if case.date_of_receipt else '')
     add_row('Place of Occurrence', case.place_of_occurrence)
     add_row('Petitioner', case.petitioner)
     add_row('Accused', case.accused if case.accused else '')
-    add_row('IO', case.io)
     add_row('Gist of Case', case.gist_of_case)
+    add_row('IO', case.io)
+    add_row('Transfered To', case.transfered_to)
 
     # Prepare response
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
@@ -1113,9 +1072,53 @@ def maritimeact_download_view(request, pk):
     doc.save(response)
     return response
 
+# CSR edit view
+@login_required
+def csr_edit_view(request, pk):
+    csr = get_object_or_404(CSR, pk=pk)
+    if request.method == 'POST':
+        form = CSRForm(request.POST, instance=csr)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'CSR updated successfully!')
+            return redirect('cases_summary')
+    else:
+        form = CSRForm(instance=csr)
+
+    return render(request, 'dsr/user/forms/csr_form.html', {'form': form, 'edit_mode': True}) 
+
+# BNSS194 edit view
+@login_required
+def bnss_missing_edit_view(request, pk):
+    case = get_object_or_404(BNSSMissingCase, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = BNSSMissingCaseForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            return redirect('cases_summary')
+    else:
+        form = BNSSMissingCaseForm(instance=case)
+    return render(request, 'dsr/user/forms/194bnss_missing_form.html', {'form': form, 'edit_mode': True})
+
+# Other cases edit view
+@login_required
+def othercases_edit_view(request, pk):
+    case = get_object_or_404(OtherCases, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = othercasesForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Other case updated successfully!')
+            return redirect('cases_summary')
+    else:
+        form = othercasesForm(instance=case)
+
+    return render(request, 'dsr/user/forms/othercases_form.html', {'form': form, 'edit_mode': True})
+
+# Maritime Act edit view
 @login_required
 def maritimeact_edit_view(request, pk):
-    case = get_object_or_404(maritimeact, pk=pk, user=request.user)
+    case = get_object_or_404(MaritimeAct, pk=pk, user=request.user)
     if request.method == 'POST':
         form = MaritimeActForm(request.POST, instance=case)
         if form.is_valid():
@@ -1127,9 +1130,33 @@ def maritimeact_edit_view(request, pk):
 
     return render(request, 'dsr/user/forms/maritimeact_form.html', {'form': form, 'edit_mode': True})
 
+#CSR delete view
+@login_required
+def csr_delete_view(request, pk):
+    csr = get_object_or_404(CSR, pk=pk)
+    csr.delete()
+    messages.success(request, 'CSR entry deleted successfully!')
+    return redirect('cases_summary')  # Adjust this to your summary view name
+
+# BNSS194 delete view
+@login_required
+def bnss_missing_delete_view(request, pk):
+    case = get_object_or_404(BNSSMissingCase, pk=pk, user=request.user)
+    case.delete()
+    return redirect('cases_summary')
+
+# Other cases delete view
+@login_required
+def othercases_delete_view(request, pk):
+    case = get_object_or_404(OtherCases, pk=pk, user=request.user)
+    case.delete()
+    messages.success(request, 'Other case entry deleted successfully!')
+    return redirect('cases_summary')
+
+# Maritime Act delete view
 @login_required
 def maritimeact_delete_view(request, pk):
-    case = get_object_or_404(maritimeact, pk=pk, user=request.user)
+    case = get_object_or_404(MaritimeAct, pk=pk, user=request.user)
     case.delete()
     messages.success(request, 'Maritime Act case entry deleted successfully!')
     return redirect('cases_summary')

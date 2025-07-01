@@ -32,9 +32,9 @@
 
     <div class="row mb-3">
       <div class="col-md-6">
-        <label for="{{ form.police_station.id_for_label }}" class="form-label">Police Station</label>
-        {{ form.police_station }}
-        {% for error in form.police_station.errors %}
+        <label for="{{ form.ps_limit.id_for_label }}" class="form-label">Local PS Limit</label>
+        {{ form.ps_limit }}
+        {% for error in form.ps_limit.errors %}
           <div class="invalid-feedback d-block">{{ error }}</div>
         {% endfor %}
       </div>
@@ -101,13 +101,7 @@
       </div>
     </div>
 
-   <div class="mb-3">
-      <label for="{{ form.io.id_for_label }}" class="form-label">Investigating Officer</label>
-      {{ form.io }}
-      {% for error in form.io.errors %}
-        <div class="invalid-feedback d-block">{{ error }}</div>
-      {% endfor %}
-    </div>
+   
 
 
     <div class="mb-3">
@@ -118,6 +112,23 @@
       {% endfor %}
     </div>
 
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="{{ form.io.id_for_label }}" class="form-label">Investigating Officer</label>
+        {{ form.io }}
+        {% for error in form.io.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-6">
+        <label for="{{ form.transfered_to.id_for_label }}" class="form-label">Transfered to</label>
+        {{ form.transfered_to }}
+        {% for error in form.transfered_to.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
     
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>

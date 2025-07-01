@@ -42,7 +42,7 @@
           <th>CSR No.</th>
           <th>D/R</th>
           <th>Petitioner</th>
-          <th>View</th>
+          <th>IO</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -50,13 +50,25 @@
         {% for entry in csr_list %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ entry.csr_number }}</td>
-            <td>{{ entry.date_of_receipt |date:"d-m-Y" }}</td>
-            <td>{{ entry.petitioner }}</td>
             <td>
-              <a href="{% url 'csr_download' entry.id %}" class="btn btn-sm btn-info" target="_blank">
-                <i class="bi bi-download"></i> Download
+              <a href="{% url 'csr_download' entry.id %}" class= "text-decoration-none" target="_blank">
+                {{ entry.csr_number }}
               </a>
+            </td>
+            <td>{{ entry.date_of_receipt |date:"d-m-Y" }}</td>
+            <td>
+              {% if entry.petitioner|stringformat:"s"|length > 15 %}
+                {{ entry.petitioner|slice:":10" }}...
+              {% else %}
+                {{ entry.petitioner }}
+              {% endif %}
+            </td>
+            <td>
+              {%if entry.io|stringformat:"s"|length > 15 %}
+              {{ entry.io|slice:":15" }}...
+              {% else %}
+                {{ entry.io }}
+              {% endif %}
             </td>
             <td>
               <a href="{% url 'csr_edit' entry.id %}" class="btn btn-sm btn-primary">Edit</a>
@@ -95,12 +107,12 @@
       <thead class="table-dark">
         <tr>
           <th>S.No</th>
-          <th>Crime Number</th>
-          <th>D/R</th>
+          <th>Cr. No.</th>
           <th>D/O</th>
-          <th>Police Station</th>
-          <th>MPS Limit</th>
-          <th>Petitioner</th>
+          <th>D/R</th>
+          <th>PS Limit</th>
+          <th>IO</th>
+          <th>Transfered to</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -113,11 +125,27 @@
               {{ case.crime_number }}
             </a>
           </td>
-          <td>{{ case.date_of_receipt|date:"d-m-Y"}}</td>
-          <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
-          <td>{{ case.police_station }}</td>
-          <td>{{ case.mps_limit }}</td>
-          <td>{{ case.petitioner }}</td>
+          <td>{{ case.date_of_occurrence|date:"d-m-Y"}}</td>
+          <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
+          <td>{{ case.ps_limit }}</td>
+          <td>
+            {% if case.io|stringformat:"s"|length > 15 %}
+              {{ case.io|slice:":15" }}...
+              {% else %}
+                {{ case.io }}
+              {% endif %}
+          </td>
+          <td>
+            {% if case.transfered_to %}
+              {% if case.transfered_to|stringformat:"s"|length > 10 %}
+                {{ case.transfered_to|slice:":10" }}...
+              {% else %}
+                {{ case.transfered_to }}
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </td>
           <td>
             <a href="{% url 'bnss_missing_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
             <a href="{% url 'bnss_missing_delete' case.id %}" class="btn btn-sm btn-danger"
@@ -154,11 +182,11 @@
         <tr>
           <th>S.No</th>
           <th>Crime Number</th>
-          <th>D/R</th>
           <th>D/O</th>
-          <th>Police Station</th>
-          <th>MPS Limit</th>
-          <th>Petitioner</th>
+          <th>D/R</th>
+          <th>PS Limit</th>
+          <th>IO</th>
+          <th>Transfered to</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -172,11 +200,27 @@
               {{ case.crime_number }}
             </a>
           </td>
-          <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
           <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
-          <td>{{ case.police_station }}</td>
-          <td>{{ case.mps_limit }}</td>
-          <td>{{ case.petitioner }}</td>
+          <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
+          <td>{{ case.ps_limit }}</td>
+          <td>
+              {%if case.io|stringformat:"s"|length > 15 %}
+              {{ case.io|slice:":15" }}...
+              {% else %}
+                {{ case.io }}
+              {% endif %}
+            </td>
+          <td>
+            {% if case.transfered_to %}
+              {% if case.transfered_to|stringformat:"s"|length > 10 %}
+                {{ case.transfered_to|slice:":10" }}...
+              {% else %}
+                {{ case.transfered_to }}
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </td>
           <td>
             <a href="{% url 'bnss_missing_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
             <a href="{% url 'bnss_missing_delete' case.id %}" class="btn btn-sm btn-danger"
@@ -214,12 +258,12 @@
       <thead class="table-dark">
         <tr>
           <th>S.No</th>
-          <th>Crime Number</th>
-          <th>D/R</th>
+          <th>Cr. No.</th>
           <th>D/O</th>
-          <th>Police Station</th>
-          <th>MPS Limit</th>
-          <th>Petitioner</th>
+          <th>D/R</th>
+          <th>PS Limit</th>
+          <th>IO</th>
+          <th>Trasfered to</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -229,14 +273,34 @@
           <td>{{ forloop.counter }}</td>
           <td>
             <a href="{% url 'othercases_download' case.id %}" class= "text-decoration-none" target="_blank">
-              {{ case.crime_number }}
+              {% if case.crime_number|stringformat:"s"|length > 10 %}
+                {{ case.crime_number|slice:":10" }}...
+              {% else %}
+                {{ case.crime_number }}
+              {% endif %}
             </a>
           </td>
-          <td>{{ case.date_of_receipt|date:"d-m-Y"}}</td>
-          <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
-          <td>{{ case.police_station }}</td>
-          <td>{{ case.mps_limit }}</td>
-          <td>{{ case.petitioner }}</td>
+          <td>{{ case.date_of_occurrence|date:"d-m-Y"}}</td>
+          <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
+          <td>{{ case.ps_limit }}</td>
+          <td>
+              {%if case.io|stringformat:"s"|length > 15 %}
+              {{ case.io|slice:":15" }}...
+              {% else %}
+                {{ case.io }}
+              {% endif %}
+            </td>
+          <td>
+            {% if case.transfered_to %}
+              {% if case.transfered_to|stringformat:"s"|length > 10 %}
+                {{ case.transfered_to|slice:":10" }}...
+              {% else %}
+                {{ case.transfered_to }}
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </td>
           <td>
             <a href="{% url 'othercases_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
             <a href="{% url 'othercases_delete' case.id %}" class="btn btn-sm btn-danger"
@@ -274,12 +338,11 @@
       <thead class="table-dark">
         <tr>
           <th>S.No</th>
-          <th>Crime Number</th>
-          <th>D/R</th>
+          <th>Cr. No.</th>
           <th>D/O</th>
-          <th>Police Station</th>
-          <th>MPS Limit</th>
-          <th>Petitioner</th>
+          <th>D/R</th>
+          <th>PS Limit</th>
+          <th>IO</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -292,11 +355,16 @@
               {{ case.crime_number }}
             </a>
           </td>
-          <td>{{ case.date_of_receipt|date:"d-m-Y"}}</td>
-          <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
-          <td>{{ case.police_station }}</td>
-          <td>{{ case.mps_limit }}</td>
-          <td>{{ case.petitioner }}</td>
+          <td>{{ case.date_of_occurrence|date:"d-m-Y"}}</td>
+          <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
+          <td>{{ case.ps_limit }}</td>
+          <td>
+              {%if case.io|stringformat:"s"|length > 15 %}
+              {{ case.io|slice:":15" }}...
+              {% else %}
+                {{ case.io }}
+              {% endif %}
+            </td>
           <td>
             <a href="{% url 'maritimeact_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
             <a href="{% url 'maritimeact_delete' case.id %}" class="btn btn-sm btn-danger"
@@ -331,11 +399,7 @@
                 <td>${entry.csr_number}</td>
                 <td>${entry.date_of_receipt}</td>
                 <td>${entry.petitioner}</td>
-                <td>
-                  <a href="/csr/${entry.id}/download/" class="btn btn-sm btn-info" target="_blank">
-                    <i class="bi bi-download"></i> Download
-                  </a>
-                </td>
+                <td>${entry.io}</td>
                 <td>
                   <a href="/csr/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
                   <a href="/csr/${entry.id}/delete/" class="btn btn-sm btn-danger"
@@ -367,11 +431,11 @@
                 <td>${index + 1}</td>
                 <td> <a href="/bns194/${entry.id}/download/" class="text-decoration-none" target="_blank">${entry.crime_number}</a>
                 </td>
-                <td>${entry.date_of_receipt}</td>
                 <td>${entry.date_of_occurrence}</td>
-                <td>${entry.police_station}</td>
-                <td>${entry.mps_limit}</td>
-                <td>${entry.petitioner}</td>
+                <td>${entry.date_of_receipt}</td>
+                <td>${entry.ps_limit}</td>
+                <td>${entry.io}</td>
+                <td>${entry.transfered_to}</td>
                 <td>
                   <a href="/bnss-missing/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
                   <a href="/bnss-missing/${entry.id}/delete/" class="btn btn-sm btn-danger"
@@ -402,11 +466,11 @@
               <tr>
                 <td>${index + 1}</td>
                 <td> <a href="/bns194/${entry.id}/download/" class="text-decoration-none"  target="_blank">${entry.crime_number}</a></td>
-                <td>${entry.date_of_receipt}</td>
                 <td>${entry.date_of_occurrence}</td>
-                <td>${entry.police_station}</td>
-                <td>${entry.mps_limit}</td>
-                <td>${entry.petitioner}</td>
+                <td>${entry.date_of_receipt}</td>
+                <td>${entry.ps_limit}</td>
+                <td>${entry.io}</td>
+                <td>${entry.transfered_to}</td>
                 <td>
                   <a href="/bnss-missing/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
                   <a href="/bnss-missing/${entry.id}/delete/" class="btn btn-sm btn-danger"
@@ -437,11 +501,11 @@
               <tr>
                 <td>${index + 1}</td>
                 <td> <a href="/othercases/${entry.id}/download/" class="text-decoration-none" target="_blank">${entry.crime_number}</a></td>
-                <td>${entry.date_of_receipt}</td>
                 <td>${entry.date_of_occurrence}</td>
-                <td>${entry.police_station}</td>
-                <td>${entry.mps_limit}</td>
-                <td>${entry.petitioner}</td>
+                <td>${entry.date_of_receipt}</td>
+                <td>${entry.ps_limit}</td>
+                <td>${entry.io}</td>
+                <td>${entry.transfered_to}</td>
                 <td>
                   <a href="/othercases/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
                   <a href="/othercases/${entry.id}/delete/" class="btn btn-sm btn-danger"
@@ -466,18 +530,17 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8">No Maritime Act entries found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7">No Maritime Act entries found.</td></tr>';
         } else {
           data.forEach((entry, index) => {
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
                 <td> <a href="/maritimeact/${entry.id}/download/" class="text-decoration-none" target="_blank">${entry.crime_number}</a></td>
-                <td>${entry.date_of_receipt}</td>
                 <td>${entry.date_of_occurrence}</td>
-                <td>${entry.police_station}</td>
-                <td>${entry.mps_limit}</td>
-                <td>${entry.petitioner}</td>
+                <td>${entry.date_of_receipt}</td>
+                <td>${entry.ps_limit}</td>
+                <td>${entry.io}</td>
                 <td>
                   <a href="/maritimeact/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
                   <a href="/maritimeact/${entry.id}/delete/" class="btn btn-sm btn-danger"
