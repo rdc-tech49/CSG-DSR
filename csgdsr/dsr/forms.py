@@ -11,46 +11,49 @@ USER_CHOICES = [
     ('ADSP_Nagapattinam', 'ADSP_Nagapattinam'),('ADSP_Ramnad', 'ADSP_Ramnad'),
     ('DSP_Chennai', 'DSP_Chennai'),('DSP_Vedaranyam', 'DSP_Vedaranyam'),('DSP_Pattukottai', 'DSP_Pattukottai'),('DSP_Thoothukudi', 'DSP_Thoothukudi'),
     ('INS_Chennai', 'INSChennai'),('INS_Mahaballipuram', 'INS_Mahaballipuram'),('INS_Cuddalore', 'INS_Cuddalore'),('INS_Nagapattinam', 'INS_Nagapattinam'),('INS_Vedaranyam', 'INS_Vedaranyam'),('INS_Pattukottai', 'INS_Pattukottai'),('INS_Manamelkudi', 'INS_Manamelkudi'),('INS_Ramnad', 'INS_Ramnad'),('INS_Thoothukudi', 'INS_Thoothukudi'),('INS_Kanyakumari', 'INS_Kanyakumari'),
-    ('MARINA_MPS', 'MARINA_MPS'),('ERNAVUR_MPS', 'ERNAVUR_MPS'),('PAZHAVERKADU_MPS', 'PAZHAVERKADU_MPS'),
-    ('ARAMBAKKAM_MPS', 'ARAMBAKKAM_MPS'),
-    ('KOVALAM_MPS', 'KOVALAM_MPS'),
-    ('KALPAKKAM_MPS', 'KALPAKKAM_MPS'),
-    ('MUTHALIYARKUPPAM_MPS', 'MUTHALIYARKUPPAM_MPS'),
-    ('MARAKKANAM_MPS','MARAKKANAM_MPS'),
-    ('PUDUKUPPAM_MPS','PUDUKUPPAM_MPS'),
-    ('DEVANAMPATTINAM _MPS','DEVANAMPATTINAM_MPS'), 
-    ('PARANGIPETTAI_MPS','PARANGIPETTAI_MPS'),
-    ('PUDUPATTINAM_MPS','PUDUPATTINAM_MPS'),
-    ('THIRUMULLAIVASAL_MPS','THIRUMULLAIVASAL_MPS'), 
-    ('POOMBUHAR_MPS','POOMBUHAR_MPS'), 
-    ('THARANGAMBADI_MPS','THARANGAMBADI_MPS'), 
-    ('NAGAPATTINAM_MPS','NAGAPATTINAM_MPS'), 
-    ('VELANKANNI_MPS','VELANKANNI_MPS'), 
-    ('KEELAIYUR_MPS','KEELAIYUR_MPS'), 
-    ('VEDARANYAM_MPS','VEDARANYAM_MPS'), 
-    ('THERKUKADU_MPS','THERKUKADU_MPS'), 
-    ('ADHIRAMAPATTINAM_MPS','ADHIRAMAPATTINAM_MPS'), 
-    ('SETHUBAVACHATIRAM_MPS','SETHUBAVACHATIRAM_MPS'), 
-    ('MANAMELKUDI_MPS','MANAMELKUDI_MPS'), 
-    ('MIMISAL_MPS','MIMISAL_MPS'), 
-    ('THIRUPUNAVASAL_MPS','THIRUPUNAVASAL_MPS'), 
-    ('THONDI_MPS','THONDI_MPS'), 
-    ('DEVIPATTINAM_MPS','DEVIPATTINAM_MPS'), 
-    ('ATTRANKARAI_MPS','ATTRANKARAI_MPS'), 
-    ('MANDAPAM_MPS','MANDAPAM_MPS'), 
-    ('RAMESWARAM_MPS','RAMESWARAM_MPS'), 
-    ('PUDUMADAM_MPS','PUDUMADAM_MPS'), 
-    ('KEELAKARAI_MPS','KEELAKARAI_MPS'), 
-    ('VALINOKKAM_MPS','VALINOKKAM_MPS'),
-    ('VEMBAR_MPS','VEMBAR_MPS'),
-    ('THARUVAIKULAM_MPS','THARUVAIKULAM_MPS'),
-    ('MEENAVAR_COLONY_MPS','MEENAVAR_COLONY_MPS'),
-    ('THIRUCHENDUR_MPS','THIRUCHENDUR_MPS'),
-    ('KULASEKARAPATTINAM_MPS','KULASEKARAPATTINAM_MPS'),
-    ('UVARI_MPS','UVARI_MPS'),
-    ('KOODANKULAM_MPS','KOODANKULAM_MPS'),
-    ('KANNIYAKUMARI_MPS','KANNIYAKUMARI_MPS'),
-    ('COLACHEL_MPS','COLACHEL_MPS'),('CONTROL_ROOM', 'CONTROL_ROOM'),('TBS', 'TBS'),('SI_TECH', 'SI_TECH'),
+
+    ('Marina_MPS', 'Marina_MPS'),('Ernavur_MPS', 'Ernavur_MPS'),('Pazhaverkadu_MPS', 'Pazhaverkadu_MPS'),
+    ('Arambakkam_MPS', 'Arambakkam_MPS'),
+    ('Kovalam_MPS', 'Kovalam_MPS'),
+    ('Kalpakkam_MPS', 'Kalpakkam_MPS'),
+    ('Muthaliyarkuppam_MPS', 'Muthaliyarkuppam_MPS'),
+    ('Marakkanam_MPS','Marakkanam_MPS'),
+    ('Pudukuppam_MPS','Pudukuppam_MPS'),
+    ('Devanampattinam _MPS','Devanampattinam_MPS'), 
+    ('Parangipettai_MPS','Parangipettai_MPS'),
+    ('Pudupattinam_MPS','Pudupattinam_MPS'),
+    ('Thirumullaivasal_MPS','Thirumullaivasal_MPS'), 
+    ('Poombuhar_MPS','Poombuhar_MPS'), 
+    ('Tharangambadi_MPS','Tharangambadi_MPS'), 
+    ('Nagapattinam_MPS','Nagapattinam_MPS'), 
+    ('Velankanni_MPS','Velankanni_MPS'), 
+    ('Keelaiyur_MPS','Keelaiyur_MPS'), 
+    ('Vedaranyam_MPS','Vedaranyam_MPS'), 
+    ('Therkukadu_MPS','Therkukadu_MPS'), 
+    ('Adhiramapattinam_MPS','Adhiramapattinam_MPS'), 
+    ('Sethubavachatiram_MPS','Sethubavachatiram_MPS'), 
+    ('Manamelkudi_MPS','Manamelkudi_MPS'), 
+    ('Mimisal_MPS','Mimisal_MPS'), 
+    ('Thirupunavasal_MPS','Thirupunavasal_MPS'), 
+    ('Thondi_MPS','Thondi_MPS'), 
+    ('Devipattinam_MPS','Devipattinam_MPS'), 
+    ('Attrankarai_MPS','Attrankarai_MPS'), 
+    ('Mandapam_MPS','Mandapam_MPS'), 
+    ('Rameswaram_MPS','Rameswaram_MPS'), 
+    ('Pudumadam_MPS','Pudumadam_MPS'), 
+    ('Keelakarai_MPS','Keelakarai_MPS'), 
+    ('Valinokkam_MPS','Valinokkam_MPS'),
+    ('Vembar_MPS','Vembar_MPS'),
+    ('Tharuvaikulam_MPS','Tharuvaikulam_MPS'),
+    ('Meenavar_Colony_MPS','Meenavar_Colony_MPS'),
+    ('Thiruchendur_MPS','Thiruchendur_MPS'),
+    ('Kulasekarapattinam_MPS','Kulasekarapattinam_MPS'),
+    ('Uvari_MPS','Uvari_MPS'),
+    ('Koodankulam_MPS','Koodankulam_MPS'),
+    ('Kanniyakumari_MPS','Kanniyakumari_MPS'),
+    ('Colachel_MPS','Colachel_MPS'),('Control_Room', 'Control_Room'),('TBS_SI', 'TBS_SI'),('SI_Tech', 'SI_Tech'),
+
+
 ]
 
 
@@ -61,14 +64,14 @@ class CustomSignupForm(forms.ModelForm):
     username = forms.ChoiceField(choices=USER_CHOICES, widget=forms.Select(attrs={"class": "form-select"}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-control"}))
     role = forms.ChoiceField(
-        choices=[('', 'Select Role')] + User.ROLE_CHOICES,
+        choices=[('', 'Select Role')] + CustomUser.ROLE_CHOICES,
         widget=forms.Select(attrs={"class": "form-select"})
     )
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={"class": "form-control"}))
     password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput(attrs={"class": "form-control"}))
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ['username', 'email', 'role']
 
     def clean(self):
@@ -83,11 +86,22 @@ class CustomSignupForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        
+        # Set password
         user.set_password(self.cleaned_data["password1"])
+        
+        # Assign superuser/staff based on role
+        if self.cleaned_data["role"] == "Admin":
+            user.is_superuser = True
+            user.is_staff = True
+        else:
+            user.is_superuser = False
+            user.is_staff = False
+
         if commit:
             user.save()
         return user
-      
+        
 class UpdateUserForm(forms.ModelForm):
     class Meta:
         model = User
@@ -306,12 +320,14 @@ class MaritimeActForm(forms.ModelForm):
     transfered_to = forms.ModelChoiceField(
         queryset=Other_Agencies.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        empty_label="Select Transfered to Agency"
+        empty_label="Select Transfered to Agency",
+        required=False
     )
     io = forms.ModelChoiceField(
         queryset=Officer.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        empty_label="Select Investigation Officer"
+        empty_label="Select Investigation Officer",
+        
     )
 
     class Meta:

@@ -565,7 +565,7 @@ def vehicle_check_form_view(request):
 #submitted forms summary views
 @login_required
 def cases_registered_summary_view(request):
-    csr_list = CSR.objects.filter(user=request.user).order_by('-date_of_receipt')
+    csr_list = CSR.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_receipt')
     bnss_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='194 BNSS').order_by('-date_of_receipt')
     missing_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='Missing').order_by('-date_of_receipt')
     other_cases = OtherCases.objects.filter(user=request.user).order_by('-date_of_receipt')
@@ -581,6 +581,7 @@ def cases_registered_summary_view(request):
     })
 
 #search for csr
+
 @login_required
 def csr_ajax_search_view(request):
     query = request.GET.get('q', '').strip()
@@ -590,19 +591,20 @@ def csr_ajax_search_view(request):
         csr_list = csr_list.filter(
             Q(csr_number__icontains=query) |
             Q(petitioner__icontains=query) |
-            Q(io_icontains=query) 
+            Q(io__name__icontains=query)  # Correct filter for Officer name
         )
 
     data = [
         {
             'id': csr.id,
             'csr_number': csr.csr_number,
-            'date_of_receipt': csr.date_of_receipt.strftime('%Y-%m-%d'),
+            'date_of_receipt': csr.date_of_receipt.strftime('%d-%m-%Y'),
             'petitioner': csr.petitioner,
-            'io': csr.io,
+            'io': str(csr.io) if csr.io else '',  # Displays "Rank - Name"
         }
         for csr in csr_list
     ]
+    
     return JsonResponse(data, safe=False)
 
 #bnss search
@@ -616,9 +618,9 @@ def bnss194_cases_ajax_search_view(request):
             Q(crime_number__icontains=query) |
             Q(date_of_occurrence__icontains=query) |
             Q(date_of_receipt__icontains=query) |
-            Q(ps_limit__icontains=query) |
-            Q(io__icontains=query) |
-            Q(transfered_to__icontains=query)
+            Q(ps_limit__name__icontains=query) |  # Assuming PS model has station_name field
+            Q(io__name__icontains=query) |
+            Q(transfered_to__agency_name__icontains=query)
         )
 
     data = [
@@ -627,9 +629,9 @@ def bnss194_cases_ajax_search_view(request):
             'crime_number': case.crime_number,
             'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
             'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'ps_limit': case.ps_limit,
-            'io': case.io,
-            'transfered_to': case.transfered_to,
+            'ps_limit': str(case.ps_limit) if case.ps_limit else '',
+            'io': str(case.io) if case.io else '',
+            'transfered_to': str(case.transfered_to) if case.transfered_to else '',
         }
         for case in cases
     ]
@@ -646,9 +648,9 @@ def missing_ajax_search_view(request):
             Q(crime_number__icontains=query) |
             Q(date_of_occurrence__icontains=query) |
             Q(date_of_receipt__icontains=query) |
-            Q(ps_limit__icontains=query) |
-            Q(io__icontains=query) |
-            Q(transfered_to__icontains=query)
+            Q(ps_limit__name__icontains=query) |
+            Q(io__name__icontains=query) |
+            Q(transfered_to__agency_name__icontains=query)
         )
 
     data = [
@@ -657,9 +659,9 @@ def missing_ajax_search_view(request):
             'crime_number': case.crime_number,
             'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
             'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'ps_limit': case.ps_limit,
-            'io': case.io,
-            'transfered_to': case.transfered_to,
+            'ps_limit': case.ps_limit.name if case.ps_limit else '',
+            'io': str(case.io) if case.io else '',
+            'transfered_to': str(case.transfered_to) if case.transfered_to else '-',
         }
         for case in cases
     ]
@@ -676,9 +678,9 @@ def othercases_ajax_search_view(request):
             Q(crime_number__icontains=query) |
             Q(date_of_occurrence__icontains=query) |
             Q(date_of_receipt__icontains=query) |
-            Q(ps_limit__icontains=query) |
-            Q(io__icontains=query) |
-            Q(transfered_to__icontains=query)
+            Q(ps_limit__name__icontains=query) |
+            Q(io__name__icontains=query) |
+            Q(transfered_to__agency_name__icontains=query)
         )
 
     data = [
@@ -687,9 +689,9 @@ def othercases_ajax_search_view(request):
             'crime_number': case.crime_number,
             'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
             'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'ps_limit': case.ps_limit,
-            'io': case.io,
-            'transfered_to': case.transfered_to,
+            'ps_limit': case.ps_limit.name if case.ps_limit else '',
+            'io': str(case.io) if case.io else '',
+            'transfered_to': str(case.transfered_to) if case.transfered_to else '-',
         }
         for case in cases
     ]
@@ -706,9 +708,9 @@ def maritimeact_ajax_search_view(request):
             Q(crime_number__icontains=query) |
             Q(date_of_occurrence__icontains=query) |
             Q(date_of_receipt__icontains=query) |
-            Q(ps_limit__icontains=query) |
-            Q(io__icontains=query) |
-            Q(transfered_to__icontains=query)
+            Q(ps_limit__name__icontains=query) |
+            Q(io__name__icontains=query) |
+            Q(transfered_to__agency_name__icontains=query)
             
         )
 
@@ -718,9 +720,9 @@ def maritimeact_ajax_search_view(request):
             'crime_number': case.crime_number,
             'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
             'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'ps_limit': case.ps_limit,
-            'io': case.io,
-            'transfered_to': case.transfered_to,
+            'ps_limit': case.ps_limit.name if case.ps_limit else '',
+            'io': str(case.io) if case.io else '',
+            'transfered_to': str(case.transfered_to) if case.transfered_to else '-',
         }
         for case in cases
     ]
