@@ -122,6 +122,7 @@ urlpatterns = [
     #submitted forms summary
     #cases_registered_summary
     path('cases-summary/', views.cases_registered_summary_view, name='cases_summary'),
+    path('rescue_seizure_summary/', views.rescue_beach_summary_view, name='rescue_seizure_summary'),
 
     #csr_summary
     path('csr/<int:pk>/download/', views.csr_download_view, name='csr_download'),
@@ -155,8 +156,18 @@ urlpatterns = [
     path('maritimeact/<int:pk>/edit/', views.maritimeact_edit_view, name='maritimeact_edit'),
     path('maritimeact/<int:pk>/delete/', views.maritimeact_delete_view, name='maritimeact_delete'),
     
-    #rescue_seizure_summary
-    path('rescue_seizure_summary/', views.rescue_seizure_summary_view, name='rescue_seizure_summary'),
+    #rescue_summary
+    path('rescue_at_beach/ajax-search/rescueb/', views.rescue_at_beach_ajax_search_view, name='rescue_beach_ajax_search'),
+    path('rescue_at_beach/export-word/', views.rescue_at_beach_export_word_view, name='rescue_beach_export_word'),
+    path('rescue_at_beach/<int:pk>/download/', views.rescue_at_beach_download_view, name='rescue_beach_download'),
+    path('rescue_at_beach/<int:pk>/edit/', views.rescue_at_beach_edit_view, name='rescue_beach_edit'),
+    path('rescue_at_beach/<int:pk>/delete/', views.rescue_at_beach_delete_view, name='rescue_at_beach_delete'),
+    
+
+
+
+
+
     #forecast_summary
     path('forecast_summary/', views.forecast_summary_view, name='forecast_summary'),
     #fishermen_attack_arrest_summary

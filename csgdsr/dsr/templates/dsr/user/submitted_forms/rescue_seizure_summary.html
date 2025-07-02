@@ -1,0 +1,117 @@
+{% extends 'dsr/user/user_page.html' %}
+{% load static %}
+{% block usercontent %}
+{% if messages %}
+  <div id="message-container">
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+<div class="container mt-4">
+  <h3 class="mb-4">Rescue At Beach Records</h3>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="rescueb-search" class="form-control" placeholder="Search by Date / Place / Number of Victims">
+    </div>
+    <div class="col-md-3">
+      <button id="clear-rescueb-search" class="btn btn-secondary w-100">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'rescue_beach_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
+  </div>
+  <!-- Table container -->
+  <div class="table-responsive" id="csr-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-striped align-middle text-center" id="rescueb-table">
+      <thead class="table-dark">
+        <tr>
+          <th>S. No</th>
+          <th>Date of Rescue</th>
+          <th>Place of Rescue</th>
+          <th>Number of Victims Rescued</th>
+          <th>View</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="rescueb-table-body">
+        {% for record in rescue_records %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <a href="{% url 'rescue_beach_download' record.id %}" class= "text-decoration-none" target="_blank">
+              {{ record.date_of_rescue|date:"d-m-Y" }}
+            </td>
+            <td>{{ record.place_of_rescue }}</td>
+            <td>{{ record.number_of_victims }}</td>
+            <td>
+              {% if record.rescue_beach_image %}
+                <a href="{{ record.rescue_beach_image.url }}" download>Download</a>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'rescue_beach_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <a href="{% url 'rescue_at_beach_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center">No records found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% comment %} script for search Rescue at Beach   {% endcomment %}
+<script>
+  document.getElementById('clear-rescueb-search').addEventListener('click', function () {
+    location.reload();
+  });
+
+  document.getElementById('rescueb-search').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/rescue_at_beach/ajax-search/rescueb/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('rescueb-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6">No Rescue entries found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td><a href="/rescueb/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_rescue}</a></td>
+                <td>${entry.place_of_rescue}</td>
+                <td>${entry.number_of_victims}</td>
+                <td><a href="{{ entry.rescue_beach_image.url }}" download>Download</a></td>
+                <td>
+                  <a href="/maritimeact/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/maritimeact/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                </td>
+              </tr>`;
+          });
+        }
+      });
+  });
+
+
+</script>
+
+
+  
+{% endblock %}

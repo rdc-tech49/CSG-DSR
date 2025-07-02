@@ -3,9 +3,9 @@ from django.http import HttpResponse
 from docx import Document
 from docx.shared import Inches
 from django import forms
-from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser, SeizedItemCategory, PS
+from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser, SeizedItemCategory, PS, RescueAtBeach
 
-from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm,PSForm
+from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm,PSForm, RescueAtBeachForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -347,8 +347,7 @@ def tnfishermen_arrest_choices_form_view(request):
 def arrest_of_sl_fishermen_choices_form_view(request):
     return HttpResponse("<h2>Arrest of SL Fishermen - Form: No page created yet.</h2>")
 
-def rescue_at_beach_form_view(request):
-    return HttpResponse("<h2>Rescue at Beach - Form: No page created yet.</h2>")
+
 
 def rescue_at_sea_form_view(request):
     return HttpResponse("<h2>Rescue at Sea - Form: No page created yet.</h2>")
@@ -438,7 +437,7 @@ def forms_view(request):
         {"title": "Missing", "url_name": "bnss_missing_form", "icon": "bi-person-dash", "color": "#dc3545"},
         {"title": "Maritime Act", "url_name": "maritimeact_form", "icon": "bi-globe", "color": "#20c997"},
         {"title": "Other Cases", "url_name": "othercases_form", "icon": "bi-briefcase", "color": "#6f42c1"},
-        {"title": "Rescue", "url_name": "rescue_at_beach_form", "icon": "bi-life-preserver", "color": "#fd7e14"},
+        {"title": "Beach Rescue", "url_name": "rescue_at_beach_form", "icon": "bi-life-preserver", "color": "#fd7e14"},
         {"title": "Seizure", "url_name": "seizure_form", "icon": "bi-shield-check", "color": "#198754"},
         {"title": "Forecast", "url_name": "forecast_form", "icon": "bi-cloud-sun", "color": "#0dcaf0"},
         {"title": "Attack on TN Fishermen", "url_name": "attack_on_tnfishermen_form", "icon": "bi-person-x", "color": "#ffc107"},
@@ -516,7 +515,31 @@ def maritimeact_form_view(request):
     
     return render(request, 'dsr/user/forms/maritimeact_form.html', {'form': form})
 
+@login_required
+def rescue_at_beach_form_view(request, record_id=None):
+    record = get_object_or_404(RescueAtBeach, id=record_id) if record_id else None
 
+    if request.method == 'POST':
+        form = RescueAtBeachForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            rescue_record = form.save(commit=False)
+            rescue_record.user = request.user  # Track logged-in user
+            rescue_record.save()
+            if record:
+                messages.success(request, "Rescue details updated successfully.")
+            else:
+                messages.success(request, "Rescue details submitted successfully.")
+            return redirect('rescue_seizure_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = RescueAtBeachForm(instance=record)
+
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/rescuebeach_form.html', context)
 
 @login_required
 def rescue_form_view(request):
@@ -578,6 +601,15 @@ def cases_registered_summary_view(request):
         'other_cases': other_cases,
         'maritime_cases': maritime_cases,
 
+    })
+
+#rescue at beach summary view
+@login_required
+def rescue_beach_summary_view(request):
+    rescue_records = RescueAtBeach.objects.order_by('-date_of_rescue')
+    
+    return render(request, 'dsr/user/submitted_forms/rescue_seizure_summary.html', {
+        'rescue_records': rescue_records,
     })
 
 #search for csr
@@ -727,6 +759,32 @@ def maritimeact_ajax_search_view(request):
         for case in cases
     ]
     return JsonResponse(data, safe=False)
+
+#search for rescue at beach cases
+@login_required
+def rescue_at_beach_ajax_search_view(request):
+    query = request.GET.get('q', '').strip()
+    cases = RescueAtBeach.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(date_of_rescue__icontains=query) |
+            Q(place_of_rescue__icontains=query) |
+            Q(number_of_victims__icontains=query)
+        )
+
+    data = [
+        {
+            
+            'date_of_rescue': case.date_of_rescue.strftime('%d-%m-%Y %H%Mhrs'),
+            'place_of_rescue': case.place_of_rescue,
+            'number_of_victims': case.number_of_victims,
+            
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
 
 #exprt CSR to Word document
 @login_required
@@ -919,6 +977,41 @@ def maritimeact_export_word_view(request):
     doc.save(response)
     return response
 
+#export rescue at beach cases to Word document
+@login_required
+def rescue_at_beach_export_word_view(request):
+    rescueb_events = RescueAtBeach.objects.filter(user=request.user).order_by('date_of_receipt')
+    doc = Document()
+
+    for case in rescueb_events:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        # Fields to include in the Word document
+        fields = [
+            
+            ("Police Station Limit", case.ps_limit),  # Directly use it as string
+            ("MPS Limit", case.mps_limit),
+            ("Date of Rescue", case.date_of_rescue.strftime('%Y-%m-%d %H:%M') if case.date_of_rescue else ''),
+            ("Place of Rescue", case.place_of_rescue),
+            ("Number of Persons Rescued", case.number_of_victims)
+            ("Victim Details", case.victim_name),
+            ("Rescuer Names", case.rescuer_name if case.rescuer_name else ''),
+            ("Gist of Rescue", case.gist_of_rescue)
+            
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()  # Second empty line
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Rescue_at_Beach.docx"'
+    doc.save(response)
+    return response
 
 #export individual CSR
 @login_required
@@ -1074,6 +1167,40 @@ def maritimeact_download_view(request, pk):
     doc.save(response)
     return response
 
+#export individual rescue at beach case
+@login_required
+def rescue_at_beach_download_view(request, pk):
+    case = get_object_or_404(RescueAtBeach, pk=pk, user=request.user)
+
+    doc = Document()
+    doc.add_heading('Rescue at Beach Details', level=1)
+
+    # Create table with two columns
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    # Add data
+    add_row('Police Station Limit', case.ps_limit)
+    add_row('MPS Limit', case.mps_limit)
+    add_row('Date of Rescue', case.date_of_rescue.strftime('%d-%m-%Y %H:%M') if case.date_of_rescue else '')
+    add_row('Place of Rescue', case.place_of_rescue)
+    add_row('Number of Persons Rescued', case.number_of_victims)
+    add_row('Victim Details', case.victim_name)
+    add_row('Rescuer Names', case.rescuer_name if case.rescuer_name else '')
+    add_row('Gist of Rescue', case.gist_of_rescue)
+
+    # Prepare response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"Rescue_at_Beach_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
 # CSR edit view
 @login_required
 def csr_edit_view(request, pk):
@@ -1132,6 +1259,21 @@ def maritimeact_edit_view(request, pk):
 
     return render(request, 'dsr/user/forms/maritimeact_form.html', {'form': form, 'edit_mode': True})
 
+# Rescue at Beach edit view
+@login_required
+def rescue_at_beach_edit_view(request, pk):
+    rescue_case = get_object_or_404(RescueAtBeach, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = RescueAtBeachForm(request.POST, request.FILES, instance=rescue_case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Rescue at Beach entry updated successfully!')
+            return redirect('rescue_seizure_summary')
+    else:
+        form = RescueAtBeachForm(instance=rescue_case)
+
+    return render(request, 'dsr/user/forms/rescuebeach_form.html', {'form': form, 'edit_mode': True})
+
 #CSR delete view
 @login_required
 def csr_delete_view(request, pk):
@@ -1163,10 +1305,15 @@ def maritimeact_delete_view(request, pk):
     messages.success(request, 'Maritime Act case entry deleted successfully!')
     return redirect('cases_summary')
 
-
+# Rescue at Beach delete view
 @login_required
-def rescue_seizure_summary_view(request):
-    return render(request, 'dsr/user/submitted_forms/rescue_seizure_summary.html')
+def rescue_at_beach_delete_view(request, pk):
+    rescue_case = get_object_or_404(RescueAtBeach, pk=pk, user=request.user)
+    rescue_case.delete()
+    messages.success(request, 'Rescue at Beach entry deleted successfully!')
+    return redirect('rescue_seizure_summary')
+
+
 
 @login_required
 def forecast_summary_view(request):
