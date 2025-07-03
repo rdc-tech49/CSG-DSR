@@ -1,0 +1,313 @@
+{% extends 'dsr/user/user_page.html' %}
+{% load static %}
+{% block usercontent %}
+{% if messages %}
+  <div id="message-container">
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="container mt-4">
+  <h3>Attack on TN Fishermen</h3>
+  <a href="{% url 'attack_tnfishermen_form' %}" class="btn btn-success mb-3">Add New</a>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="attack-search" class="form-control" placeholder="Search by Date / Place / District">
+    </div>
+    <div class="col-md-3">
+      <button id="clear-attack-search" class="btn btn-secondary w-100"><i class="bi bi-x-circle"></i>Clear</button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'tnfishermen_attack_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
+  </div>
+  <!-- Table container -->
+    <div class="table-responsive" id="tnfishermenattack-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+      <table class="table table-striped table-bordered align-middle text-center" id="tnfishermenattack-table">
+        <thead class="table-dark">
+          <tr>
+            <th>S.No</th>
+            <th>Date of Attack</th>
+            <th>Place</th>
+            <th>Attacked By</th>
+            <th>Injured</th>
+            <th>Missing</th>
+            <th>Died</th>
+            <th>District</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="attack-table-body">
+          {% for record in attacks %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ record.date_of_attack|date:"d-m-Y H:i" }}</td>
+            <td>
+              <a href="{% url 'tnfishermen_attack_download' record.id %}" class= "text-decoration-none" target="_blank">
+                  {{ record.place_of_attack }}
+                </a>
+            </td>
+            <td>{{ record.attacked_by }}</td>
+            <td>{{ record.number_of_TNFishermen_injured }}</td>
+            <td>{{ record.number_of_TNFishermen_missing|default:"-" }}</td>
+            <td>{{ record.number_of_TNFishermen_died|default:"-" }}</td>
+            <td>{{ record.district }}</td>
+            <td>
+              <a href="{% url 'tnfishermen_attack_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <a href="{% url 'tnfishermen_attack_delete' record.id %}" class="btn btn-sm btn-danger"
+                onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="9" class="text-center">No records found.</td></tr>
+          {% endfor %} 
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% comment %} arrest of fishermen summary  {% endcomment %}
+  <h3 class="mt-5">Arrest of TN Fishermen</h3>
+  <a href="{% url 'arrest_tnfishermen_form' %}" class="btn btn-success mb-3">Add New</a>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="tnarrest-search" class="form-control" placeholder="Search by Date / Place / District ">
+    </div>
+    <div class="col-md-3">
+      <button id="clear-tnarrest-search" class="btn btn-secondary w-100"><i class="bi bi-x-circle"></i>Clear</button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'tnfishermen_arrest_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
+  </div>
+
+  <!-- Table container -->
+  <div class="table-responsive" id="bnss194_table-wrapper" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Date</th>
+          <th>Place</th>
+          <th>Fishermen Arrested</th>
+          <th>Boats Seized</th>
+          <th>Fishermen Released</th>
+          <th>Boats Released</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="tnarrest-table-body">
+        {% for record in tn_arrests %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ record.date_of_arrest|date:"d-m-Y H:i" }}</td>
+          <td>{{ record.place_of_arrest }}</td>
+          
+          <td>{{ record.number_of_TNFishermen_arrested }}</td>
+          <td>{{ record.no_of_boats_seized|default:"-" }}</td>
+          
+          
+          <td>{{ record.number_of_TNFishermen_released|default:"-" }}</td>
+          <td>{{ record.no_of_boats_released|default:"-" }}</td>
+          <td>
+            <a href="{% url 'tnfishermen_arrest_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+            <a href="{% url 'tnfishermen_arrest_delete' record.id %}" class="btn btn-sm btn-danger"
+              onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center">No records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="mt-5">Arrest of SL Fishermen</h3>
+  <a href="{% url 'arrest_slfishermen_form' %}" class="btn btn-success mb-3">Add New</a>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="slarrest-search" class="form-control" placeholder="Search by Date / Place ">
+    </div>
+    <div class="col-md-3">
+      <button id="clear-slarrest-search" class="btn btn-secondary w-100"><i class="bi bi-x-circle"></i>Clear</button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'slfishermen_arrest_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
+  </div>
+
+  <!-- Table container -->
+  <div class="table-responsive" id="slarrest-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-striped table-bordered align-middle text-center" id="slarrest-table">
+      <thead class="table-dark">
+        <tr>
+          <th>S.No</th>
+          <th>Date of Arrest</th>
+          <th>Place</th>
+          <th>Arrested by</th>
+          <th>Fishermen Arrested</th>
+          <th>Boats Seized</th>
+          <th>Fisheremen Released</th>
+          <th>Boats Released</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="slarrest-table-body">
+        
+        {% for record in sl_arrests %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ record.date_of_arrest|date:"d-m-Y H:i" }}</td>
+          <td>{{ record.place_of_arrest }}</td>
+          <td>{{ record.arrested_by }}</td>
+          <td>{{ record.number_of_SLFishermen_arrested }}</td>
+          <td>{{ record.no_of_boats_seized|default:"-" }}</td>
+          <td>{{ record.number_of_SLFishermen_released|default:"-" }}</td>
+          <td>{{ record.no_of_boats_released|default:"-" }}</td>
+          <td>
+            <a href="{% url 'slfishermen_arrest_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+            <a href="{% url 'slfishermen_arrest_delete' record.id %}" class="btn btn-sm btn-danger"
+              onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center">No records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% comment %} script for search tn fishermen attack functionality {% endcomment %}
+<script>
+  document.getElementById('clear-attack-search').addEventListener('click', function () {
+    location.reload();
+  });
+
+  document.getElementById('attack-search').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/tnfishermen_attack/ajax-search/tnfishermen_attack/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('attack-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9">No records found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${entry.date_of_attack}</td>
+                <td>${entry.place_of_attack}</td>
+                <td>${entry.attacked_by}</td>
+                <td>${entry.number_of_TNFishermen_injured}</td>
+                <td>${entry.number_of_TNFishermen_missing ?? '-'}</td>
+                <td>${entry.number_of_TNFishermen_died ?? '-'}</td>
+                <td>${entry.district}</td>
+                <td>
+                  <a href="/tnfishermen_attack/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/tnfishermen_attack/${entry.id}/delete/" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</a>
+                </td>
+              </tr>
+            `;
+          });
+        }
+      });
+  });
+</script>
+
+{% comment %} search for tn fishermen arrest functionality  {% endcomment %}
+<script>
+  document.getElementById('clear-tnarrest-search').addEventListener('click', function () {
+    location.reload();
+  });
+
+  document.getElementById('tnarrest-search').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/tnfishermen_arrest/ajax-search/tnfishermen_arrest/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('tnarrest-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="10">No records found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${entry.date_of_arrest}</td>
+                <td>${entry.place_of_arrest}</td>
+                <td>${entry.arrested_by}</td>
+                <td>${entry.number_of_TNFishermen_arrested}</td>
+                <td>${entry.no_of_boats_seized ?? '-'}</td>
+                <td>${entry.district}</td>
+                <td>${entry.number_of_TNFishermen_released ?? '-'}</td>
+                <td>${entry.no_of_boats_released ?? '-'}</td>
+                <td>
+                  <a href="/tnfishermen_arrest/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/tnfishermen_arrest/${entry.id}/delete/" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</a>
+                </td>
+              </tr>
+            `;
+          });
+        }
+      });
+  });
+</script>
+{% comment %} search for sl fishermen arrest functionality  {% endcomment %}
+<script>
+  document.getElementById('clear-slarrest-search').addEventListener('click', function () {
+    location.reload();
+  });
+
+  document.getElementById('slarrest-search').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/slfishermen_arrest/ajax-search/slfishermen_arrest/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('slarrest-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9">No records found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${entry.date_of_arrest}</td>
+                <td>${entry.place_of_arrest}</td>
+                <td>${entry.arrested_by}</td>
+                <td>${entry.number_of_SLFishermen_arrested}</td>
+                <td>${entry.no_of_boats_seized ?? '-'}</td>
+                <td>${entry.number_of_SLFishermen_released ?? '-'}</td>
+                <td>${entry.no_of_boats_released ?? '-'}</td>
+                <td>
+                  <a href="/slfishermen_arrest/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/slfishermen_arrest/${entry.id}/delete/" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</a>
+                </td>
+              </tr>
+            `;
+          });
+        }
+      });
+  });
+</script>
+
+{% endblock %}

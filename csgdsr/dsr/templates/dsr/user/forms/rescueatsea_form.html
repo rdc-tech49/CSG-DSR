@@ -1,0 +1,91 @@
+{% extends 'dsr/user/user_page.html' %}
+{% load static %}
+{% block usercontent %}
+<div class="container mt-4">
+  <h2 class="mb-4">{% if edit_mode %}Edit Rescue at Beach Details {% else %}Rescue at Beach Form{% endif %}</h2>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" novalidate  enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="{{ form.mps_limit.id_for_label }}" class="form-label">MPS Limit</label>
+        {{ form.mps_limit }}
+        {% for error in form.mps_limit.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="{{ form.date_of_rescue.id_for_label }}" class="form-label">Date of Rescue</label>
+        {{ form.date_of_rescue }}
+        {% for error in form.date_of_rescue.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-6">
+        <label for="{{ form.place_of_rescue.id_for_label }}" class="form-label">Place of Rescue</label>
+        {{ form.place_of_rescue }}
+        {% for error in form.place_of_rescue.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="mb-3 col-md-6">
+        <label for="{{ form.number_of_victims.id_for_label }}" class="form-label">Number of Victims Rescued</label>
+        {{ form.number_of_victims }}
+        {% for error in form.number_of_victims.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="mb-3 col-md-6">
+        <label for="{{ form.victim_name.id_for_label }}" class="form-label">Victim Names</label>
+        {{ form.victim_name }}
+        {% for error in form.victim_name.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="mb-3 col-md-6">
+        <label for="{{ form.number_of_boats_rescued.id_for_label }}" class="form-label">Number of Boats Rescued</label>
+        {{ form.number_of_boats_rescued }}
+        {% for error in form.number_of_boats_rescued.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3 col-md-6">
+        <label for="{{ form.rescuer_name.id_for_label }}" class="form-label">Rescuer Name</label>
+        {{ form.rescuer_name }}
+        {% for error in form.rescuer_name.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="{{ form.gist_of_rescue.id_for_label }}" class="form-label">Gist of Rescue</label>
+      {{ form.gist_of_rescue }}
+      {% for error in form.gist_of_rescue.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+      {% endfor %}
+    </div>
+    <div class="mb-3">
+      <label for="{{ form.rescue_sea_image.id_for_label }}" class="form-label">Rescue Beach Image (Optional)</label>
+      {{ form.rescue_sea_image }}
+      {% for error in form.rescue_sea_image.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+      {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+
+{% endblock %}

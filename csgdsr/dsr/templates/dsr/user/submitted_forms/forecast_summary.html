@@ -1,0 +1,107 @@
+{% extends 'dsr/user/user_page.html' %}
+{% load static %}
+{% block usercontent %}
+{% if messages %}
+  <div id="message-container">
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="container mt-4">
+  <h2 class="mb-4">Forecast Summary</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="forecast-search" class="form-control" placeholder="Search by Date / Place / Details">
+    </div>
+    <div class="col-md-3">
+      <button id="clear-forecast-search" class="btn btn-secondary w-100">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'forecast_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
+  </div>
+
+  <!-- Table container -->
+  <div class="table-responsive" id="forecast-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-striped align-middle text-center" id="forecast-table">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Date of Forecast</th>
+          <th>Place of Forecast</th>
+          <th>Forecast Details</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="forecast-table-body">
+        {% for record in forecast_records %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ record.date_of_forecast }}</td>
+            <td>
+              <a href="{% url 'forecast_download' record.id %}" class= "text-decoration-none" target="_blank">
+              {{ record.place_of_forecast }}</td>
+            <td>{{ record.forecast_details }}</td>
+            <td>
+              <a href="{% url 'forecast_edit' record.pk %}" class="btn btn-primary btn-sm">Edit</a>
+              <a href="{% url 'forecast_delete' record.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">No records found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% comment %} SEARCH FOR FORECAST RECORDS {% endcomment %}
+<script>
+  document.getElementById('clear-forecast-search').addEventListener('click', function () {
+    location.reload();
+  });
+  document.getElementById('forecast-search').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/forecast/ajax-search/forecast/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('forecast-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5">No Forecast entries found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td> ${entry.date_of_forecast}</a></td>
+                <td><a href="/forecast/${entry.id}/download/" class="text-decoration-none" target="_blank">${entry.place_of_forecast}</td>
+                <td>
+                  ${entry.forecast_details}
+                </td>
+                <td>
+                  <a href="/forecast_edit/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/forecast_delete/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                    onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                </td>
+              </tr>`;
+          });
+
+        }
+      });
+  });
+</script> 
+{% endblock %}

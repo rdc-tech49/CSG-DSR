@@ -92,12 +92,15 @@ urlpatterns = [
     path('seizure_form/', views.seizure_form_view, name='seizure_form'),
     #forecast 
     path('forecast_form/', views.forecast_form_view, name='forecast_form'),
-    #attack on TN fishermen 
-    path('attack_on_tnfishermen/', views.attack_on_tnfishermen_view, name='attack_on_tnfishermen_form'),
-    #TN fishermen_arrest
-    path('tnfishermen_arrest_form/', views.tnfishermen_arrest_form_view, name='tnfishermen_arrest_form'),
-    #Arrest Of SL Fishermen
-    path('arrest_of_sl_fishermen_form/', views.arrest_of_sl_fishermen_form_view, name='arrest_of_sl_fishermen_form'),
+    #Fishermen Attack Arrest
+    path('attack_tnfishermen_form/', views.attack_tnfishermen_form, name='attack_tnfishermen_form'),
+    path('arrest_tnfishermen_form/', views.arrest_tnfishermen_form, name='arrest_tnfishermen_form'),
+    path('arrest_slfishermen_form/', views.arrest_slfishermen_form, name='arrest_slfishermen_form'),
+
+
+
+
+
     #On Road Vehicle Status
     path('onroad_vehicle_status_form/', views.onroad_vehicle_status_form_view, name='onroad_vehicle_status_form'),
     #On Water Vehicle  Status
@@ -123,6 +126,8 @@ urlpatterns = [
     #cases_registered_summary
     path('cases-summary/', views.cases_registered_summary_view, name='cases_summary'),
     path('rescue_seizure_summary/', views.rescue_beach_summary_view, name='rescue_seizure_summary'),
+    path('forecast_summary/', views.forecast_summary_view, name='forecast_summary'),
+    path('fishermen_attack_arrest_summary/', views.fishermen_attack_arrest_summary, name='fishermen_attack_arrest_summary'),
 
     #csr_summary
     path('csr/<int:pk>/download/', views.csr_download_view, name='csr_download'),
@@ -163,15 +168,49 @@ urlpatterns = [
     path('rescue_at_beach/<int:pk>/edit/', views.rescue_at_beach_edit_view, name='rescue_beach_edit'),
     path('rescue_at_beach/<int:pk>/delete/', views.rescue_at_beach_delete_view, name='rescue_at_beach_delete'),
     
+    #rescue_at_sea_summary
+    path('rescue_at_sea/ajax-search/rescue_sea/', views.rescue_at_sea_ajax_search_view, name='rescue_sea_ajax_search'),
+    path('rescue_at_sea/export-word/', views.rescue_at_sea_export_word_view, name='rescue_sea_export_word'),
+    path('rescue_at_sea/<int:pk>/download/', views.rescue_at_sea_download_view, name='rescue_sea_download'),
+    path('rescue_at_sea/<int:pk>/edit/', views.rescue_at_sea_edit_view, name='rescue_sea_edit'),
+    path('rescue_at_sea/<int:pk>/delete/', views.rescue_at_sea_delete_view, name='rescue_sea_delete'),
 
-
-
-
+    #seizure_summary
+    path('seizure/ajax-search/seizure/', views.seizure_ajax_search_view, name='seizure_ajax_search'),
+    path('seizure/export-word/', views.seizure_export_word_view, name='seizure_export_word'),
+    path('seizure/<int:pk>/download/', views.seizure_download_view, name='seizure_download'),
+    path('seizure/<int:pk>/edit/', views.seizure_edit_view, name='seizure_edit'),
+    path('seizure/<int:pk>/delete/', views.seizure_delete_view, name='seizure_delete'),
 
     #forecast_summary
-    path('forecast_summary/', views.forecast_summary_view, name='forecast_summary'),
-    #fishermen_attack_arrest_summary
-    path('fishermen_attack_arrest_summary/', views.fishermen_attack_arrest_summary_view, name='fishermen_attack_arrest_summary'),
+    path('forecast/ajax-search/forecast/', views.forecast_ajax_search_view, name='forecast_ajax_search'),
+    path('forecast/export-word/', views.forecast_export_word_view, name='forecast_export_word'),
+    path('forecast/<int:pk>/download/', views.forecast_download_view, name='forecast_download'),
+    path('forecast/<int:pk>/edit/', views.forecast_edit_view, name='forecast_edit'),
+    path('forecast/<int:pk>/delete/', views.forecast_delete_view, name='forecast_delete'),
+    
+    #tn_fishermen_attack_summary
+    path('tnfishermen_attack/ajax-search/tnfishermen_attack/', views.ajax_search_attack_tnfishermen, name='tnfishermen_attack_ajax_search'),
+    path('tnfishermen_attack/export-word/', views.attack_tnfishermen_export_word_view, name='tnfishermen_attack_export_word'),
+    path('tnfishermen_attack/<int:pk>/download/', views.attack_tnfishermen_download_view, name='tnfishermen_attack_download'),
+    path('tnfishermen_attack/<int:pk>/edit/', views.attack_tnfishermen_edit_view, name='tnfishermen_attack_edit'),
+    path('tnfishermen_attack/<int:pk>/delete/', views.delete_attack_tnfishermen, name='tnfishermen_attack_delete'),
+
+    #tn_fishermen_arrest_summary
+    path('tnfishermen_arrest/ajax-search/tnfishermen_arrest/', views.ajax_search_arrest_tnfishermen, name='tnfishermen_arrest_ajax_search'),
+    path('tnfishermen_arrest/export-word/', views.arrest_tnfishermen_export_word_view, name='tnfishermen_arrest_export_word'),
+    path('tnfishermen_arrest/<int:pk>/download/', views.arrest_tnfishermen_download_view, name='tnfishermen_arrest_download'),
+    path('tnfishermen_arrest/<int:pk>/edit/', views.arrest_tnfishermen_edit_view, name='tnfishermen_arrest_edit'),
+    path('tnfishermen_arrest/<int:pk>/delete/', views.delete_arrest_tnfishermen, name='tnfishermen_arrest_delete'),
+
+    #sl_fishermen_arrest_summary
+    path('slfishermen_arrest/ajax-search/slfishermen_arrest/', views.ajax_search_arrest_slfishermen, name='slfishermen_arrest_ajax_search'),
+    path('slfishermen_arrest/export-word/', views.arrest_slfishermen_export_word_view, name='slfishermen_arrest_export_word'),
+    path('slfishermen_arrest/<int:pk>/download/', views.arrest_slfishermen_download_view, name='slfishermen_arrest_download'),
+    path('slfishermen_arrest/<int:pk>/edit/', views.arrest_slfishermen_edit_view, name='slfishermen_arrest_edit'),
+    path('slfishermen_arrest/<int:pk>/delete/', views.delete_arrest_slfishermen, name='slfishermen_arrest_delete'),
+
+
     #vehicle_status_summary
     path('vehicle_status_summary/', views.vehicle_status_summary_view, name='vehicle_status_summary'),
     #vvc_beat_proforma_summary

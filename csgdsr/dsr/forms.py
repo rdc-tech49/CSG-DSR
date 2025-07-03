@@ -411,7 +411,7 @@ class SeizureForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'}),
         empty_label="Select PS Limit"
     )
-    transfered_to = forms.ModelChoiceField(
+    handed_over_to = forms.ModelChoiceField(
         queryset=Other_Agencies.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
         empty_label="Select Transfered to Agency"
@@ -429,8 +429,9 @@ class SeizureForm(forms.ModelForm):
                 format='%Y-%m-%dT%H:%M'
             ),
             'place_of_seizure': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Seizure'}),
-            'latitude': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Latitude'}),
-            'longitude': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Longitude'}),
+            'latitude': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Latitude', 'step': 'any'}),
+            'longitude': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Longitude', 'step': 'any'}),
+
             'accused': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Accused Name details & Vehicle No (if any)'}),
             'seized_by': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Seized By Name'}),
             'seizure_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
@@ -447,15 +448,26 @@ class ForecastForm(forms.ModelForm):
         model = Forecast
         exclude = ['submitted_at', 'user']
         widgets = {
-            'date_of_forecast': forms.DateTimeInput(
-                attrs={'type': 'datetime-local', 'class': 'form-control'},
-                format='%Y-%m-%dT%H:%M'
-            ),
+            'date_of_forecast': forms.DateInput(
+            attrs={'type': 'date', 'class': 'form-control'},
+             format='%Y-%m-%d'),
             'place_of_forecast': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Forecast'}),
             'forecast_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Forecast Details'}),
         }
-    
+
+DISTRICT_CHOICES = [
+    ('Chennai', 'Chennai'),
+    ('Chengalpattu', 'Chengalpattu'),
+    ('Villupuram', 'Villupuram'),
+    ('Rameswaram', 'Rameswaram'),
+    ('Cuddalore', 'Cuddalore'),
+]
+
 class AttackOnTNFishermenForm(forms.ModelForm):
+    district = forms.ChoiceField(
+        choices=DISTRICT_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
     mps_limit = forms.ModelChoiceField(
         queryset=MPS.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
@@ -469,7 +481,7 @@ class AttackOnTNFishermenForm(forms.ModelForm):
     transfered_to = forms.ModelChoiceField(
         queryset=Other_Agencies.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        empty_label="Select Transfered to Agency"
+        empty_label="Select Transfered to Agency",required=False
     )
     
     class Meta:
@@ -492,19 +504,25 @@ class AttackOnTNFishermenForm(forms.ModelForm):
             'gist_of_attack': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Attack'}),
         }
 
+
 class ArrestOfTNFishermenForm(forms.ModelForm):
+    district = forms.ChoiceField(
+        choices=DISTRICT_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    
     mps_limit = forms.ModelChoiceField(
         queryset=MPS.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
         empty_label="Select MPS Limit"
     )
+    
     arrested_by = forms.ModelChoiceField(
         queryset=Other_Agencies.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
         empty_label="Select Arrested by Agency"
     )
     
-
     class Meta:
         model = ArrestOfTNFishermen
         exclude = ['submitted_at', 'user']
@@ -553,7 +571,7 @@ class ArrestOfSLFishermenForm(forms.ModelForm):
             ),
             'place_of_arrest': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Place of Arrest'}),
             'number_of_SLFishermen_arrested': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of SL Fishermen Arrested'}),
-            'arrested_Fishermen_names': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arrested Fishermen Names'}),
+            'arrested_Fishermen_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Arrested Fishermen Names'}),
             'no_of_boats_seized': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Seized'}),
             'boat_details': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Boat Details'}),
             'gist_of_arrest': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Gist of Arrest'}),

@@ -233,7 +233,7 @@ class RescueAtSea(models.Model):
     place_of_rescue = models.CharField(max_length=200)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     number_of_victims = models.PositiveIntegerField()
-    number_of_boats_rescued = models.PositiveIntegerField()
+    number_of_boats_rescued = models.PositiveIntegerField(null=True, blank=True)
     victim_name = models.CharField(max_length=200)
     rescuer_name = models.CharField(max_length=200)
     rescue_sea_image = models.ImageField(upload_to='rescue_sea_images/', blank=True, null=True,validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'heic'])])
@@ -276,6 +276,13 @@ class Forecast(models.Model):
         return f"{self.date_of_forecast} - {self.place_of_forecast} - {self.mps_limit}"
 
 class AttackOnTNFishermen(models.Model):
+    DISTRICT_CHOICES = [
+        ('Chennai', 'Chennai'),
+        ('Chengalpattu', 'Chengalpattu'),
+        ('Villupuram', 'Villupuram'),
+        ('Rameswaram', 'Rameswaram'),
+        ('Cuddalore', 'Cuddalore'),
+    ]
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     attacked_by = models.ForeignKey(Other_Agencies, on_delete=models.CASCADE, blank=True, null=True)
     date_of_attack = models.DateTimeField()
@@ -283,9 +290,11 @@ class AttackOnTNFishermen(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6,blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
+    district = models.CharField(max_length=50, choices=DISTRICT_CHOICES,blank=True, null=True)
     number_of_TNFishermen_injured = models.PositiveIntegerField()
     number_of_TNFishermen_missing = models.PositiveIntegerField(blank=True, null=True)
     number_of_TNFishermen_died = models.PositiveIntegerField(blank=True, null=True)
+    
     victim_names = models.CharField(max_length=200)
     attacker_details = models.CharField(max_length=200, blank=True, null=True)
     items_looted= models.CharField(max_length=200, blank=True, null=True)
@@ -297,10 +306,19 @@ class AttackOnTNFishermen(models.Model):
         return f"{self.attacked_by} - {self.date_of_attack}"
 
 class ArrestOfTNFishermen(models.Model):
+    DISTRICT_CHOICES = [
+        ('Chennai', 'Chennai'),
+        ('Chengalpattu', 'Chengalpattu'),
+        ('Villupuram', 'Villupuram'),
+        ('Rameswaram', 'Rameswaram'),
+        ('Cuddalore', 'Cuddalore'),
+    ]
+
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_arrest = models.DateTimeField()
     place_of_arrest = models.CharField(max_length=200)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6,blank=True, null=True)
+    district = models.CharField(max_length=50, choices=DISTRICT_CHOICES,blank=True, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     arrested_by = models.ForeignKey(Other_Agencies, on_delete=models.CASCADE, blank=True, null=True)
@@ -311,10 +329,11 @@ class ArrestOfTNFishermen(models.Model):
     gist_of_arrest = models.TextField()
     number_of_TNFishermen_released = models.PositiveIntegerField(blank=True, null=True)
     no_of_boats_released = models.PositiveIntegerField(blank=True, null=True)
-    
     submitted_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return f"{self.number_of_TNFishermen_arrested} - {self.date_of_arrest}"
+
 
 class ArrestOfSLFishermen(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
