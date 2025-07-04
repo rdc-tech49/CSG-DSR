@@ -1,0 +1,206 @@
+{% extends 'dsr/user/user_page.html' %}
+{% load static %}
+{% block usercontent %}
+{% if messages %}
+  <div id="message-container">
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="container mt-4">
+  <h3 class="mb-4">VVC Meeting Records</h3>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="vvc-search" class="form-control" placeholder="Search by Date / Place ">
+    </div>
+    <div class="col-md-3">
+      <button id="clear-vvc-search" class="btn btn-secondary w-100">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'vvc_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
+  </div>
+  <!-- Table for vvc container -->
+  <div class="table-responsive" id="vvc-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-striped align-middle text-center" id="vvc-table">
+      <thead class="table-dark">
+        <tr>
+          <th>S. No</th>
+          <th>Date</th>
+          <th>Village Name </th>
+          <th>Number of Villagers</th>
+          <th>View</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="vvc-table-body">
+        {% for record in vvc_records %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <a href="{% url 'vvc_download' record.id %}" class= "text-decoration-none" target="_blank">
+              {{ record.date_of_vvc|date:"d-m-Y" }}
+            </td>
+            <td>{{ record.village_name }}</td>
+            <td>{{ record.number_of_villagers }}</td>
+            <td>
+              {% if record.rescue_beach_image %}
+                <a href="{{ record.vvc_image.url }}" download>Download</a>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'vvc_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <a href="{% url 'vvc_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center">No records found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  {% comment %} Beat summary  {% endcomment %}
+  <h3 class="mb-4">Beat  Records</h3>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="beat-search" class="form-control" placeholder="Search">
+    </div>
+    <div class="col-md-3">
+      <button id="clear-beat-search" class="btn btn-secondary w-100">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'beat_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
+  </div>
+  <!-- Table for beat container -->
+  <div class="table-responsive" id="beat-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-striped align-middle text-center" id="beat-table">
+      <thead class="table-dark">
+        <tr>
+          <th>S. No</th>
+          <th>Date</th>
+          <th>Day Beat </th>
+          <th>Night Beat </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="beat-table-body">
+        {% for record in beat_records %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <a href="{% url 'beat_download' record.id %}" class= "text-decoration-none" target="_blank">
+              {{ record.date_of_beat|date:"d-m-Y" }}
+            </td>
+            <td>{{ record.day_beat_count }}</td>
+            <td>{{ record.night_beat_count }}</td>
+            <td>
+              <a href="{% url 'beat_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <a href="{% url 'beat_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">No records found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% comment %} script for vvc search {% endcomment %}
+<script>
+  document.getElementById('clear-vvc-search').addEventListener('click', function () {
+    location.reload();
+  });
+  
+  document.getElementById('vvc-search').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/vvc/ajax-search/vvc/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('vvc-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6">No VVC entries found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td><a href="/vvc/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_vvc}</a></td>
+                <td>${entry.village_name}</td>
+                <td>${entry.number_of_villagers}</td>
+                <td>
+                  ${entry.vvc_image ? `<a href="${entry.vvc_image}" download>Download</a>` : `-`}
+                </td>
+                <td>
+                  <a href="/vvc/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/vvc/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                    onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                </td>
+              </tr>`;
+          });
+
+        }
+      });
+  });
+</script> 
+{% comment %} script for beat search {% endcomment %}
+<script>
+  document.getElementById('clear-beat-search').addEventListener('click', function () {
+    location.reload();
+  });
+
+  document.getElementById('beat-search').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/beat/ajax-search/beat/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('beat-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5">No Beat entries found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td><a href="/beat/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_beat}</a></td>
+                <td>${entry.day_beat_count}</td>
+                <td>${entry.night_beat_count}</td>
+                
+                <td>
+                  <a href="/beat/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/beat/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                    onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                </td>
+              </tr>`;
+          });
+
+        }
+      });
+  });
+</script> 
+{% endblock %}
