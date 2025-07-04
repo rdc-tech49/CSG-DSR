@@ -44,9 +44,7 @@ urlpatterns = [
     # admin other agencies 
     path('admin_other_agencies/', views.admin_other_agencies_view, name='admin_other_agencies_page'),
     path('admin_other_agencies/agency/edit/<int:agency_id>/', views.admin_other_agencies_view, name='edit_agency'),
-    # path('admin_other_agencies/attacker/edit/<int:attacker_id>/', views.admin_other_agencies_view, name='edit_attacker'),
-    # path('admin_other_agencies/arrest_tn/edit/<int:arrest_tn_id>/', views.admin_other_agencies_view, name='edit_arrest_tn'),
-    # path('admin_other_agencies/arrest_sl/edit/<int:arrest_sl_id>/', views.admin_other_agencies_view, name='edit_arrest_sl'),
+
 
     # admin seizure
     path('admin_seizure_items/', views.admin_seizure_items_view, name='admin_seizure_items_page'),
@@ -67,12 +65,7 @@ urlpatterns = [
     path('add_checkpost/', views.add_checkpost, name='add_checkpost'),
     #Other_Agencies
     path('other_agencies_form/', views.other_agencies_form_view, name='other_agencies_form'),
-    #AttackOnTNFishermen_ChoicesForm
-    path('attack_on_tnfishermen_choices_form/', views.attack_on_tnfishermen_choices_form_view, name='attack_on_tnfishermen_choices_form'),
-    #TNFishermenArrest_ChoicesForm
-    path('tnfishermen_arrest_choices_form/', views.tnfishermen_arrest_choices_form_view, name='tnfishermen_arrest_choices_form'),
-    #ArrestOfSLFishermen_ChoicesForm
-    path('arrest_of_sl_fishermen_choices_form/', views.arrest_of_sl_fishermen_choices_form_view, name='arrest_of_sl_fishermen_choices_form'),
+
 
     #individual forms
     #cases registered forms
@@ -96,18 +89,13 @@ urlpatterns = [
     path('attack_tnfishermen_form/', views.attack_tnfishermen_form, name='attack_tnfishermen_form'),
     path('arrest_tnfishermen_form/', views.arrest_tnfishermen_form, name='arrest_tnfishermen_form'),
     path('arrest_slfishermen_form/', views.arrest_slfishermen_form, name='arrest_slfishermen_form'),
-
-
-
-
-
-    #On Road Vehicle Status
+    #onroad vehicle status
     path('onroad_vehicle_status_form/', views.onroad_vehicle_status_form_view, name='onroad_vehicle_status_form'),
-    #On Water Vehicle  Status
+    #onwater vehicle status 
     path('onwater_vehicle_status_form/', views.onwater_vehicle_status_form_view, name='onwater_vehicle_status_form'),
     #VVC meeting
     path('vvc_meeting_form/', views.vvc_meeting_form_view, name='vvc_meeting_form'),
-    #Beat   Details
+    #Beat Details
     path('beat_details_form/', views.beat_details_form_view, name='beat_details_form'),
     #Proforma
     path('proforma_form/', views.proforma_form_view, name='proforma_form'),
@@ -117,8 +105,13 @@ urlpatterns = [
     path('atv_patrol_form/', views.atv_patrol_form_view, name='atv_patrol_form'),
     #Vehicle CheckPost
     path('vehicle_checkpost_form/', views.vehicle_checkpost_form_view, name='vehicle_checkpost_form'),
-    #Vehicle Check others
+    #Vehicle Check others   
     path('vehicle_check_others_form/', views.vehicle_check_others_form_view, name='vehicle_check_others_form'),
+
+
+
+
+   
 
     
 
@@ -128,6 +121,10 @@ urlpatterns = [
     path('rescue_seizure_summary/', views.rescue_beach_summary_view, name='rescue_seizure_summary'),
     path('forecast_summary/', views.forecast_summary_view, name='forecast_summary'),
     path('fishermen_attack_arrest_summary/', views.fishermen_attack_arrest_summary, name='fishermen_attack_arrest_summary'),
+    path('vehicle_status_summary/', views.vehicle_status_summary_view, name='vehicle_status_summary'),
+    path('beat__vvc_summary/', views.beat__vvc_summary_view, name='beat__vvc_summarysummary'),
+    path('proforma_summary/', views.proforma_summary_view, name='proforma_summary'),
+    path('vehicle_check_patrol_summary/', views.vehicle_check_patrol_summary_view, name='vehicle_check_patrol_summary'),
 
     #csr_summary
     path('csr/<int:pk>/download/', views.csr_download_view, name='csr_download'),
@@ -210,13 +207,72 @@ urlpatterns = [
     path('slfishermen_arrest/<int:pk>/edit/', views.arrest_slfishermen_edit_view, name='slfishermen_arrest_edit'),
     path('slfishermen_arrest/<int:pk>/delete/', views.delete_arrest_slfishermen, name='slfishermen_arrest_delete'),
 
+    #beat_summary
+    path('beat/ajax-search/beat/', views.beat_ajax_search_view, name='beat_ajax_search'),
+    path('beat/export-word/', views.beat_export_word_view, name='beat_export_word'),
+    path('beat/<int:pk>/download/', views.beat_download_view, name='beat_download'),
+    path('beat/<int:pk>/edit/', views.beat_edit_view, name='beat_edit'),
+    path('beat/<int:pk>/delete/', views.beat_delete_view, name='beat_delete'),  
 
-    #vehicle_status_summary
-    path('vehicle_status_summary/', views.vehicle_status_summary_view, name='vehicle_status_summary'),
-    #vvc_beat_proforma_summary
-    path('vvc_beat_proforma_summary/', views.vvc_beat_proforma_summary_view, name='vvc_beat_proforma_summary'),
-    #patrol_vehicle_check_summary
-    path('patrol_vehicle_check_summary/', views.patrol_vehicle_check_summary_view, name='patrol_vehicle_check_summary'),
+    #vvc_summary
+    path('vvc/ajax-search/vvc/', views.vvc_ajax_search_view, name='vvc_ajax_search'),
+    path('vvc/export-word/', views.vvc_export_word_view, name='vvc_export_word'),
+    path('vvc/<int:pk>/download/', views.vvc_download_view, name='vvc_download'),
+    path('vvc/<int:pk>/edit/', views.vvc_edit_view, name='vvc_edit'),
+    path('vvc/<int:pk>/delete/', views.vvc_delete_view, name='vvc_delete'),
+
+    #proforma_summary
+    path('proforma/ajax-search/proforma/', views.proforma_ajax_search_view, name='proforma_ajax_search'),
+    path('proforma/export-word/', views.proforma_export_word_view, name='proforma_export_word'),
+    path('proforma/<int:pk>/download/', views.proforma_download_view, name='proforma_download'),
+    path('proforma/<int:pk>/edit/', views.proforma_edit_view, name='proforma_edit'),
+    path('proforma/<int:pk>/delete/', views.proforma_delete_view, name='proforma_delete'),
+
+    #onroad_vehicle_status_summary
+    path('onroad_vehicle_status/ajax-search/onroad_vehicle_status/', views.onroad_vehicle_status_ajax_search_view, name='onroad_vehicle_status_ajax_search'),
+    path('onroad_vehicle_status/export-word/', views.onroad_vehicle_status_export_word_view, name='onroad_vehicle_status_export_word'),
+    path('onroad_vehicle_status/<int:pk>/download/', views.onroad_vehicle_status_download_view, name='onroad_vehicle_status_download'),
+    path('onroad_vehicle_status/<int:pk>/edit/', views.onroad_vehicle_status_edit_view, name='onroad_vehicle_status_edit'),
+    path('onroad_vehicle_status/<int:pk>/delete/', views.onroad_vehicle_status_delete_view, name='onroad_vehicle_status_delete'),
+
+    #onwater_vehicle_status_summary
+    path('onwater_vehicle_status/ajax-search/onwater_vehicle_status/', views.onwater_vehicle_status_ajax_search_view, name='onwater_vehicle_status_ajax_search'),
+    path('onwater_vehicle_status/export-word/', views.onwater_vehicle_status_export_word_view, name='onwater_vehicle_status_export_word'),
+    path('onwater_vehicle_status/<int:pk>/download/', views.onwater_vehicle_status_download_view, name='onwater_vehicle_status_download'),
+    path('onwater_vehicle_status/<int:pk>/edit/', views.onwater_vehicle_status_edit_view, name='onwater_vehicle_status_edit'),
+    path('onwater_vehicle_status/<int:pk>/delete/', views.onwater_vehicle_status_delete_view, name='onwater_vehicle_status_delete'),
+
+
+    #boat_patrol_summary
+    path('boat_patrol/ajax-search/boat_patrol/', views.boat_patrol_ajax_search_view, name='boat_patrol_ajax_search'),
+    path('boat_patrol/export-word/', views.boat_patrol_export_word_view, name='boat_patrol_export_word'),
+    path('boat_patrol/<int:pk>/download/', views.boat_patrol_download_view, name='boat_patrol_download'),
+    path('boat_patrol/<int:pk>/edit/', views.boat_patrol_edit_view, name='boat_patrol_edit'),
+    path('boat_patrol/<int:pk>/delete/', views.boat_patrol_delete_view, name='boat_patrol_delete'),
+
+    #atv_patrol_summary
+    path('atv_patrol/ajax-search/atv_patrol/', views.atv_patrol_ajax_search_view, name='atv_patrol_ajax_search'),
+    path('atv_patrol/export-word/', views.atv_patrol_export_word_view, name='atv_patrol_export_word'),
+    path('atv_patrol/<int:pk>/download/', views.atv_patrol_download_view, name='atv_patrol_download'),
+    path('atv_patrol/<int:pk>/edit/', views.atv_patrol_edit_view, name='atv_patrol_edit'),
+    path('atv_patrol/<int:pk>/delete/', views.atv_patrol_delete_view, name='atv_patrol_delete'),
+
+    #vehicle_checkpost_summary
+    path('vehicle_checkpost/ajax-search/vehicle_checkpost/', views.vehicle_checkpost_ajax_search_view, name='vehicle_checkpost_ajax_search'),
+    path('vehicle_checkpost/export-word/', views.vehicle_checkpost_export_word_view, name='vehicle_checkpost_export_word'),
+    path('vehicle_checkpost/<int:pk>/download/', views.vehicle_checkpost_download_view, name='vehicle_checkpost_download'),
+    path('vehicle_checkpost/<int:pk>/edit/', views.vehicle_checkpost_edit_view, name='vehicle_checkpost_edit'),
+    path('vehicle_checkpost/<int:pk>/delete/', views.vehicle_checkpost_delete_view, name='vehicle_checkpost_delete'),
+
+    #vehicle_check_others_summary
+    path('vehicle_check_others/ajax-search/vehicle_check_others/', views.vehicle_check_others_ajax_search_view, name='vehicle_check_others_ajax_search'),
+    path('vehicle_check_others/export-word/', views.vehicle_check_others_export_word_view, name='vehicle_check_others_export_word'),
+    path('vehicle_check_others/<int:pk>/download/', views.vehicle_check_others_download_view, name='vehicle_check_others_download'),
+    path('vehicle_check_others/<int:pk>/edit/', views.vehicle_check_others_edit_view, name='vehicle_check_others_edit'),
+    path('vehicle_check_others/<int:pk>/delete/', views.vehicle_check_others_delete_view, name='vehicle_check_others_delete'),
+    
+
+
 
 
 

@@ -24,7 +24,7 @@
       </button>
     </div>
     <div class="col-md-3 text-end">
-      <a href="{% url 'boatpatrol_export_word' %}" class="btn btn-success">
+      <a href="{% url 'boat_patrol_export_word' %}" class="btn btn-success">
         <i class="bi bi-download"></i> Download All (Word)
       </a>
     </div>
@@ -47,15 +47,15 @@
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>
-              <a href="{% url 'boatpatrol_download' record.id %}" class= "text-decoration-none" target="_blank">
+              <a href="{% url 'boat_patrol_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_patrol|date:"d-m-Y" }}
             </td>
             <td>{{ record.patrol_place }}</td>
             <td>{{ record.boat_number }}</td>
             <td>{{ record.numberof_boats_checked }}</td>
             <td>
-              <a href="{% url 'boatpatrol_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'boatpatrol_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+              <a href="{% url 'boat_patrol_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <a href="{% url 'boat_patrol_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
             </td>
           </tr>
         {% empty %}
@@ -79,7 +79,7 @@
       </button>
     </div>
     <div class="col-md-3 text-end">
-      <a href="{% url 'atv_export_word' %}" class="btn btn-success">
+      <a href="{% url 'atv_patrol_export_word_view' %}" class="btn btn-success">
         <i class="bi bi-download"></i> Download All (Word)
       </a>
     </div>
@@ -102,15 +102,15 @@
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>
-              <a href="{% url 'atv_download' record.id %}" class= "text-decoration-none" target="_blank">
+              <a href="{% url 'atv_patrol_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_patrol|date:"d-m-Y" }}
             </td>
             <td>{{ record.patrol_place }}</td>
             <td>{{ record.atv_number }}</td>
             
             <td>
-              <a href="{% url 'atv_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'atv_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+              <a href="{% url 'atv_patrol_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <a href="{% url 'atv_patrol_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
             </td>
           </tr>
         {% empty %}
@@ -134,7 +134,7 @@
       </button>
     </div>
     <div class="col-md-3 text-end">
-      <a href="{% url 'vehiclec_export_word' %}" class="btn btn-success">
+      <a href="{% url 'vehicle_checkpost_export_word_view' %}" class="btn btn-success">
         <i class="bi bi-download"></i> Download All (Word)
       </a>
     </div>
@@ -157,7 +157,7 @@
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>
-              <a href="{% url 'vehiclec_download' record.id %}" class= "text-decoration-none" target="_blank">
+              <a href="{% url 'vehicle_checkpost_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_check|date:"d-m-Y" }}
             </td>
             <td>{{ record.vehicle_check_start_time }} - {{vehicle_check_end_time}}</td>
@@ -165,8 +165,8 @@
             <td>{{ record.number_of_vehicles_checked }}</td>
             
             <td>
-              <a href="{% url 'vehiclec_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'vehiclec_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+              <a href="{% url 'vehicle_checkpost_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <a href="{% url 'vehicle_checkpost_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
             </td>
           </tr>
         {% empty %}
@@ -189,7 +189,7 @@
       </button>
     </div>
     <div class="col-md-3 text-end">
-      <a href="{% url 'vehicleo_export_word' %}" class="btn btn-success">
+      <a href="{% url 'vehicle_check_others_export_word' %}" class="btn btn-success">
         <i class="bi bi-download"></i> Download All (Word)
       </a>
     </div>
@@ -212,15 +212,15 @@
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>
-              <a href="{% url 'vehicleo_download' record.id %}" class= "text-decoration-none" target="_blank">
+              <a href="{% url 'vehicle_check_others_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_vehicleo|date:"d-m-Y" }}
             </td>
             <td>{{ record.place_of_check }}</td>
             <td>{{ record.vehicle_check_start_time }} - {{ record.vehicle_check_end_time }}</td>
             <td>{{ record.number_of_vehicles_checked }}</td>
             <td>
-              <a href="{% url 'vehicleo_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'vehicleo_at_beach_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+              <a href="{% url 'vehicle_check_others_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <a href="{% url 'vehicle_check_others_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
             </td>
           </tr>
         {% empty %}
@@ -242,7 +242,7 @@
 
   document.getElementById('boatpatrol-search').addEventListener('input', function () {
     const query = this.value;
-    fetch(`/boatpatrol/ajax-search/boatpatrol/?q=${encodeURIComponent(query)}`)
+    fetch(`/boat_patrol/ajax-search/boat_patrol/?q=${encodeURIComponent(query)}`)
       .then(response => response.json())
       .then(data => {
         const tbody = document.getElementById('boatpatrol-table-body');
@@ -255,13 +255,13 @@
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
-                <td><a href="/boatpatrol/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_patrol}</a></td>
+                <td><a href="/boat_patrol/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_patrol}</a></td>
                 <td>${entry.patrol_place}</td>
                 <td>${entry.boat_number}</td>
                 <td>${entry.numberof_boats_checked}</td>
                 <td>
-                  <a href="/boatpatrol/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/boatpatrol/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                  <a href="/boat_patrol/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/boat_patrol/${entry.id}/delete/" class="btn btn-sm btn-danger"
                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
                 </td>
               </tr>`;
@@ -280,7 +280,7 @@
 
   document.getElementById('atv-search').addEventListener('input', function () {
     const query = this.value;
-    fetch(`/atv/ajax-search/atv/?q=${encodeURIComponent(query)}`)
+    fetch(`/atv_patrol/ajax-search/atv_patrol/?q=${encodeURIComponent(query)}`)
       .then(response => response.json())
       .then(data => {
         const tbody = document.getElementById('atv-table-body');
@@ -293,12 +293,12 @@
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
-                <td><a href="/atv/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_patrol}</a></td>
+                <td><a href="/atv_patrol/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_patrol}</a></td>
                 <td>${entry.patrol_place}</td>
                 <td>${entry.atv_number}</td>
                 <td>
-                  <a href="/atv/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/atv/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                  <a href="/atv_patrol/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/atv_patrol/${entry.id}/delete/" class="btn btn-sm btn-danger"
                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
                 </td>
               </tr>`;
@@ -317,7 +317,7 @@
 
   document.getElementById('vehiclec-search').addEventListener('input', function () {
     const query = this.value;
-    fetch(`/vehiclec/ajax-search/vehiclec/?q=${encodeURIComponent(query)}`)
+    fetch(`/vehicle_checkpost/ajax-search/vehicle_checkpost/?q=${encodeURIComponent(query)}`)
       .then(response => response.json())
       .then(data => {
         const tbody = document.getElementById('vehiclec-table-body');
@@ -330,14 +330,14 @@
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
-                <td><a href="/vehiclec/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_check}</a></td>
+                <td><a href="/vehicle_checkpost/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_check}</a></td>
                 <td>${entry.vehicle_check_start_time} - ${entry.vehicle_check_end_time}</td>
                 <td>${entry.check_post}</td>
                 <td>${entry.number_of_vehicles_checked}</td>
                 
                 <td>
-                  <a href="/vehiclec/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/vehiclec/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                  <a href="/vehicle_checkpost/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/vehicle_checkpost/${entry.id}/delete/" class="btn btn-sm btn-danger"
                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
                 </td>
               </tr>`;
@@ -356,7 +356,7 @@
 
   document.getElementById('vehicleo-search').addEventListener('input', function () {
     const query = this.value;
-    fetch(`/vehicleo/ajax-search/vehicleo/?q=${encodeURIComponent(query)}`)
+    fetch(`/vehicle_check_others/ajax-search/vehicle_check_others/?q=${encodeURIComponent(query)}`)
       .then(response => response.json())
       .then(data => {
         const tbody = document.getElementById('vehicleo-table-body');
@@ -369,7 +369,7 @@
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
-                <td><a href="/vehicleo/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_check}</a></td>
+                <td><a href="/vehicle_check_others/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_check}</a></td>
                 <td>${entry.vehicle_check_start_time} - ${entry.vehicle_check_end_time} </td>
                 <td>${entry.place_of_check}</td>
                 <td>${entry.number_of_vehicles_checked}</td>
@@ -377,8 +377,8 @@
                   ${entry.vehicleo_image ? `<a href="${entry.vehicleo_image}" download>Download</a>` : `-`}
                 </td>
                 <td>
-                  <a href="/vehicleo/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/vehicleo/${entry.id}/delete/" class="btn btn-sm btn-danger"
+                  <a href="/vehicle_check_others/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
+                  <a href="/vehicle_check_others/${entry.id}/delete/" class="btn btn-sm btn-danger"
                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
                 </td>
               </tr>`;

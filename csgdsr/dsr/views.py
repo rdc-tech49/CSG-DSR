@@ -567,10 +567,6 @@ def rescue_at_sea_form_view(request,record_id=None):
 
 
 @login_required
-def rescue_form_view(request):
-    return render(request, 'dsr/user/forms/rescue_form.html')
-
-@login_required
 def seizure_form_view(request,record_id=None):
     record = get_object_or_404(Seizure, id=record_id) if record_id else None
     if request.method == 'POST':
@@ -683,37 +679,7 @@ def arrest_slfishermen_form(request, record_id=None):
     }
     return render(request, 'dsr/user/forms/arrest_slfishermen_form.html', context)
 
-@login_required
-def fishermen_attack_form_view(request):
-    return render(request, 'dsr/user/forms/fishermen_attack_form.html')
 
-@login_required
-def fishermen_arrest_form_view(request):
-    return render(request, 'dsr/user/forms/fishermen_arrest_form.html')
-
-@login_required
-def boat_vehicle_status_form_view(request):
-    return render(request, 'dsr/user/forms/boat_vehicle_status_form.html')
-
-@login_required
-def vvc_form_view(request):
-    return render(request, 'dsr/user/forms/vvc_form.html')
-
-@login_required
-def beat_form_view(request):
-    return render(request, 'dsr/user/forms/beat_form.html')
-
-@login_required
-def proforma_form_view(request):
-    return render(request, 'dsr/user/forms/proforma_form.html')
-
-@login_required
-def boat_patrol_form_view(request):
-    return render(request, 'dsr/user/forms/boat_patrol_form.html')
-
-@login_required
-def vehicle_check_form_view(request):
-    return render(request, 'dsr/user/forms/vehicle_check_form.html')
 
 #submitted forms summary views
 @login_required
@@ -2250,19 +2216,5 @@ def delete_arrest_slfishermen(request, pk):
     return redirect('fishermen_attack_arrest_summary')
 
 
-@login_required
-def fishermen_attack_arrest_summary_view(request):
-    return render(request, 'dsr/user/submitted_forms/fishermen_attack_arrest_summary.html')
 
-@login_required
-def vehicle_status_summary_view(request):
-    return render(request, 'dsr/user/submitted_forms/vehicle_status_summary.html')
-
-@login_required
-def vvc_beat_proforma_summary_view(request):
-    return render(request, 'dsr/user/submitted_forms/vvc_beat_proforma_summary.html')
-
-@login_required
-def patrol_vehicle_check_summary_view(request):
-    return render(request, 'dsr/user/submitted_forms/patrol_vehicle_check_summary.html')
 
