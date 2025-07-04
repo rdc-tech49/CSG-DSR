@@ -42,7 +42,7 @@
         </tr>
       </thead>
       <tbody id="onroad-table-body">
-        {% for record in onwater_records %}
+        {% for record in onroad %}
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ record.vehicle_type }}</td>
@@ -95,7 +95,7 @@
         </tr>
       </thead>
       <tbody id="onwater-table-body">
-        {% for record in onwater_records %}
+        {% for record in onwater %}
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ record.boat_type }}</td>

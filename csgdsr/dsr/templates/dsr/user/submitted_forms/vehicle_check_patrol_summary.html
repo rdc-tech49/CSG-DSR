@@ -37,6 +37,7 @@
           <th>S. No</th>
           <th>Date</th>
           <th>Place</th>
+          <th>Boat Type</th>
           <th>Baot No.</th>
           <th>Boats Checked</th>
           <th>Action</th>
@@ -51,6 +52,7 @@
               {{ record.date_of_patrol|date:"d-m-Y" }}
             </td>
             <td>{{ record.patrol_place }}</td>
+            <td>{{ record.boat_type }}</td>
             <td>{{ record.boat_number }}</td>
             <td>{{ record.numberof_boats_checked }}</td>
             <td>
@@ -60,7 +62,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="6" class="text-center">No records found.</td>
+            <td colspan="7" class="text-center">No records found.</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -68,7 +70,7 @@
   </div>
 
   {% comment %} atv patrol  {% endcomment %}
-  <h3 class="mb-4">Boat Patrol Records</h3>
+  <h3 class="mb-4">ATV Patrol Records</h3>
   <div class="row mb-3">
     <div class="col-md-6">
       <input type="text" id="atv-search" class="form-control" placeholder="Search by Date">
@@ -249,7 +251,7 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6">No Patrol entries found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7">No Patrol entries found.</td></tr>';
         } else {
           data.forEach((entry, index) => {
             tbody.innerHTML += `
@@ -257,6 +259,7 @@
                 <td>${index + 1}</td>
                 <td><a href="/boat_patrol/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_patrol}</a></td>
                 <td>${entry.patrol_place}</td>
+                <td>${entry.boat_type}</td>
                 <td>${entry.boat_number}</td>
                 <td>${entry.numberof_boats_checked}</td>
                 <td>

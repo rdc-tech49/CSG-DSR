@@ -122,7 +122,7 @@ urlpatterns = [
     path('forecast_summary/', views.forecast_summary_view, name='forecast_summary'),
     path('fishermen_attack_arrest_summary/', views.fishermen_attack_arrest_summary, name='fishermen_attack_arrest_summary'),
     path('vehicle_status_summary/', views.vehicle_status_summary_view, name='vehicle_status_summary'),
-    path('beat__vvc_summary/', views.beat__vvc_summary_view, name='beat__vvc_summarysummary'),
+    path('beat__vvc_summary/', views.beat__vvc_summary_view, name='beat__vvc_summary'),
     path('proforma_summary/', views.proforma_summary_view, name='proforma_summary'),
     path('vehicle_check_patrol_summary/', views.vehicle_check_patrol_summary_view, name='vehicle_check_patrol_summary'),
 
@@ -244,7 +244,7 @@ urlpatterns = [
 
 
     #boat_patrol_summary
-    path('boat_patrol/ajax-search/boat_patrol/', views.boat_patrol_ajax_search_view, name='boat_patrol_ajax_search'),
+    path('boat_patrol/ajax-search/boat_patrol/', views.boat_patrol_ajax_search, name='boat_patrol_ajax_search'),
     path('boat_patrol/export-word/', views.boat_patrol_export_word_view, name='boat_patrol_export_word'),
     path('boat_patrol/<int:pk>/download/', views.boat_patrol_download_view, name='boat_patrol_download'),
     path('boat_patrol/<int:pk>/edit/', views.boat_patrol_edit_view, name='boat_patrol_edit'),

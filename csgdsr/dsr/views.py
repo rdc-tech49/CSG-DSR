@@ -5,7 +5,8 @@ from docx.shared import Inches
 from django import forms
 from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser, SeizedItemCategory, PS, RescueAtBeach,RescueAtSea,Seizure,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen,OnRoadVehicleStatus,OnWaterVehicleStatus,VVCmeeting,BeatDetails,Proforma,BoatPatrol,VehicleCheckPost,Atvpatrol,VehicleCheckothers
 
-from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm,PSForm, RescueAtBeachForm,RescueAtSeaForm,SeizureForm,ForecastForm,AttackOnTNFishermenForm,ArrestOfTNFishermenForm,ArrestOfSLFishermenForm,OnRoadVehicleStatusForm, OnWaterVehicleStatusForm, VVCmeetingForm, BeatDetailsForm, ProformaForm, BoatPatrolForm, VehicleCheckPostForm, AtvpatrolForm, VehicleCheckothersForm
+
+from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm,PSForm, RescueAtBeachForm,RescueAtSeaForm,SeizureForm,ForecastForm,AttackOnTNFishermenForm,ArrestOfTNFishermenForm,ArrestOfSLFishermenForm,OnRoadVehicleStatusForm, OnWaterVehicleStatusForm,  VVCmeetingForm, BeatDetailsForm, ProformaForm, BoatPatrolForm, VehicleCheckPostForm, AtvpatrolForm, VehicleCheckothersForm
 
 
 from django.contrib import messages
@@ -446,12 +447,15 @@ def forms_view(request):
         {"title": "Attack on TN Fishermen", "url_name": "attack_tnfishermen_form", "icon": "bi-person-x", "color": "#ffc107"},
         {"title": "TN Fishermen Arrest", "url_name": "arrest_tnfishermen_form", "icon": "bi-handcuffs", "color": "#dc3545"},
         {"title": "SL Fishermen Arrest", "url_name": "arrest_slfishermen_form", "icon": "bi-handcuffs", "color": "#dc3545"},
-        {"title": "Vehicle & Boat Status", "url_name": "onwater_vehicle_status_form", "icon": "bi-truck", "color": "#6c757d"},
+        {"title": "Vehicle Status", "url_name": "onroad_vehicle_status_form", "icon": "bi-truck", "color": "#6c757d"},
+        {"title": "Boat Status", "url_name": "onwater_vehicle_status_form", "icon": "bi-truck", "color": "#6c757d"},
         {"title": "VVC", "url_name": "vvc_meeting_form", "icon": "bi-folder2-open", "color": "#20c997"},
         {"title": "Beat", "url_name": "beat_details_form", "icon": "bi-compass", "color": "#0d6efd"},
         {"title": "Proforma", "url_name": "proforma_form", "icon": "bi-ui-checks", "color": "#198754"},
         {"title": "Boat Patrol", "url_name": "boat_patrol_form", "icon": "bi-ship", "color": "#0dcaf0"},
-        {"title": "Vehicle Check", "url_name": "vehicle_checkpost_form", "icon": "bi-search", "color": "#6f42c1"},
+        {"title": "ATV Patrol", "url_name": "atv_patrol_form", "icon": "bi-ship", "color": "#0dcaf0"},
+        {"title": "Vehicle Check - CheckPost", "url_name": "vehicle_checkpost_form", "icon": "bi-search", "color": "#6f42c1"},
+        {"title": "Vehicle Check - CheckPost", "url_name": "vehicle_check_others_form", "icon": "bi-search", "color": "#6f42c1"},
     ]
     return render(request, 'dsr/user/forms_page.html', {'cards': cards})
 
@@ -679,7 +683,221 @@ def arrest_slfishermen_form(request, record_id=None):
     }
     return render(request, 'dsr/user/forms/arrest_slfishermen_form.html', context)
 
+@login_required
+def onroad_vehicle_status_form_view(request, record_id=None):
+    record = get_object_or_404(OnRoadVehicleStatus, id=record_id) if record_id else None
+    if request.method == 'POST':
+        form = OnRoadVehicleStatusForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            vehicle_record = form.save(commit=False)
+            vehicle_record.user = request.user
+            vehicle_record.save()
+            if record:
+                messages.success(request, "On Road Vehicle Status details updated successfully!")
+            else:
+                messages.success(request, "On Road Vehicle Status form submitted successfully!")
+            return redirect('vehicle_status_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = OnRoadVehicleStatusForm(instance=record)
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/onroad_vehicle_form.html', context)
 
+@login_required
+def onwater_vehicle_status_form_view(request, record_id=None):
+    record = get_object_or_404(OnWaterVehicleStatus, id=record_id) if record_id else None
+    if request.method == 'POST':
+        form = OnWaterVehicleStatusForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            vehicle_record = form.save(commit=False)
+            vehicle_record.user = request.user
+            vehicle_record.save()
+            if record:
+                messages.success(request, "On Water Vehicle Status details updated successfully!")
+            else:
+                messages.success(request, "On Water Vehicle Status form submitted successfully!")
+            return redirect('vehicle_status_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = OnWaterVehicleStatusForm(instance=record)
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/onwater_vehicle_form.html', context)
+
+@login_required
+def vvc_meeting_form_view(request, record_id=None):
+    record = get_object_or_404(VVCmeeting, id=record_id) if record_id else None
+    if request.method == 'POST':
+        form = VVCmeetingForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            vvc_record = form.save(commit=False)
+            vvc_record.user = request.user
+            vvc_record.save()
+            if record:
+                messages.success(request, "VVC Meeting details updated successfully!")
+            else:
+                messages.success(request, "VVC Meeting form submitted successfully!")
+            return redirect('beat__vvc_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = VVCmeetingForm(instance=record)
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/vvc_meeting_form.html', context)
+
+@login_required
+def beat_details_form_view(request, record_id=None):
+    record = get_object_or_404(BeatDetails, id=record_id) if record_id else None
+    if request.method == 'POST':
+        form = BeatDetailsForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            beat_record = form.save(commit=False)
+            beat_record.user = request.user
+            beat_record.save()
+            if record:
+                messages.success(request, "Beat details updated successfully!")
+            else:
+                messages.success(request, "Beat details form submitted successfully!")
+            return redirect('beat__vvc_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = BeatDetailsForm(instance=record)
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/beat_Details_form.html', context)
+
+@login_required
+def proforma_form_view(request, record_id=None):
+    record = get_object_or_404(Proforma, id=record_id) if record_id else None
+    if request.method == 'POST':
+        form = ProformaForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            proforma_record = form.save(commit=False)
+            proforma_record.user = request.user
+            proforma_record.save()
+            if record:
+                messages.success(request, "Proforma details updated successfully!")
+            else:
+                messages.success(request, "Proforma form submitted successfully!")
+            return redirect('proforma_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = ProformaForm(instance=record)
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/proforma_form.html', context)
+
+@login_required
+def boat_patrol_form_view(request, record_id=None):
+    record = get_object_or_404(BoatPatrol, id=record_id) if record_id else None
+    if request.method == 'POST':
+        form = BoatPatrolForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            boat_patrol_record = form.save(commit=False)
+            boat_patrol_record.user = request.user
+            boat_patrol_record.save()
+            if record:
+                messages.success(request, "Boat Patrol details updated successfully!")
+            else:
+                messages.success(request, "Boat Patrol form submitted successfully!")
+            return redirect('vehicle_check_patrol_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = BoatPatrolForm(instance=record)
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/boat_patrol_form.html', context)
+
+@login_required
+def atv_patrol_form_view(request, record_id=None):
+    record = get_object_or_404(Atvpatrol, id=record_id) if record_id else None
+    if request.method == 'POST':
+        form = AtvpatrolForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            atv_patrol_record = form.save(commit=False)
+            atv_patrol_record.user = request.user
+            atv_patrol_record.save()
+            if record:
+                messages.success(request, "ATV Patrol details updated successfully!")
+            else:
+                messages.success(request, "ATV Patrol form submitted successfully!")
+            return redirect('vehicle_check_patrol_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = AtvpatrolForm(instance=record)
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/atv_patrol_form.html', context)
+
+@login_required
+def vehicle_checkpost_form_view(request, record_id=None):
+    record = get_object_or_404(VehicleCheckPost, id=record_id) if record_id else None
+    if request.method == 'POST':
+        form = VehicleCheckPostForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            vehicle_check_record = form.save(commit=False)
+            vehicle_check_record.user = request.user
+            vehicle_check_record.save()
+            if record:
+                messages.success(request, "Vehicle Check details updated successfully!")
+            else:
+                messages.success(request, "Vehicle Check form submitted successfully!")
+            return redirect('vehicle_check_patrol_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = VehicleCheckPostForm(instance=record)
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/vehicle_checkport_form.html', context)
+
+@login_required
+def vehicle_check_others_form_view(request, record_id=None):
+    record = get_object_or_404(VehicleCheckothers, id=record_id) if record_id else None
+    if request.method == 'POST':
+        form = VehicleCheckothersForm(request.POST, request.FILES, instance=record)
+        if form.is_valid():
+            vehicle_check_record = form.save(commit=False)
+            vehicle_check_record.user = request.user
+            vehicle_check_record.save()
+            if record:
+                messages.success(request, "Vehicle Check details updated successfully!")
+            else:
+                messages.success(request, "Vehicle Check form submitted successfully!")
+            return redirect('vehicle_check_patrol_summary')
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = VehicleCheckothersForm(instance=record)
+    context = {
+        'form': form,
+        'edit_mode': record is not None,
+    }
+    return render(request, 'dsr/user/forms/vehicle_checkothers_form.html', context)
 
 #submitted forms summary views
 @login_required
@@ -732,6 +950,47 @@ def fishermen_attack_arrest_summary(request):
         'tn_arrests': tn_arrests,
         'sl_arrests': sl_arrests,
     })
+
+#vehicle status summary view
+def vehicle_status_summary_view(request):
+    onroad = OnRoadVehicleStatus.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+    onwater = OnWaterVehicleStatus.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+
+    return render(request, 'dsr/user/submitted_forms/vehicle_status_summary.html', {
+        'onroad': onroad,
+        'onwater': onwater,
+    })
+
+#vehicle status summary view
+def beat__vvc_summary_view(request):
+    vvc_records = VVCmeeting.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+    beat_records = BeatDetails.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+
+    return render(request, 'dsr/user/submitted_forms/beat_vvc_summary.html', {
+        'vvc_records': vvc_records,
+        'beat_records': beat_records,
+    })
+
+#proforma summary view
+def proforma_summary_view(request):
+    proforma_records = Proforma.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+    
+    return render(request, 'dsr/user/submitted_forms/proforma_summary.html', {
+        'proforma_records': proforma_records
+    })
+
+#patrol summary view
+def vehicle_check_patrol_summary_view(request):
+    boatpatrol_records = BoatPatrol.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+    atv_records = Atvpatrol.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+    vehiclec_records = VehicleCheckPost.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+    vehicleo_records = VehicleCheckothers.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+    
+    return render(request, 'dsr/user/submitted_forms/vehicle_check_patrol_summary.html', {
+        'boatpatrol_records': boatpatrol_records,'atv_records': atv_records,'vehiclec_records': vehiclec_records,'vehicleo_records': vehicleo_records
+    })
+
+
 
 #search for csr
 @login_required
@@ -1069,6 +1328,166 @@ def ajax_search_arrest_slfishermen(request):
         for case in cases
     ]
     return JsonResponse(data, safe=False)
+
+#search for onroad vehicle status
+@login_required
+def onroad_vehicle_status_ajax_search_view(request):    
+    query = request.GET.get('q', '').strip()
+    cases = OnRoadVehicleStatus.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(vehicle_type__icontains=query) |
+            Q(vehicle_number__icontains=query) |
+            Q(working_status__icontains=query) 
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'vehicle_type': case.vehicle_type,
+            'vehicle_number': case.vehicle_number,
+            'working_status': case.working_status
+   
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for onwater vehicle status
+@login_required
+def onwater_vehicle_status_ajax_search_view(request):    
+    query = request.GET.get('q', '').strip()
+    cases = OnWaterVehicleStatus.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(boat_type__icontains=query) |
+            Q(boat_number__icontains=query) |
+            Q(working_status__icontains=query) 
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'boat_type': case.boat_type,
+            'boat_number': case.boat_number,
+            'working_status': case.working_status
+   
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for boat patrol
+@login_required
+def boat_patrol_ajax_search(request):    
+    query = request.GET.get('q', '').strip()
+    cases = BoatPatrol.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(date_of_patrol__icontains=query) |
+            Q(boat_type__icontains=query) |
+            Q(boat_number__icontains=query) |
+            Q(numberof_boats_checked__icontains=query) 
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'boat_type': case.boat_type,
+            'boat_number': case.boat_number,
+            'numberof_boats_checked': case.numberof_boats_checked
+   
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for atv patrol
+@login_required
+def atv_patrol_ajax_search_view(request):    
+    query = request.GET.get('q', '').strip()
+    cases = Atvpatrol.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(date_of_patrol__icontains=query) |
+            Q(patrol_place__icontains=query) |
+            Q(atv_number__icontains=query) 
+            
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'date_of_patrol': case.date_of_patrol,
+            'patrol_place': case.patrol_place,
+            'atv_number': case.atv_number
+   
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for Vehicle check- checkpost
+@login_required
+def vehicle_checkpost_ajax_search_view(request):    
+    query = request.GET.get('q', '').strip()
+    cases = VehicleCheckPost.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(date_of_check__icontains=query) |
+            Q(check_post__icontains=query) 
+            
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'date_of_check': case.date_of_check,
+            'check_post': case.check_post,
+            
+   
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for Vehicle check- others
+@login_required
+def vehicle_check_others_ajax_search_view(request):    
+    query = request.GET.get('q', '').strip()
+    cases = VehicleCheckothers.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(date_of_check__icontains=query) |
+            Q(place_of_check__icontains=query) 
+            
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'date_of_check': case.date_of_check,
+            'place_of_check': case.place_of_check,
+            
+   
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+
+
+
+
+
+
+
 
 #exprt CSR to Word document
 @login_required
