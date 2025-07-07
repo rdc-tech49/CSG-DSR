@@ -724,7 +724,8 @@ class BoatPatrolForm(forms.ModelForm):
                 attrs={'type': 'time', 'class': 'form-control'},
                 format='%H:%M'
             ),
-            'number_of_boats_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Checked'}),
+            'patrol_place': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Patrol place'}),
+            'numberof_boats_checked': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Number of Boats Checked'}),
             'registration_numberofboats_checked': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Registration Number of Boats Checked'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
         }

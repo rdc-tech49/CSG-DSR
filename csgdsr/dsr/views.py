@@ -332,58 +332,7 @@ def other_agencies_form_view(request):
         form = Other_AgenciesForm()
     return render(request, 'dsr/admin.other_agencies_form.html', {'form': form})
 
-def arrest_of_sl_fishermen_choices_form_view(request):
-    return HttpResponse("<h2>Arrest of SL Fishermen - Form: No page created yet.</h2>")
 
-def officer_form_view(request):
-    return HttpResponse("<h2>Arrest of SL Fishermen - Form: No page created yet.</h2>")
-
-def seized_item_category_form_view(request):
-    return HttpResponse("<h2>Seized Item Category - Form: No page created yet.</h2>")
-
-def attack_on_tnfishermen_choices_form_view(request):
-    return HttpResponse("<h2>Attack on TN Fishermen - Form: No page created yet.</h2>")
-
-def tnfishermen_arrest_choices_form_view(request):
-    return HttpResponse("<h2>TN Fishermen Arrest - Form: No page created yet.</h2>")
-
-def arrest_of_sl_fishermen_choices_form_view(request):
-    return HttpResponse("<h2>Arrest of SL Fishermen - Form: No page created yet.</h2>")
-
-
-
-def rescue_at_sea_form_view(request):
-    return HttpResponse("<h2>Rescue at Sea - Form: No page created yet.</h2>")
-
-def attack_on_tnfishermen_view(request):
-    return HttpResponse("<h2>Attack on TN Fishermen - Form: No page created yet.</h2>")
-
-def tnfishermen_arrest_form_view(request):  
-    return HttpResponse("<h2>TN Fishermen Arrest - Form: No page created yet.</h2>")
-
-def arrest_of_sl_fishermen_form_view(request):
-    return HttpResponse("<h2>Arrest of SL Fishermen - Form: No page created yet.</h2>")
-
-def onroad_vehicle_status_form_view(request):   
-    return HttpResponse("<h2>On Road Vehicle Status - Form: No page created yet.</h2>")
-
-def onwater_vehicle_status_form_view(request):
-    return HttpResponse("<h2>On Water Vehicle Status - Form: No page created yet.</h2>")
-
-def vvc_meeting_form_view(request): 
-    return HttpResponse("<h2>VVC Meeting - Form: No page created yet.</h2>")
-
-def beat_details_form_view(request):    
-    return HttpResponse("<h2>Beat Details - Form: No page created yet.</h2>")
-
-def atv_patrol_form_view(request):
-    return HttpResponse("<h2>ATV Patrol - Form: No page created yet.</h2>")
-
-def vehicle_checkpost_form_view(request):
-    return HttpResponse("<h2>Vehicle Checkpost - Form: No page created yet.</h2>")
-
-def vehicle_check_others_form_view(request):
-    return HttpResponse("<h2>Vehicle Check Others - Form: No page created yet.</h2>")
 
 
 
@@ -749,11 +698,8 @@ def vvc_meeting_form_view(request, record_id=None):
             messages.error(request, "Please correct the form errors.")
     else:
         form = VVCmeetingForm(instance=record)
-    context = {
-        'form': form,
-        'edit_mode': record is not None,
-    }
-    return render(request, 'dsr/user/forms/vvc_meeting_form.html', context)
+    return render(request, 'dsr/user/forms/vvc_meeting_form.html', {'form': form})
+
 
 @login_required
 def beat_details_form_view(request, record_id=None):
@@ -973,7 +919,7 @@ def beat__vvc_summary_view(request):
 
 #proforma summary view
 def proforma_summary_view(request):
-    proforma_records = Proforma.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+    proforma_records = Proforma.objects.filter(user = request.user).order_by('-submitted_at')
     
     return render(request, 'dsr/user/submitted_forms/proforma_summary.html', {
         'proforma_records': proforma_records
@@ -2098,6 +2044,7 @@ def vvc_export_word_view(request):
             ("Conducted By", meeting.conducted_by),
             ("MPS Limit", str(meeting.mps_limit) if meeting.mps_limit else ''),
             ("VVC Details", meeting.vvc_details if meeting.vvc_details else ''),
+            ("VVC Image", meeting.vvc_image.url if meeting.vvc_image else '')
         ]
 
         for label, value in fields:
@@ -2106,7 +2053,19 @@ def vvc_export_word_view(request):
             row[1].text = str(value)
 
         doc.add_paragraph()
+        # Add Seizure Image if available
+        if meeting.vvc_image:
+            doc.add_paragraph("VVC Image:")
+
+            try:
+                image_path = meeting.vvc_image.path
+                doc.add_picture(image_path, width=Inches(2.0))  # Adjust width as needed
+            except Exception as e:
+                doc.add_paragraph(f"Image could not be loaded: {e}")
+
         doc.add_paragraph()
+        doc.add_paragraph()
+        
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     response['Content-Disposition'] = 'attachment; filename="VVC_Meeting_Export.docx"'
@@ -2858,7 +2817,7 @@ def proforma_download_view(request, pk):
 
 #boat patrol download view
 @login_required
-def boat_patrol_download(request, pk):
+def boat_patrol_download_view(request, pk):
     case = get_object_or_404(BoatPatrol, pk=pk, user=request.user)
 
     doc = Document()
@@ -2917,6 +2876,18 @@ def vvc_download_view(request, pk):
     add_row('Conducted By', case.conducted_by)
     add_row('Details', case.vvc_details if case.vvc_details else '')
 
+    doc.add_paragraph()
+
+    # Add Seizure Image if available
+    if case.vvc_image:
+        doc.add_paragraph("VVC Image:")
+
+        try:
+            image_path = case.vvc_image.path
+            doc.add_picture(image_path, width=Inches(2.0))  # Adjust width as needed
+        except Exception as e:
+            doc.add_paragraph(f"Image could not be loaded: {e}")
+
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     filename = f"VVC_Meeting_{case.id}.docx"
     response['Content-Disposition'] = f'attachment; filename={filename}'
@@ -2925,7 +2896,7 @@ def vvc_download_view(request, pk):
 
 # atv doanload view 
 @login_required
-def atv_patrol_download(request, pk):
+def atv_patrol_download_view(request, pk):
     case = get_object_or_404(Atvpatrol, pk=pk, user=request.user)
 
     doc = Document()
@@ -2961,7 +2932,7 @@ def atv_patrol_download(request, pk):
 
 # Vehicle Check Checkpost download view
 @login_required
-def vehicle_checkpost_download(request, pk):
+def vehicle_checkpost_download_view(request, pk):
     case = get_object_or_404(VehicleCheckPost, pk=pk, user=request.user)
 
     doc = Document()
@@ -3240,7 +3211,7 @@ def proforma_edit_view(request, pk):
 #onroad vehicle status edit
 @login_required
 def onroad_vehicle_status_edit_view(request, pk):
-    case = get_object_or_404(OnRoadVehicleStatus, pk=pk, user=request.user)
+    case = get_object_or_404(OnRoadVehicleStatus, pk=pk)
     if request.method == 'POST':
         form = OnRoadVehicleStatusForm(request.POST, instance=case)
         if form.is_valid():
@@ -3255,7 +3226,7 @@ def onroad_vehicle_status_edit_view(request, pk):
 #owater vehicle status edit
 @login_required
 def onwater_vehicle_status_edit_view(request, pk):
-    case = get_object_or_404(OnWaterVehicleStatus, pk=pk, user=request.user)
+    case = get_object_or_404(OnWaterVehicleStatus, pk=pk)
     if request.method == 'POST':
         form = OnWaterVehicleStatusForm(request.POST, instance=case)
         if form.is_valid():
@@ -3439,14 +3410,14 @@ def proforma_delete_view(request, pk):
 
 @login_required
 def onroad_vehicle_status_delete_view(request, pk):
-    obj = get_object_or_404(OnRoadVehicleStatus, pk=pk,user=request.user)
+    obj = get_object_or_404(OnRoadVehicleStatus, pk=pk)
     obj.delete()
     messages.success(request, 'On Road Vehicle Status record deleted successfully.')
     return redirect('vehicle_status_summary')
 
 @login_required
 def onwater_vehicle_status_delete_view(request, pk):
-    obj = get_object_or_404(OnWaterVehicleStatus, pk=pk,user=request.user)
+    obj = get_object_or_404(OnWaterVehicleStatus, pk=pk)
     obj.delete()
     messages.success(request, 'Boat  Status record deleted successfully.')
     return redirect('vehicle_status_summary')

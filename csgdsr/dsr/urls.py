@@ -58,9 +58,7 @@ urlpatterns = [
 
     #categories forms
     #Officer
-    path('officer_form/', views.officer_form_view, name='officer_form'),
-    #Seized Item Category
-    path('seized_item_category_form/', views.seized_item_category_form_view, name='seized_item_category_form'),
+
     #checkpost
     path('add_checkpost/', views.add_checkpost, name='add_checkpost'),
     #Other_Agencies
