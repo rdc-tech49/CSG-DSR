@@ -1329,6 +1329,70 @@ def ajax_search_arrest_slfishermen(request):
     ]
     return JsonResponse(data, safe=False)
 
+#search for vvc details 
+@login_required
+def vvc_ajax_search_view(request):    
+    query = request.GET.get('q', '').strip()
+    cases = VVCmeeting.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(date_of_vvc__icontains=query) |
+            Q(village_name__icontains=query) 
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'date_of_vvc': case.date_of_vvc,
+            'village_name':case.village_name
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for beat details 
+@login_required
+def beat_ajax_search_view(request):    
+    query = request.GET.get('q', '').strip()
+    cases = BeatDetails.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(date_of_beat__icontains=query) 
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'date_of_beat': case.date_of_beat
+   
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
+#search for proforma 
+@login_required
+def proforma_ajax_search_view(request):    
+    query = request.GET.get('q', '').strip()
+    cases = Proforma.objects.filter(user=request.user)
+
+    if query:
+        cases = cases.filter(
+            Q(date_of_proforma__icontains=query) 
+        )
+
+    data = [
+        {
+            'id': case.id,
+            'date_of_proforma': case.date_of_proforma
+   
+        }
+        for case in cases
+    ]
+    return JsonResponse(data, safe=False)
+
 #search for onroad vehicle status
 @login_required
 def onroad_vehicle_status_ajax_search_view(request):    
@@ -1480,14 +1544,6 @@ def vehicle_check_others_ajax_search_view(request):
         for case in cases
     ]
     return JsonResponse(data, safe=False)
-
-
-
-
-
-
-
-
 
 #exprt CSR to Word document
 @login_required
@@ -1962,6 +2018,304 @@ def arrest_slfishermen_export_word_view(request):
     doc.save(response)
     return response
 
+
+#export onroad vehicle status
+@login_required
+def onroad_vehicle_status_export_word_view(request):
+    vehicles = OnRoadVehicleStatus.objects.filter(mps_limit__name=request.user.username).order_by('vehicle_type')
+    doc = Document()
+
+    for vehicle in vehicles:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        fields = [
+            ("Vehicle Type", vehicle.get_vehicle_type_display()),
+            ("Vehicle Number", vehicle.vehicle_number),
+            ("Working Status", vehicle.get_working_status_display()),
+            ("MPS Limit", str(vehicle.mps_limit) if vehicle.mps_limit else ''),
+            ("Remarks", vehicle.remarks if vehicle.remarks else ''),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="OnRoad_Vehicle_Status.docx"'
+    doc.save(response)
+    return response
+
+#export boat status as word
+@login_required
+def onwater_vehicle_status_export_word_view(request):
+    boats = OnWaterVehicleStatus.objects.filter(mps_limit__name=request.user.username).order_by('boat_type')
+    doc = Document()
+
+    for boat in boats:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        fields = [
+            ("Boat Type", boat.get_boat_type_display()),
+            ("Boat Number", boat.boat_number if boat.boat_number else ''),
+            ("Working Status", boat.get_working_status_display()),
+            ("MPS Limit", str(boat.mps_limit) if boat.mps_limit else ''),
+            ("Remarks", boat.remarks if boat.remarks else ''),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="OnWater_Vehicle_Status.docx"'
+    doc.save(response)
+    return response
+
+#vvc meeting export word
+@login_required
+def vvc_export_word_view(request):
+    meetings = VVCmeeting.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_vvc')
+    doc = Document()
+
+    for meeting in meetings:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        fields = [
+            ("Date of VVC Meeting", meeting.date_of_vvc.strftime('%d-%m-%Y') if meeting.date_of_vvc else ''),
+            ("Village Name", meeting.village_name),
+            ("Number of Villagers Participated", str(meeting.number_of_villagers) if meeting.number_of_villagers else ''),
+            ("Conducted By", meeting.conducted_by),
+            ("MPS Limit", str(meeting.mps_limit) if meeting.mps_limit else ''),
+            ("VVC Details", meeting.vvc_details if meeting.vvc_details else ''),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="VVC_Meeting_Export.docx"'
+    doc.save(response)
+    return response
+
+# beat exort word view
+@login_required
+def beat_export_word_view(request):
+    beats = BeatDetails.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_beat')
+    doc = Document()
+
+    for beat in beats:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        fields = [
+            ("Date of Beat", beat.date_of_beat.strftime('%d-%m-%Y') if beat.date_of_beat else ''),
+            ("MPS Limit", str(beat.mps_limit) if beat.mps_limit else ''),
+            ("Day Beat Count", str(beat.day_beat_count)),
+            ("Night Beat Count", str(beat.night_beat_count)),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Beat_Details_Export.docx"'
+    doc.save(response)
+    return response
+
+#proforma export word 
+@login_required
+def proforma_export_word_view(request):
+    proformas = Proforma.objects.filter(user=request.user).order_by('-date_of_proforma')
+    doc = Document()
+
+    for pro in proformas:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        fields = [
+            ("Date of Proforma", pro.date_of_proforma.strftime('%d-%m-%Y') if pro.date_of_proforma else ''),
+            ("MPS Visited", str(pro.mps_visited)),
+            ("Check Posts Checked", str(pro.check_post_checked)),
+            ("Boat Guards Checked", str(pro.boat_guard_checked)),
+            ("VVC Meetings Conducted", str(pro.vvc_meeting_conducted)),
+            ("Villages Visited", str(pro.villages_visited)),
+            ("Meetings Attended", str(pro.meetings_attended)),
+            ("Awareness Programs Conducted", str(pro.awareness_programs_conducted)),
+            ("Coastal Security Exercises Conducted", str(pro.coastal_security_exercises_conducted)),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Proforma_Export.docx"'
+    doc.save(response)
+    return response
+
+#boat patrol export view
+@login_required
+def boat_patrol_export_word_view(request):
+    patrols = BoatPatrol.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_patrol')
+    doc = Document()
+
+    for patrol in patrols:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        fields = [
+            ("Date of Patrol", patrol.date_of_patrol.strftime('%d-%m-%Y') if patrol.date_of_patrol else ''),
+            ("Patrol Officer", str(patrol.patrol_officer) if patrol.patrol_officer else ''),
+            ("Boat Type", patrol.get_boat_type_display()),
+            ("Boat Number", patrol.boat_number if patrol.boat_number else ''),
+            ("Patrol Time", f"{patrol.patrol_start_time.strftime('%H:%M')} - {patrol.patrol_end_time.strftime('%H:%M')} hrs"),
+            ("Place of Patrol", patrol.patrol_place),
+            ("MPS Limit", str(patrol.mps_limit) if patrol.mps_limit else ''),
+            ("Number of Boats Checked", str(patrol.numberof_boats_checked)),
+            ("Registration Number(s) of Boats Checked", patrol.registration_numberofboats_checked if patrol.registration_numberofboats_checked else ''),
+            ("Remarks", patrol.remarks if patrol.remarks else ''),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Boat_Patrol_Export.docx"'
+    doc.save(response)
+    return response
+
+#atv patrol export word
+@login_required
+def atv_patrol_export_word_view(request):
+    patrols = Atvpatrol.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_patrol')
+    doc = Document()
+
+    for patrol in patrols:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        fields = [
+            ("Date of Patrol", patrol.date_of_patrol.strftime('%d-%m-%Y') if patrol.date_of_patrol else ''),
+            ("Patrol Officer", patrol.patrol_officer),
+            ("ATV Number", patrol.atv_number if patrol.atv_number else ''),
+            ("Patrol Time", f"{patrol.patrol_start_time.strftime('%H:%M')} - {patrol.patrol_end_time.strftime('%H:%M')} hrs"),
+            ("Place of Patrol", patrol.patrol_place),
+            ("MPS Limit", str(patrol.mps_limit) if patrol.mps_limit else ''),
+            ("Remarks", patrol.remarks if patrol.remarks else ''),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="ATV_Patrol_Export.docx"'
+    doc.save(response)
+    return response
+
+#vehicle check -post export word 
+@login_required
+def vehicle_checkpost_export_word_view(request):
+    checks = VehicleCheckPost.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_check')
+    doc = Document()
+
+    for check in checks:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        fields = [
+            ("Date of Check", check.date_of_check.strftime('%d-%m-%Y') if check.date_of_check else ''),
+            ("Officer", str(check.officer) if check.officer else ''),
+            ("Time of Check", f"{check.vehicle_check_start_time.strftime('%H:%M')} - {check.vehicle_check_end_time.strftime('%H:%M')} hrs"),
+            ("Check Post", str(check.check_post)),
+            ("MPS Limit", str(check.mps_limit) if check.mps_limit else ''),
+            ("Number of Vehicles Checked", str(check.number_of_vehicles_checked)),
+            ("Registration Numbers", check.registration_numbers if check.registration_numbers else ''),
+            ("Remarks", check.remarks if check.remarks else ''),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Vehicle_Check_Post_Export.docx"'
+    doc.save(response)
+    return response
+
+#vehicle check others export word view
+@login_required
+def vehicle_check_others_export_word_view(request):
+    checks = VehicleCheckothers.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_check')
+    doc = Document()
+
+    for check in checks:
+        table = doc.add_table(rows=0, cols=2)
+        table.style = 'Table Grid'
+
+        fields = [
+            ("Date of Check", check.date_of_check.strftime('%d-%m-%Y') if check.date_of_check else ''),
+            ("Officer", str(check.officer) if check.officer else ''),
+            ("Time of Check", f"{check.vehicle_check_start_time.strftime('%H:%M')} - {check.vehicle_check_end_time.strftime('%H:%M')} hrs"),
+            ("Place of Check", check.place_of_check),
+            ("MPS Limit", str(check.mps_limit) if check.mps_limit else ''),
+            ("Number of Vehicles Checked", str(check.number_of_vehicles_checked)),
+            ("Registration Numbers", check.registration_numbers if check.registration_numbers else ''),
+            ("Remarks", check.remarks if check.remarks else ''),
+        ]
+
+        for label, value in fields:
+            row = table.add_row().cells
+            row[0].text = label
+            row[1].text = str(value)
+
+        doc.add_paragraph()
+        doc.add_paragraph()
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="Vehicle_Check_Others_Export.docx"'
+    doc.save(response)
+    return response
+
+
 #export individual CSR
 @login_required
 def csr_download_view(request, pk):
@@ -2387,8 +2741,294 @@ def arrest_slfishermen_download_view(request, pk):
     response['Content-Disposition'] = f'attachment; filename={filename}'
     doc.save(response)
     return response
-    
 
+# onroad vehicle download view
+@login_required
+def onroad_vehicle_status_download_view(request, pk):
+    case = get_object_or_404(OnRoadVehicleStatus, pk=pk)
+
+    doc = Document()
+    doc.add_heading('On Road Vehicle Status', level=1)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    add_row('MPS Limit', str(case.mps_limit))
+    add_row('Vehicle Type', case.get_vehicle_type_display())
+    add_row('Vehicle Number', case.vehicle_number)
+    add_row('Working Status', case.get_working_status_display())
+    add_row('Remarks', case.remarks if case.remarks else '')
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"OnRoad_Vehicle_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+#onwater @login_required
+def onwater_vehicle_status_download_view(request, pk):
+    case = get_object_or_404(OnWaterVehicleStatus, pk=pk)
+
+    doc = Document()
+    doc.add_heading('On Water Vehicle Status', level=1)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    add_row('MPS Limit', str(case.mps_limit))
+    add_row('Boat Type', case.get_boat_type_display())
+    add_row('Boat Number', case.boat_number if case.boat_number else 'N/A')
+    add_row('Working Status', case.get_working_status_display())
+    add_row('Remarks', case.remarks if case.remarks else '')
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"OnWater_Vehicle_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+#beat download view
+@login_required
+def beat_download_view(request, pk):
+    case = get_object_or_404(BeatDetails, pk=pk, user=request.user)
+
+    doc = Document()
+    doc.add_heading('Beat Details', level=1)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    add_row('Date of Beat', case.date_of_beat.strftime('%d-%m-%Y') if case.date_of_beat else '')
+    add_row('MPS Limit', str(case.mps_limit))
+    add_row('Day Beat Count', case.day_beat_count)
+    add_row('Night Beat Count', case.night_beat_count)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"Beat_Details_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+#proforma download
+@login_required
+def proforma_download_view(request, pk):
+    case = get_object_or_404(Proforma, pk=pk, user=request.user)
+
+    doc = Document()
+    doc.add_heading('Proforma Summary', level=1)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    add_row('Date of Proforma', case.date_of_proforma.strftime('%d-%m-%Y') if case.date_of_proforma else '')
+    add_row('MPS Visited', case.mps_visited)
+    add_row('Check Posts Checked', case.check_post_checked)
+    add_row('Boat Guard Checked', case.boat_guard_checked)
+    add_row('VVC Meetings Conducted', case.vvc_meeting_conducted)
+    add_row('Villages Visited', case.villages_visited)
+    add_row('Meetings Attended', case.meetings_attended)
+    add_row('Awareness Programs Conducted', case.awareness_programs_conducted)
+    add_row('Coastal Security Exercises Conducted', case.coastal_security_exercises_conducted)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"Proforma_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+#boat patrol download view
+@login_required
+def boat_patrol_download(request, pk):
+    case = get_object_or_404(BoatPatrol, pk=pk, user=request.user)
+
+    doc = Document()
+    doc.add_heading('Boat Patrol Details', level=1)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    # Add data
+    add_row('Patrol Officer', case.patrol_officer)
+    add_row('Boat Type', case.get_boat_type_display())
+    add_row('Boat Number', case.boat_number if case.boat_number else '-')
+    add_row('Date of Patrol', case.date_of_patrol.strftime('%d-%m-%Y') if case.date_of_patrol else '')
+
+    start_time = case.patrol_start_time.strftime('%H:%M')
+    end_time = case.patrol_end_time.strftime('%H:%M')
+    add_row('Time of Patrol', f"{start_time} - {end_time} hrs")
+
+    add_row('Place of Patrol', case.patrol_place)
+    add_row('MPS Limit', str(case.mps_limit))
+    add_row('No. of Boats Checked', str(case.numberof_boats_checked) if case.numberof_boats_checked else '')
+    add_row('Reg. No of Boats Checked', case.registration_numberofboats_checked if case.registration_numberofboats_checked else '-')
+    add_row('Remarks', case.remarks if case.remarks else '')
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"Boat_Patrol_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+# vvc meeting
+@login_required
+def vvc_download_view(request, pk):
+    case = get_object_or_404(VVCmeeting, pk=pk, user=request.user)
+
+    doc = Document()
+    doc.add_heading('VVC Meeting Details', level=1)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    add_row('Date of VVC', case.date_of_vvc.strftime('%d-%m-%Y') if case.date_of_vvc else '')
+    add_row('MPS Limit', str(case.mps_limit))
+    add_row('Village Name', case.village_name)
+    add_row('No. of Villagers Attended', case.number_of_villagers)
+    add_row('Conducted By', case.conducted_by)
+    add_row('Details', case.vvc_details if case.vvc_details else '')
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"VVC_Meeting_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+# atv doanload view 
+@login_required
+def atv_patrol_download(request, pk):
+    case = get_object_or_404(Atvpatrol, pk=pk, user=request.user)
+
+    doc = Document()
+    doc.add_heading('ATV Patrol Details', level=1)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    # Add data
+    add_row('Patrol Officer', case.patrol_officer)
+    add_row('ATV Number', case.atv_number if case.atv_number else '-')
+    add_row('Date of Patrol', case.date_of_patrol.strftime('%d-%m-%Y') if case.date_of_patrol else '')
+
+    start_time = case.patrol_start_time.strftime('%H:%M')
+    end_time = case.patrol_end_time.strftime('%H:%M')
+    add_row('Time of Patrol', f"{start_time} - {end_time} hrs")
+
+    add_row('Place of Patrol', case.patrol_place)
+    add_row('MPS Limit', str(case.mps_limit))
+    add_row('Remarks', case.remarks if case.remarks else '')
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"ATV_Patrol_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+
+# Vehicle Check Checkpost download view
+@login_required
+def vehicle_checkpost_download(request, pk):
+    case = get_object_or_404(VehicleCheckPost, pk=pk, user=request.user)
+
+    doc = Document()
+    doc.add_heading('Vehicle Check at Check Post Details', level=1)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    # Add data
+    add_row('Date of Check', case.date_of_check.strftime('%d-%m-%Y') if case.date_of_check else '')
+    
+    start_time = case.vehicle_check_start_time.strftime('%H:%M')
+    end_time = case.vehicle_check_end_time.strftime('%H:%M')
+    add_row('Time of Check', f"{start_time} - {end_time} hrs")
+
+    add_row('Place of Check', str(case.check_post))
+    add_row('MPS Limit', str(case.mps_limit))
+    add_row('Number of vehicles checked', str(case.number_of_vehicles_checked) if case.number_of_vehicles_checked else '')
+    add_row('Reg. No of vehicles checked', str(case.registration_numbers) if case.registration_numbers else '')
+    add_row('Remarks', case.remarks if case.remarks else '')
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"Vehicle_Check_Others_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+
+# Vehicle Check Others download view
+@login_required
+def vehicle_check_others_download_view(request, pk):
+    case = get_object_or_404(VehicleCheckothers, pk=pk, user=request.user)
+
+    doc = Document()
+    doc.add_heading('Vehicle Check (Others) Details', level=1)
+
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Table Grid'
+
+    def add_row(label, value):
+        row = table.add_row().cells
+        row[0].text = str(label)
+        row[1].text = str(value) if value else ''
+
+    # Add data
+    add_row('Date of Check', case.date_of_check.strftime('%d-%m-%Y') if case.date_of_check else '')
+
+    start_time = case.vehicle_check_start_time.strftime('%H:%M')
+    end_time = case.vehicle_check_end_time.strftime('%H:%M')
+    add_row('Time of Check', f"{start_time} - {end_time} hrs")
+
+    add_row('Place of Check', case.place_of_check)
+    add_row('MPS Limit', str(case.mps_limit))
+    add_row('Number of vehicles checked', str(case.number_of_vehicles_checked) if case.number_of_vehicles_checked else '')
+    add_row('Reg. No of vehicles checked', str(case.registration_numbers) if case.registration_numbers else '')
+    add_row('Remarks', case.remarks if case.remarks else '')
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    filename = f"Vehicle_Check_Others_{case.id}.docx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    doc.save(response)
+    return response
+   
 # CSR edit view
 @login_required
 def csr_edit_view(request, pk):
@@ -2552,6 +3192,141 @@ def arrest_slfishermen_edit_view(request, pk):
 
     return render(request, 'dsr/user/forms/arrest_slfishermen_form.html', {'form': form, 'edit_mode': True})
 
+#beat edit
+@login_required
+def beat_edit_view(request, pk):
+    case = get_object_or_404(BeatDetails, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = BeatDetailsForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Beat record updated successfully.')
+            return redirect('beat__vvc_summary')
+    else:
+        form = BeatDetailsForm(instance=case)
+
+    return render(request, 'dsr/user/forms/beat_Details_form.html', {'form': form, 'edit_mode': True})
+
+#vvc edit
+@login_required
+def vvc_edit_view(request, pk):
+    case = get_object_or_404(VVCmeeting, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = VVCmeetingForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'VVC record updated successfully.')
+            return redirect('beat__vvc_summary')
+    else:
+        form = VVCmeetingForm(instance=case)
+
+    return render(request, 'dsr/user/forms/vvc_meeting_form.html', {'form': form, 'edit_mode': True})
+
+#proforma edit
+@login_required
+def proforma_edit_view(request, pk):
+    case = get_object_or_404(Proforma, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = ProformaForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Proforma record updated successfully.')
+            return redirect('proforma_summary')
+    else:
+        form = ProformaForm(instance=case)
+
+    return render(request, 'dsr/user/forms/proforma_form.html', {'form': form, 'edit_mode': True})
+
+#onroad vehicle status edit
+@login_required
+def onroad_vehicle_status_edit_view(request, pk):
+    case = get_object_or_404(OnRoadVehicleStatus, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = OnRoadVehicleStatusForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Vehicle Status record updated successfully.')
+            return redirect('vehicle_status_summary')
+    else:
+        form = OnRoadVehicleStatusForm(instance=case)
+
+    return render(request, 'dsr/user/forms/onroad_vehicle_form.html', {'form': form, 'edit_mode': True})
+
+#owater vehicle status edit
+@login_required
+def onwater_vehicle_status_edit_view(request, pk):
+    case = get_object_or_404(OnWaterVehicleStatus, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = OnWaterVehicleStatusForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Boat  record updated successfully.')
+            return redirect('vehicle_status_summary')
+    else:
+        form = OnWaterVehicleStatusForm(instance=case)
+
+    return render(request, 'dsr/user/forms/onwater_vehicle_form.html', {'form': form, 'edit_mode': True})
+
+#boat patrol edit
+@login_required
+def boat_patrol_edit_view(request, pk):
+    case = get_object_or_404(BoatPatrol, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = BoatPatrolForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Boat Patrol record updated successfully.')
+            return redirect('vehicle_check_patrol_summary')
+    else:
+        form = BoatPatrolForm(instance=case)
+
+    return render(request, 'dsr/user/forms/boat_patrol_form.html', {'form': form, 'edit_mode': True})
+
+#atv patrol  edit
+@login_required
+def atv_patrol_edit_view(request, pk):
+    case = get_object_or_404(Atvpatrol, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = AtvpatrolForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'ATV Patrol record updated successfully.')
+            return redirect('vehicle_check_patrol_summary')
+    else:
+        form = AtvpatrolForm(instance=case)
+
+    return render(request, 'dsr/user/forms/atv_patrol_form.html', {'form': form, 'edit_mode': True})
+
+#vehicle check -checkpost edit
+@login_required
+def vehicle_checkpost_edit_view(request, pk):
+    case = get_object_or_404(VehicleCheckPost, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = VehicleCheckPostForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Vehicle check  record updated successfully.')
+            return redirect('vehicle_check_patrol_summary')
+    else:
+        form = VehicleCheckPostForm(instance=case)
+
+    return render(request, 'dsr/user/forms/vehicle_checkport_form.html', {'form': form, 'edit_mode': True})
+
+#vehicle check others edit
+@login_required
+def vehicle_check_others_edit_view(request, pk):
+    case = get_object_or_404(VehicleCheckothers, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = VehicleCheckothersForm(request.POST, instance=case)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Vehicle check record updated successfully.')
+            return redirect('vehicle_check_patrol_summary')
+    else:
+        form = VehicleCheckothersForm(instance=case)
+
+    return render(request, 'dsr/user/forms/vehicle_checkothers_form.html', {'form': form, 'edit_mode': True})
+
 #CSR delete view
 @login_required
 def csr_delete_view(request, pk):
@@ -2634,6 +3409,74 @@ def delete_arrest_slfishermen(request, pk):
     messages.success(request, 'SL Fishermen arrest record deleted successfully.')
     return redirect('fishermen_attack_arrest_summary')
 
+@login_required
+def delete_arresbeat_delete_viewt_slfishermen(request, pk):
+    obj = get_object_or_404(BeatDetails, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'Beat record deleted successfully.')
+    return redirect('beat__vvc_summary')
 
+@login_required
+def beat_delete_view(request, pk):
+    obj = get_object_or_404(BeatDetails, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'Beat record deleted successfully.')
+    return redirect('beat__vvc_summary')
+
+@login_required
+def vvc_delete_view(request, pk):
+    obj = get_object_or_404(VVCmeeting, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'VVC record deleted successfully.')
+    return redirect('beat__vvc_summary')
+
+@login_required
+def proforma_delete_view(request, pk):
+    obj = get_object_or_404(Proforma, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'Proforma record deleted successfully.')
+    return redirect('proforma_summary')
+
+@login_required
+def onroad_vehicle_status_delete_view(request, pk):
+    obj = get_object_or_404(OnRoadVehicleStatus, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'On Road Vehicle Status record deleted successfully.')
+    return redirect('vehicle_status_summary')
+
+@login_required
+def onwater_vehicle_status_delete_view(request, pk):
+    obj = get_object_or_404(OnWaterVehicleStatus, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'Boat  Status record deleted successfully.')
+    return redirect('vehicle_status_summary')
+
+@login_required
+def boat_patrol_delete_view(request, pk):
+    obj = get_object_or_404(BoatPatrol, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'Boat  Patrol record deleted successfully.')
+    return redirect('vehicle_check_patrol_summary')
+
+@login_required
+def atv_patrol_delete_view(request, pk):
+    obj = get_object_or_404(Atvpatrol, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'ATV  Patrol record deleted successfully.')
+    return redirect('vehicle_check_patrol_summary')
+
+@login_required
+def vehicle_checkpost_delete_view(request, pk):
+    obj = get_object_or_404(VehicleCheckPost, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'Vehicle Check  record deleted successfully.')
+    return redirect('vehicle_check_patrol_summary')
+
+@login_required
+def vehicle_check_others_delete_view(request, pk):
+    obj = get_object_or_404(VehicleCheckothers, pk=pk,user=request.user)
+    obj.delete()
+    messages.success(request, 'Vehicle Check  record deleted successfully.')
+    return redirect('vehicle_check_patrol_summary')
 
 
