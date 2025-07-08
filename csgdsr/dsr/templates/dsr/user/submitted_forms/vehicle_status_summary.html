@@ -45,7 +45,8 @@
         {% for record in onroad %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ record.vehicle_type }}</td>
+            <td>{{ record.get_vehicle_type_display }}</td>
+            {% comment %} <td>{{ record.vehicle_type }}</td> {% endcomment %}
             <td>
               <a href="{% url 'onroad_vehicle_status_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.vehicle_number }}
@@ -98,7 +99,8 @@
         {% for record in onwater %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ record.boat_type }}</td>
+            <td>{{ record.get_boat_type_display }}</td>
+            {% comment %} <td>{{ record.boat_type }}</td> {% endcomment %}
             <td>
               <a href="{% url 'onwater_vehicle_status_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.boat_number }}

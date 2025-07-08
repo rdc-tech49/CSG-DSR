@@ -354,7 +354,7 @@ class ArrestOfSLFishermen(models.Model):
         return f"{self.number_of_SLFishermen_arrested} - {self.date_of_arrest}"
 
 class OnRoadVehicleStatus(models.Model):
-    VEHICLE_TYPE_CHOICES = [('TWO_WHEELER', 'Two Wheeler'),('FOUR_WHEELER', 'Four Wheeler'),('ATV', 'ATV (All-Terrain Vehicle)'),]
+    VEHICLE_TYPE_CHOICES = [('TWO_WHEELER', 'Two Wheeler'),('FOUR_WHEELER', 'Four Wheeler'),('ATV', 'ATV'),]
     WORKING_STATUS_CHOICES = [('WORKING', 'Working'),('NOT_WORKING', 'Not Working'),('CONDEMNED', 'Condemned'),('Other', 'Other')]
     mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     vehicle_type = models.CharField(max_length=20, choices=VEHICLE_TYPE_CHOICES)
@@ -364,7 +364,7 @@ class OnRoadVehicleStatus(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.vehicle_type} - {self.vehicle_number}"
+        return f"{self.get_vehicle_type_display()} - {self.vehicle_number}"
 
 class OnWaterVehicleStatus(models.Model):
     BOAT_TYPE_CHOICES = [('12_TON_BOAT', '12 Ton Boat'),('5_TON_BOAT', '5 Ton Boat'),('JET_SKI', 'Jet Ski'),('JET_BOAT', 'Jet Boat'),('AMPHIBIOUS_CRAFT', 'Amphibious Craft')]
@@ -424,7 +424,7 @@ class BoatPatrol(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     patrol_officer = models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
     boat_type = models.CharField(max_length=50, choices=[('12_TON_BOAT', '12 Ton Boat'), ('5_TON_BOAT', '5 Ton Boat'), ('JET_SKI', 'Jet Ski'), ('JET_BOAT', 'Jet Boat'), ('AMPHIBIOUS_CRAFT', 'Amphibious Craft')])
-    boat_number = models.CharField(max_length=100,blank=True, null=True)
+    boat_number = models.ForeignKey(        'OnWaterVehicleStatus',on_delete=models.SET_NULL,null=True,blank=True)    
     date_of_patrol = models.DateField()
     patrol_start_time = models.TimeField()
     patrol_end_time = models.TimeField()
@@ -441,7 +441,7 @@ class BoatPatrol(models.Model):
 class Atvpatrol(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     patrol_officer = models.CharField(max_length=200)
-    atv_number = models.CharField(max_length=100,blank=True, null=True)
+    atv_number = models.ForeignKey('OnRoadVehicleStatus',on_delete=models.SET_NULL,null=True,blank=True,limit_choices_to={'vehicle_type': 'ATV'},related_name='atv_patrols')
     date_of_patrol = models.DateField()
     patrol_start_time = models.TimeField()
     patrol_end_time = models.TimeField()

@@ -899,8 +899,8 @@ def fishermen_attack_arrest_summary(request):
 
 #vehicle status summary view
 def vehicle_status_summary_view(request):
-    onroad = OnRoadVehicleStatus.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
-    onwater = OnWaterVehicleStatus.objects.filter(mps_limit__name=request.user.username).order_by('-submitted_at')
+    onroad = OnRoadVehicleStatus.objects.all()
+    onwater = OnWaterVehicleStatus.objects.all()
 
     return render(request, 'dsr/user/submitted_forms/vehicle_status_summary.html', {
         'onroad': onroad,
@@ -1340,10 +1340,11 @@ def proforma_ajax_search_view(request):
     return JsonResponse(data, safe=False)
 
 #search for onroad vehicle status
+
 @login_required
 def onroad_vehicle_status_ajax_search_view(request):    
     query = request.GET.get('q', '').strip()
-    cases = OnRoadVehicleStatus.objects.filter(user=request.user)
+    cases = OnRoadVehicleStatus.objects.all()
 
     if query:
         cases = cases.filter(
@@ -1355,10 +1356,9 @@ def onroad_vehicle_status_ajax_search_view(request):
     data = [
         {
             'id': case.id,
-            'vehicle_type': case.vehicle_type,
+            'vehicle_type': case.get_vehicle_type_display(),
             'vehicle_number': case.vehicle_number,
             'working_status': case.working_status
-   
         }
         for case in cases
     ]
@@ -1368,7 +1368,7 @@ def onroad_vehicle_status_ajax_search_view(request):
 @login_required
 def onwater_vehicle_status_ajax_search_view(request):    
     query = request.GET.get('q', '').strip()
-    cases = OnWaterVehicleStatus.objects.filter(user=request.user)
+    cases = OnWaterVehicleStatus.objects.all()
 
     if query:
         cases = cases.filter(
@@ -1380,10 +1380,9 @@ def onwater_vehicle_status_ajax_search_view(request):
     data = [
         {
             'id': case.id,
-            'boat_type': case.boat_type,
+            'boat_type': case.get_boat_type_display(),
             'boat_number': case.boat_number,
             'working_status': case.working_status
-   
         }
         for case in cases
     ]
@@ -1393,7 +1392,7 @@ def onwater_vehicle_status_ajax_search_view(request):
 @login_required
 def boat_patrol_ajax_search(request):    
     query = request.GET.get('q', '').strip()
-    cases = BoatPatrol.objects.filter(user=request.user)
+    cases = BoatPatrol.objects.all
 
     if query:
         cases = cases.filter(

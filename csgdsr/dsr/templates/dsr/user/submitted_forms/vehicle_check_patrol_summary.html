@@ -52,8 +52,8 @@
               {{ record.date_of_patrol|date:"d-m-Y" }}
             </td>
             <td>{{ record.patrol_place }}</td>
-            <td>{{ record.boat_type }}</td>
-            <td>{{ record.boat_number }}</td>
+            <td>{{ record.get_boat_type_display }}</td>
+            <td>{{ record.boat_number.boat_number }}</td>
             <td>{{ record.numberof_boats_checked }}</td>
             <td>
               <a href="{% url 'boat_patrol_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
@@ -161,7 +161,7 @@
               <a href="{% url 'vehicle_checkpost_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_check|date:"d-m-Y" }}
             </td>
-            <td>{{ record.vehicle_check_start_time }} - {{vehicle_check_end_time}}</td>
+            <td>{{ record.vehicle_check_start_time|time:"H:i" }} - {{ record.vehicle_check_end_time|time:"H:i" }} hrs</td>
             <td>{{ record.check_post }}</td>
             <td>{{ record.number_of_vehicles_checked }}</td>
             
@@ -214,10 +214,11 @@
             <td>{{ forloop.counter }}</td>
             <td>
               <a href="{% url 'vehicle_check_others_download' record.id %}" class= "text-decoration-none" target="_blank">
-              {{ record.date_of_vehicleo|date:"d-m-Y" }}
+              {{ record.date_of_check|date:"d-m-Y" }}
             </td>
+            <td>{{ record.vehicle_check_start_time|time:"H:i" }} - {{ record.vehicle_check_end_time|time:"H:i" }} hrs</td>
             <td>{{ record.place_of_check }}</td>
-            <td>{{ record.vehicle_check_start_time }} - {{ record.vehicle_check_end_time }}</td>
+            
             <td>{{ record.number_of_vehicles_checked }}</td>
             <td>
               <a href="{% url 'vehicle_check_others_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>

@@ -707,13 +707,18 @@ class BoatPatrolForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'}),
         empty_label="Select Patrol Officer"
     )
+    boat_number = forms.ModelChoiceField(
+        queryset=OnWaterVehicleStatus.objects.exclude(boat_number__isnull=True).exclude(boat_number__exact=''),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False,
+        empty_label="Select Boat Number"
+    )
     
     class Meta:
         model = BoatPatrol
         exclude = ['submitted_at', 'user']
         widgets = {
             'boat_type': forms.Select(attrs={'class': 'form-control'}),
-            'boat_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Boat Number'}),
             'date_of_patrol': forms.DateInput(
                 attrs={'type': 'date', 'class': 'form-control'}),
             'patrol_start_time': forms.TimeInput(
@@ -741,12 +746,17 @@ class AtvpatrolForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'}),
         empty_label="Select Patrol Officer"
     )
+    atv_number = forms.ModelChoiceField(
+        queryset=OnRoadVehicleStatus.objects.filter(vehicle_type='ATV'),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select ATV Number"
+    )
+
     
     class Meta:
         model = Atvpatrol
         exclude = ['submitted_at', 'user']
         widgets = {
-            'atv_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter ATV Number'}),
             'date_of_patrol': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'patrol_start_time': forms.TimeInput(
                 attrs={'type': 'time', 'class': 'form-control'},
