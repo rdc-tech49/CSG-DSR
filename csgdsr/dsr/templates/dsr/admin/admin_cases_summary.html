@@ -1,6 +1,6 @@
-{% extends 'dsr/user/user_page.html' %}
+{% extends 'dsr/admin/admin_page.html' %}
 {% load static %}
-{% block usercontent %}
+{% block admincontent %} 
 {% if messages %}
   <div id="message-container">
     {% for message in messages %}
@@ -40,11 +40,11 @@
         <tr>
           <th>S.No</th>
           <th>CSR No.</th>
-          <th>MPS Limit</th>
+          <th>MPS</th>
           <th>D/R</th>
           
           <th>IO</th>
-          <th>Action</th>
+          <th>Gist</th>
         </tr>
       </thead>
       <tbody id="csr-table-body">
@@ -73,9 +73,11 @@
               {% endif %}
             </td>
             <td>
-              <a href="{% url 'csr_edit' entry.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'csr_delete' entry.id %}" class="btn btn-sm btn-danger"
-                 onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+              {%if entry.gist_of_petition|stringformat:"s"|length > 15 %}
+              {{ entry.gist_of_petition|slice:":15" }}...
+              {% else %}
+                {{ entry.gist_of_petition }}
+              {% endif %}
             </td>
           </tr>
         {% empty %}
@@ -114,10 +116,9 @@
           <th>PS Limit</th>
           <th>D/O</th>
           <th>D/R</th>
-          
           <th>IO</th>
           <th>Transfered to</th>
-          <th>Action</th>
+          <th>Gist</th>
         </tr>
       </thead>
       <tbody id="bnss194-table-body">
@@ -153,9 +154,15 @@
             {% endif %}
           </td>
           <td>
-            <a href="{% url 'bnss_missing_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
-            <a href="{% url 'bnss_missing_delete' case.id %}" class="btn btn-sm btn-danger"
-              onclick="return confirm('Are you sure?')">Delete</a>
+            {% if case.gist_of_case %}
+              {% if case.gist_of_case|stringformat:"s"|length > 10 %}
+                {{ case.gist_of_case|slice:":10" }}...
+              {% else %}
+                {{ case.gist_of_case }}
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
           </td>
         </tr>
         {% empty %}
@@ -195,7 +202,7 @@
           
           <th>IO</th>
           <th>Transfered to</th>
-          <th>Action</th>
+          <th>Gist</th>
         </tr>
       </thead>
       <tbody id="missing-table-body">
@@ -210,6 +217,7 @@
           </td>
           <td>{{ case.mps_limit }}</td>
           <td>{{ case.ps_limit }}</td>
+
           <td>{{ case.date_of_occurrence|date:"d-m-Y" }}</td>
           <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
           <td>
@@ -231,9 +239,15 @@
             {% endif %}
           </td>
           <td>
-            <a href="{% url 'bnss_missing_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
-            <a href="{% url 'bnss_missing_delete' case.id %}" class="btn btn-sm btn-danger"
-              onclick="return confirm('Are you sure?')">Delete</a>
+            {% if case.gist_of_case %}
+              {% if case.gist_of_case|stringformat:"s"|length > 10 %}
+                {{ case.gist_of_case|slice:":10" }}...
+              {% else %}
+                {{ case.gist_of_case }}
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
           </td>
         </tr>
         {% empty %}
@@ -272,9 +286,10 @@
           <th>PS Limit</th>
           <th>D/O</th>
           <th>D/R</th>
+          
           <th>IO</th>
           <th>Trasfered to</th>
-          <th>Action</th>
+          <th>Gist</th>
         </tr>
       </thead>
       <tbody id="othercases-table-body">
@@ -294,6 +309,7 @@
           <td>{{ case.ps_limit }}</td>
           <td>{{ case.date_of_occurrence|date:"d-m-Y"}}</td>
           <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
+          
           <td>
               {%if case.io|stringformat:"s"|length > 15 %}
               {{ case.io|slice:":15" }}...
@@ -313,13 +329,19 @@
             {% endif %}
           </td>
           <td>
-            <a href="{% url 'othercases_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
-            <a href="{% url 'othercases_delete' case.id %}" class="btn btn-sm btn-danger"
-              onclick="return confirm('Are you sure?')">Delete</a>
+            {% if case.gist_of_case %}
+              {% if case.gist_of_case|stringformat:"s"|length > 10 %}
+                {{ case.gist_of_case|slice:":10" }}...
+              {% else %}
+                {{ case.gist_of_case }}
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8">No cases found.</td></tr>
+        <tr><td colspan="9">No cases found.</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -354,8 +376,9 @@
           <th>PS Limit</th>
           <th>D/O</th>
           <th>D/R</th>
+          
           <th>IO</th>
-          <th>Action</th>
+          <th>Gist</th>
         </tr>
       </thead>
       <tbody id="maritime-table-body">
@@ -371,21 +394,24 @@
           <td>{{ case.ps_limit }}</td>
           <td>{{ case.date_of_occurrence|date:"d-m-Y"}}</td>
           <td>{{ case.date_of_receipt|date:"d-m-Y" }}</td>
+          
           <td>
               {%if case.io|stringformat:"s"|length > 15 %}
               {{ case.io|slice:":15" }}...
               {% else %}
                 {{ case.io }}
               {% endif %}
-            </td>
+          </td>
           <td>
-            <a href="{% url 'maritimeact_edit' case.id %}" class="btn btn-sm btn-primary">Edit</a>
-            <a href="{% url 'maritimeact_delete' case.id %}" class="btn btn-sm btn-danger"
-              onclick="return confirm('Are you sure?')">Delete</a>
+            {%if case.gist_of_case|stringformat:"s"|length > 15 %}
+              {{ case.gist_of_case|slice:":15" }}...
+              {% else %}
+                {{ case.gist_of_case }}
+              {% endif %}
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8">No Maritime Act cases found.</td></tr>
+        <tr><td colspan="9">No Maritime Act cases found.</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -415,9 +441,7 @@
                 
                 <td>${entry.io}</td>
                 <td>
-                  <a href="/csr/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/csr/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                  ${entry.gist_of_petition}
                 </td>
               </tr>`;
           });
@@ -453,9 +477,7 @@
                 <td>${entry.io}</td>
                 <td>${entry.transfered_to}</td>
                 <td>
-                  <a href="/bnss-missing/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/bnss-missing/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                  ${entry.gist_of_case}
                 </td>
               </tr>`;
           });
@@ -486,12 +508,11 @@
                 <td>${entry.ps_limit}</td>
                 <td>${entry.date_of_occurrence}</td>
                 <td>${entry.date_of_receipt}</td>
+                
                 <td>${entry.io}</td>
                 <td>${entry.transfered_to}</td>
                 <td>
-                  <a href="/bnss-missing/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/bnss-missing/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                  ${entry.gist_of_case}
                 </td>
               </tr>`;
           });
@@ -522,12 +543,11 @@
                 <td>${entry.ps_limit}</td>
                 <td>${entry.date_of_occurrence}</td>
                 <td>${entry.date_of_receipt}</td>
+                
                 <td>${entry.io}</td>
                 <td>${entry.transfered_to}</td>
                 <td>
-                  <a href="/othercases/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/othercases/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                  ${entry.gist_of_case}
                 </td>
               </tr>`;
           });
@@ -559,11 +579,10 @@
                 <td>${entry.ps_limit}</td>
                 <td>${entry.date_of_occurrence}</td>
                 <td>${entry.date_of_receipt}</td>
+                
                 <td>${entry.io}</td>
                 <td>
-                  <a href="/maritimeact/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/maritimeact/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                     onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                  ${entry.gist_of_case}
                 </td>
               </tr>`;
           });

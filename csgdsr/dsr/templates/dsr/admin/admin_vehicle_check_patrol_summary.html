@@ -1,6 +1,6 @@
-{% extends 'dsr/user/user_page.html' %}
+{% extends 'dsr/admin/admin_page.html' %}
 {% load static %}
-{% block usercontent %}
+{% block admincontent %}
 {% if messages %}
   <div id="message-container">
     {% for message in messages %}
@@ -40,7 +40,7 @@
           <th>Boat Type</th>
           <th>Baot No.</th>
           <th>Boats Checked</th>
-          <th>Action</th>
+          <th>MPS Limit</th>
         </tr>
       </thead>
       <tbody id="boatpatrol-table-body">
@@ -55,10 +55,8 @@
             <td>{{ record.get_boat_type_display }}</td>
             <td>{{ record.boat_number.boat_number }}</td>
             <td>{{ record.numberof_boats_checked }}</td>
-            <td>
-              <a href="{% url 'boat_patrol_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'boat_patrol_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
-            </td>
+            <td>{{ record.mps_limit }}</td>
+              
           </tr>
         {% empty %}
           <tr>
@@ -95,7 +93,7 @@
           <th>Date</th>
           <th>Place</th>
           <th>ATV No.</th>
-          <th>Action</th>
+          <th>MPS Limit</th>
         </tr>
       </thead>
       <tbody id="atv-table-body">
@@ -110,8 +108,7 @@
             <td>{{ record.atv_number }}</td>
             
             <td>
-              <a href="{% url 'atv_patrol_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'atv_patrol_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+              <td>{{ record.mps_limit }}</td>
             </td>
           </tr>
         {% empty %}
@@ -150,7 +147,7 @@
           <th>Time</th>
           <th>Check Post</th>
           <th>Vehicles Checked</th>
-          <th>Action</th>
+          <th>MPS Limit</th>
         </tr>
       </thead>
       <tbody id="vehiclec-table-body">
@@ -166,8 +163,7 @@
             <td>{{ record.number_of_vehicles_checked }}</td>
             
             <td>
-              <a href="{% url 'vehicle_checkpost_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'vehicle_checkpost_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+              <td>{{ record.mps_limit }}</td>
             </td>
           </tr>
         {% empty %}
@@ -205,7 +201,7 @@
           <th>Time</th>
           <th>Place</th>
           <th>Vehicles Checked</th>
-          <th>Action</th>
+          <th>MPS Limit</th>
         </tr>
       </thead>
       <tbody id="vehicleo-table-body">
@@ -221,8 +217,7 @@
             
             <td>{{ record.number_of_vehicles_checked }}</td>
             <td>
-              <a href="{% url 'vehicle_check_others_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'vehicle_check_others_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+              <td>{{ record.mps_limit }}</td>
             </td>
           </tr>
         {% empty %}
@@ -262,11 +257,7 @@
                 <td>${entry.boat_type}</td>
                 <td>${entry.boat_number}</td>
                 <td>${entry.numberof_boats_checked}</td>
-                <td>
-                  <a href="/boat_patrol/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/boat_patrol/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
-                </td>
+                <td>${entry.mps_limit}</td>
               </tr>`;
           });
 
@@ -299,11 +290,7 @@
                 <td><a href="/atv_patrol/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_patrol}</a></td>
                 <td>${entry.patrol_place}</td>
                 <td>${entry.atv_number}</td>
-                <td>
-                  <a href="/atv_patrol/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/atv_patrol/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
-                </td>
+                <td>${entry.mps_limit}</td>
               </tr>`;
           });
 
@@ -337,12 +324,7 @@
                 <td>${entry.vehicle_check_start_time} - ${entry.vehicle_check_end_time} hrs </td>
                 <td>${entry.check_post}</td>
                 <td>${entry.number_of_vehicles_checked}</td>
-                
-                <td>
-                  <a href="/vehicle_checkpost/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/vehicle_checkpost/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
-                </td>
+                <td>${entry.mps_limit}</td>
               </tr>`;
           });
 
@@ -376,11 +358,7 @@
                 <td>${entry.vehicle_check_start_time} - ${entry.vehicle_check_end_time} hrs </td>
                 <td>${entry.place_of_check}</td>
                 <td>${entry.number_of_vehicles_checked}</td>
-                <td>
-                  <a href="/vehicle_check_others/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/vehicle_check_others/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
-                </td>
+                <td>${entry.mps_limit}</td>
               </tr>`;
           });
 

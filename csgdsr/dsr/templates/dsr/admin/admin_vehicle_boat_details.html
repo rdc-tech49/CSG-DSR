@@ -1,0 +1,142 @@
+{% extends 'dsr/admin/admin_page.html' %}
+{% load static %}
+
+{% block admincontent %}
+
+<div class="container mt-4">
+
+  <h1 class="mb-4">Vehicle & Boat Management</h1>
+  <hr class="my-4">
+
+
+  {% if messages %}
+    <div id="message-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- vehicle Form -->
+  <h2 class="mb-4">Vehicle Management</h2>
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_vehicle %} Edit vehicle {% else %} Add vehicle {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_vehicle %}{% url 'edit_vehicle' vehicle_id %}{% else %}{% url 'admin_vehicle_boat_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ vehicle_form.as_p }}
+        <button type="submit" name="vehicle_submit" class="btn btn-primary">{% if edit_vehicle %}Update{% else %}Add{% endif %} vehicle</button>
+        {% if edit_vehicle %}
+          <a href="{% url 'admin_vehicle_boat_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- vehicle Table -->
+  <h4>vehicle List</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Vehicle Type</th>
+          <th>Vehicle Number</th>
+          <th>Alloted to</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vehicle in vehicle_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ vehicle.get_vehicle_type_display }}</td>
+            <td>{{ vehicle.vehicle_number }}</td>
+            <td>{{ vehicle.alloted_to }}</td>
+            <td>{{ vehicle.working_status }}</td>
+            <td>
+              <a href="{% url 'edit_vehicle' vehicle.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center">No vehicle entries found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- boat Form -->
+   <h2 class="mb-4">Boat Management</h2>
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_boat %} Edit Boat {% else %} Add boat {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_boat %}{% url 'edit_boat' boat_id %}{% else %}{% url 'admin_vehicle_boat_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ boat_form.as_p }}
+        <button type="submit" name="boat_submit" class="btn btn-primary">{% if edit_boat %}Update{% else %}Add{% endif %} Boat</button>
+        {% if edit_boat %}
+          <a href="{% url 'admin_vehicle_boat_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- boat Table -->
+  <h4>Boat List</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Boat Type</th>
+          <th>Boat Number</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for boat in boat_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ boat.get_boat_type_display }}</td>
+            <td>{{ boat.boat_number }}</td>
+            <td>{{ boat.working_status }}</td>
+            <td>
+              <a href="{% url 'edit_boat' boat.id %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">No boat entries found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+ 
+</div>
+
+<script>
+setTimeout(function() {
+  const alertBox = document.querySelector('#message-container .alert');
+  if (alertBox) {
+    alertBox.classList.remove('show');
+    alertBox.classList.add('hide');
+    setTimeout(() => alertBox.remove(), 500);
+  }
+}, 5000);
+</script>
+
+{% endblock %}

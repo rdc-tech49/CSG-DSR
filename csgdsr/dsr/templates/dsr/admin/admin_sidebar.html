@@ -45,6 +45,13 @@
           </li>
 
           <li>
+            <a href="{% url 'admin_vehicle_boat_page' %}" class="dropdown-item d-flex align-items-center {% if request.resolver_match.url_name == 'admin_vehicle_boat_page' %}active{% else %}text-white{% endif %}">
+              <i class="bi bi-ui-checks"></i>
+              <span class="ms-2">Vehicle & Boat</span>
+            </a>
+          </li>
+
+          <li>
             <a href="{% url 'admin_other_agencies_page' %}" class="dropdown-item  d-flex align-items-center {% if request.resolver_match.url_name == 'admin_other_agencies_page' %}active{% else %}text-white{% endif %}">
               <i class="bi bi-ui-checks"></i>
               <span class="ms-2">Other Agencies</span>
@@ -59,10 +66,36 @@
           </li>
         </ul>
       </li>
+      <hr>
+      <h3 class="ms-2">Reports</h3>
       <li>
-        <a href="{% url 'forms_page' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'forms_page' %}active{% else %}text-white{% endif %}">
+        <a href="{% url 'admin_cases_summary' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_cases_summary' %}active{% else %}text-white{% endif %}">
           <i class="bi bi-ui-checks"></i>
-          <span class="ms-2">Reports</span>
+          <span class="ms-2">Cases</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'admin_vvc_beat_proforma_summary' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_vvc_beat_proforma_summary' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-ui-checks"></i>
+          <span class="ms-2">VVC/ Beat /Proforma</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'admin_patrol_check_summary' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_patrol_check_summary' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-ui-checks"></i>
+          <span class="ms-2">Patrol/ Check </span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'admin_fishermen_attack_arrest_summary' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_fishermen_attack_arrest_summary' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-ui-checks"></i>
+          <span class="ms-2">Fishermen attack/arrests</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'admin_assets_summary' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'admin_assets_summary' %}active{% else %}text-white{% endif %}">
+          <i class="bi bi-ui-checks"></i>
+          <span class="ms-2">Assets</span>
         </a>
       </li>
 

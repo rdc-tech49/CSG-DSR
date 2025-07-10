@@ -185,7 +185,8 @@ class SeizedItemCategoryForm(forms.ModelForm):
             'item_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Item Name'}),
             'quantity_type': forms.Select(attrs={'class': 'form-control'}),
         }
-        
+
+
 # user interface forms 
 class CSRForm(forms.ModelForm):
     class Meta:
@@ -594,6 +595,7 @@ class OnRoadVehicleStatusForm(forms.ModelForm):
             'vehicle_type': forms.Select(attrs={'class': 'form-control'}),
             'vehicle_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Vehicle Number of vehicle checked'}),
             'working_status': forms.Select(attrs={'class': 'form-control'}),
+            'alloted_to': forms.TextInput(attrs={'class': 'form-control'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Enter Remarks'}),
         }
 

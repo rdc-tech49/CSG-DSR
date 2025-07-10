@@ -91,7 +91,7 @@ class MPS(models.Model):
     name = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
-        return self.name
+        return self.name.replace("_", " ")
 
 class PS(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -131,6 +131,7 @@ class SeizedItemCategory(models.Model):
     quantity_type = models.CharField(max_length=50, choices=[('kg', 'Kilograms'), ('liters', 'Liters'), ('nos', 'Numbers')])
     def __str__(self):
         return f"{self.item_name} - {self.quantity_type}"
+
 
 
 class CSR(models.Model):
@@ -356,10 +357,12 @@ class ArrestOfSLFishermen(models.Model):
 class OnRoadVehicleStatus(models.Model):
     VEHICLE_TYPE_CHOICES = [('TWO_WHEELER', 'Two Wheeler'),('FOUR_WHEELER', 'Four Wheeler'),('ATV', 'ATV'),]
     WORKING_STATUS_CHOICES = [('WORKING', 'Working'),('NOT_WORKING', 'Not Working'),('CONDEMNED', 'Condemned'),('Other', 'Other')]
-    mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
+    
     vehicle_type = models.CharField(max_length=20, choices=VEHICLE_TYPE_CHOICES)
     vehicle_number = models.CharField(max_length=100, unique=True)
     working_status = models.CharField(max_length=20, choices=WORKING_STATUS_CHOICES)
+    mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
+    alloted_to =  models.CharField(max_length=100,  null=True, blank=True,default="-")
     remarks = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
@@ -369,10 +372,11 @@ class OnRoadVehicleStatus(models.Model):
 class OnWaterVehicleStatus(models.Model):
     BOAT_TYPE_CHOICES = [('12_TON_BOAT', '12 Ton Boat'),('5_TON_BOAT', '5 Ton Boat'),('JET_SKI', 'Jet Ski'),('JET_BOAT', 'Jet Boat'),('AMPHIBIOUS_CRAFT', 'Amphibious Craft')]
     WORKING_STATUS_CHOICES = [('WORKING', 'Working'), ('NOT_WORKING', 'Not Working'), ('CONDEMNED', 'Condemned'),('Other', 'Other')]
-    mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
+    
     boat_type = models.CharField(max_length=50, choices=BOAT_TYPE_CHOICES)
     boat_number = models.CharField(max_length=100, unique=True, null=True, blank=True)
     working_status = models.CharField(max_length=20, choices=WORKING_STATUS_CHOICES)
+    mps_limit = models.ForeignKey(MPS, on_delete=models.SET_NULL, null=True, blank=True)
     remarks = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
@@ -407,6 +411,8 @@ class BeatDetails(models.Model):
 class Proforma(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)
     date_of_proforma = models.DateField()
+    officer=models.ForeignKey('Officer', on_delete=models.CASCADE,null=True, blank=True)
+
     mps_visited = models.IntegerField(default=0)
     check_post_checked = models.IntegerField(default=0)
     boat_guard_checked = models.IntegerField(default=0)

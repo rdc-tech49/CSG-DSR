@@ -1,6 +1,6 @@
-{% extends 'dsr/user/user_page.html' %}
+{% extends 'dsr/admin/admin_page.html' %}
 {% load static %}
-{% block usercontent %}
+{% block admincontent %}
 {% if messages %}
   <div id="message-container">
     {% for message in messages %}
@@ -36,13 +36,11 @@
         <tr>
           <th>S. No</th>
           <th>Date</th>
-          {% if user.is_superuser %}
-            <th>MPS Limit</th>
-          {% endif %}
+                      
+          <th>MPS Limit </th>
           <th>Village Name </th>
           <th>Number of Villagers</th>
           <th>View</th>
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody id="vvc-table-body">
@@ -53,9 +51,7 @@
               <a href="{% url 'vvc_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_vvc|date:"d-m-Y" }}
             </td>
-            {% if user.is_superuser %}
-              <td>{{ record.mps_limit }}</td>
-            {% endif %}
+            <td>{{ record.mps_limit }}</td>
             <td>{{ record.village_name }}</td>
             <td>{{ record.number_of_villagers }}</td>
             <td>
@@ -65,10 +61,7 @@
                 -
               {% endif %}
             </td>
-            <td>
-              <a href="{% url 'vvc_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'vvc_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
-            </td>
+            
           </tr>
         {% empty %}
           <tr>
@@ -103,9 +96,10 @@
         <tr>
           <th>S. No</th>
           <th>Date</th>
+          <th>MPS Limit</th>
           <th>Day Beat </th>
           <th>Night Beat </th>
-          <th>Actions</th>
+          
         </tr>
       </thead>
       <tbody id="beat-table-body">
@@ -116,12 +110,12 @@
               <a href="{% url 'beat_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_beat|date:"d-m-Y" }}
             </td>
+            <td>
+              {{ record.mps_limit }}
+            </td>
             <td>{{ record.day_beat_count }}</td>
             <td>{{ record.night_beat_count }}</td>
-            <td>
-              <a href="{% url 'beat_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
-              <a href="{% url 'beat_delete' record.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
-            </td>
+            
           </tr>
         {% empty %}
           <tr>
@@ -131,6 +125,70 @@
       </tbody>
     </table>
   </div>
+
+  {% comment %} Proforma summary  {% endcomment %}
+  <h3 class="mb-4">Proforma Records</h3>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" id="proforma-search" class="form-control" placeholder="Search by Date ">
+    </div>
+    <div class="col-md-3">
+      <button id="clear-proforma-search" class="btn btn-secondary w-100">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+    <div class="col-md-3 text-end">
+      <a href="{% url 'proforma_export_word' %}" class="btn btn-success">
+        <i class="bi bi-download"></i> Download All (Word)
+      </a>
+    </div>
+  </div>
+  <!-- Table container -->
+  <div class="table-responsive" id="proforma-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-striped align-middle text-center" id="proforma-table">
+      <thead class="table-dark">
+        <tr>
+          <th>S. No</th>
+          <th>Officer</th>
+          <th>Date</th>
+          <th>MPS</th>
+          <th>CheckPost</th>
+          <th>Boat Guard</th>
+          <th>VVC</th>
+          <th>Villages</th>
+          <th>Meetings</th>
+          <th>Awareness</th>
+          <th>CS Exercise</th>
+          
+        </tr>
+      </thead>
+      <tbody id="proforma-table-body">
+        {% for record in proforma_records %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ record.officer }}</td>
+            <td>
+              <a href="{% url 'proforma_download' record.id %}" class= "text-decoration-none" target="_blank">
+              {{ record.date_of_proforma|date:"d-m-Y" }}
+            </td>
+            <td>{{ record.mps_visited }}</td>
+            <td>{{ record.check_post_checked }}</td>
+            <td>{{ record.boat_guard_checked }}</td>
+            <td>{{ record.vvc_meeting_conducted }}</td>
+            <td>{{ record.villages_visited }}</td>
+            <td>{{ record.meetings_attended }}</td>
+            <td>{{ record.awareness_programs_conducted }}</td>
+            <td>{{ record.coastal_security_exercises_conducted }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="11" class="text-center">No records found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
 </div>
 
 {% comment %} script for vvc search {% endcomment %}
@@ -155,16 +213,15 @@
               <tr>
                 <td>${index + 1}</td>
                 <td><a href="/vvc/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_vvc}</a></td>
+                <td>
+                  ${entry.mps_limit}
+                </td>
                 <td>${entry.village_name}</td>
                 <td>${entry.number_of_villagers}</td>
                 <td>
                   ${entry.vvc_image ? `<a href="${entry.vvc_image}" download>Download</a>` : `-`}
                 </td>
-                <td>
-                  <a href="/vvc/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/vvc/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
-                </td>
+                
               </tr>`;
           });
 
@@ -194,14 +251,13 @@
               <tr>
                 <td>${index + 1}</td>
                 <td><a href="/beat/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_beat}</a></td>
+                <td>
+                  ${entry.mps_limit}
+                </td>
                 <td>${entry.day_beat_count}</td>
                 <td>${entry.night_beat_count}</td>
                 
-                <td>
-                  <a href="/beat/${entry.id}/edit/" class="btn btn-sm btn-primary">Edit</a>
-                  <a href="/beat/${entry.id}/delete/" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
-                </td>
+                
               </tr>`;
           });
 
@@ -209,4 +265,43 @@
       });
   });
 </script> 
+{% comment %} Script for Proforma Search {% endcomment %}
+<script>
+  document.getElementById('clear-proforma-search').addEventListener('click', function () {
+    location.reload();
+  });
+
+  document.getElementById('proforma-search').addEventListener('input', function () {
+    const query = this.value;
+    fetch(`/proforma/ajax-search/proforma/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('proforma-table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="11">No proforma entries found.</td></tr>';
+        } else {
+          data.forEach((entry, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${entry.officer}</td>
+                <td><a href="/proforma/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_proforma}</a></td>
+                <td>${entry.mps_visited}</td>
+                <td>${entry.check_post_checked}</td>
+                <td>${entry.boat_guard_checked}</td>
+                <td>${entry.vvc_meeting_conducted}</td>
+                <td>${entry.villages_visited}</td>
+                <td>${entry.meetings_attended}</td>
+                <td>${entry.awareness_programs_conducted}</td>
+                <td>${entry.coastal_security_exercises_conducted}</td>        
+              </tr>`;
+          });
+
+        }
+      });
+  });
+
+</script>
 {% endblock %}

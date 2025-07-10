@@ -47,11 +47,17 @@
         {% for record in forecast_records %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ record.date_of_forecast }}</td>
+            <td>{{ record.date_of_forecast |date:"d-m-Y"  }}</td>
             <td>
               <a href="{% url 'forecast_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.place_of_forecast }}</td>
-            <td>{{ record.forecast_details }}</td>
+            <td>
+              {% if record.forecast_details|length > 10 %}
+                {{ record.forecast_details|slice:":10" }}...
+              {% else %}
+                {{ record.forecast_details }}
+              {% endif %}
+            </td>
             <td>
               <a href="{% url 'forecast_edit' record.pk %}" class="btn btn-primary btn-sm">Edit</a>
               <a href="{% url 'forecast_delete' record.pk %}" class="btn btn-danger btn-sm">Delete</a>
@@ -87,8 +93,8 @@
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
-                <td> ${entry.date_of_forecast}</a></td>
-                <td><a href="/forecast/${entry.id}/download/" class="text-decoration-none" target="_blank">${entry.place_of_forecast}</td>
+                <td> ${entry.date_of_forecast}</td>
+                <td><a href="/forecast/${entry.id}/download/" class="text-decoration-none" target="_blank">${entry.place_of_forecast}</a></td>
                 <td>
                   ${entry.forecast_details}
                 </td>

@@ -37,6 +37,7 @@
           <th>S.No</th>
           <th>Type</th>
           <th>Vehicle Number</th>
+          <th>Alloted to</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
@@ -51,6 +52,7 @@
               <a href="{% url 'onroad_vehicle_status_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.vehicle_number }}
             </td>
+            <td>{{ record.alloted_to }}</td>
             <td>{{ record.working_status }}</td>
             <td>
               <a href="{% url 'onroad_vehicle_status_edit' record.id %}" class="btn btn-sm btn-primary">Edit</a>
@@ -59,7 +61,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="5" class="text-center">No records found.</td>
+            <td colspan="6" class="text-center">No records found.</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -137,7 +139,7 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5">No Rescue entries found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6">No Rescue entries found.</td></tr>';
         } else {
           data.forEach((entry, index) => {
             tbody.innerHTML += `
@@ -145,6 +147,7 @@
                 <td>${index + 1}</td>
                 <td><a href="/onroad_vehicle_status/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.vehicle_type}</a></td>
                 <td>${entry.vehicle_number}</td>
+                <td>${entry.alloted_to}</td>
                 <td>${entry.working_status}</td>
                 
                 <td>

@@ -41,6 +41,13 @@ urlpatterns = [
     path('admin_MPS_buildings/checkpost/edit/<int:checkpost_id>/', views.admin_MPS_buildings_view, name='edit_checkpost'),
     path('admin_MPS_buildings/ps/edit/<int:ps_id>/', views.admin_MPS_buildings_view, name='edit_ps'),
 
+    # admin vehicle boat 
+    path('admin_vehicle_boat/', views.admin_vehicle_boat_view, name='admin_vehicle_boat_page'),
+    path('admin_vehicle_boat/vehicle/edit/<int:vehicle_id>/', views.admin_vehicle_boat_view, name='edit_vehicle'),
+    path('admin_vehicle_boat/boat/edit/<int:boat_id>/', views.admin_vehicle_boat_view, name='edit_boat'),
+
+
+
     # admin other agencies 
     path('admin_other_agencies/', views.admin_other_agencies_view, name='admin_other_agencies_page'),
     path('admin_other_agencies/agency/edit/<int:agency_id>/', views.admin_other_agencies_view, name='edit_agency'),
@@ -49,6 +56,16 @@ urlpatterns = [
     # admin seizure
     path('admin_seizure_items/', views.admin_seizure_items_view, name='admin_seizure_items_page'),
     path('admin_seizure_items/edit/<int:item_id>/', views.admin_seizure_items_view, name='edit_seizure_item'),
+
+    #admin reports
+    path('admin_cases_summary/', views.admin_admin_cases_summary_view, name='admin_cases_summary'),
+    path('admin_vvc_beat_proforma_summary/', views.admin_vvc_beat_proforma_summary_view, name='admin_vvc_beat_proforma_summary'),
+    path('admin_patrol_check_summary/', views.admin_patrol_check_summary_view, name='admin_patrol_check_summary'),
+    path('admin_fishermen_attack_arrest_summary/', views.admin_fishermen_attack_arrest_summary_view, name='admin_fishermen_attack_arrest_summary'),
+    path('admin_assets_summary/', views.admin_assets_summary_view, name='admin_assets_summary'),
+
+
+
 
     # user page
     #dashboard

@@ -5,6 +5,7 @@ from docx.shared import Inches
 from django import forms
 from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser, SeizedItemCategory, PS, RescueAtBeach,RescueAtSea,Seizure,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen,OnRoadVehicleStatus,OnWaterVehicleStatus,VVCmeeting,BeatDetails,Proforma,BoatPatrol,VehicleCheckPost,Atvpatrol,VehicleCheckothers
 
+from django.utils.dateparse import parse_date
 
 from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm,PSForm, RescueAtBeachForm,RescueAtSeaForm,SeizureForm,ForecastForm,AttackOnTNFishermenForm,ArrestOfTNFishermenForm,ArrestOfSLFishermenForm,OnRoadVehicleStatusForm, OnWaterVehicleStatusForm,  VVCmeetingForm, BeatDetailsForm, ProformaForm, BoatPatrolForm, VehicleCheckPostForm, AtvpatrolForm, VehicleCheckothersForm
 
@@ -332,12 +333,58 @@ def other_agencies_form_view(request):
         form = Other_AgenciesForm()
     return render(request, 'dsr/admin.other_agencies_form.html', {'form': form})
 
+@login_required
+def admin_vehicle_boat_view(request, vehicle_id=None, boat_id=None):
+    vehicle_list = OnRoadVehicleStatus.objects.all().order_by('submitted_at')
+    boat_list = OnWaterVehicleStatus.objects.all().order_by('submitted_at')
+    
 
+    vehicle_instance = get_object_or_404(OnRoadVehicleStatus, id=vehicle_id) if vehicle_id else None
+    boat_instance = get_object_or_404(OnWaterVehicleStatus, id=boat_id) if boat_id else None
+    
+    if request.method == 'POST':
+        
+        # Handle vehicle Form
+        if 'vehicle_submit' in request.POST:
+            vehicle_form = OnRoadVehicleStatusForm(request.POST, instance=vehicle_instance)
+            if vehicle_form.is_valid():
+                vehicle_form.save()
+                if vehicle_instance:
+                    messages.success(request, "Vehicle Details updated successfully.")
+                else:
+                    messages.success(request, "Vehicle Details added successfully.")
+                return redirect('admin_vehicle_boat_page')
+            else:
+                messages.error(request, "Please correct the Vehicle details form errors.")
+            boat_form = OnWaterVehicleStatusForm()  # Empty Checkpost form
 
-
-
-
-
+        # Handle CheckPost Form
+        elif 'boat_submit' in request.POST:
+            boat_form = OnWaterVehicleStatusForm(request.POST, instance=boat_instance)
+            if boat_form.is_valid():
+                boat_form.save()
+                if boat_instance:
+                    messages.success(request, "Boat Details updated successfully.")
+                else:
+                    messages.success(request, "Boat Details added successfully.")
+                return redirect('admin_vehicle_boat_page')
+            else:
+                messages.error(request, "Please correct the Boat Details form errors.")
+            
+    else:
+        vehicle_form = OnRoadVehicleStatusForm(instance=vehicle_instance)
+        boat_form = OnWaterVehicleStatusForm(instance=boat_instance)
+    context = {
+        'vehicle_form': vehicle_form,
+        'boat_form': boat_form,
+        'vehicle_list': vehicle_list,
+        'boat_list': boat_list,
+        'edit_vehicle': vehicle_instance is not None,
+        'edit_boat': boat_instance is not None,
+        'vehicle_id': vehicle_instance.id if vehicle_instance else '',
+        'boat_id': boat_instance.id if boat_instance else ''
+    }
+    return render(request, 'dsr/admin/admin_vehicle_boat_details.html', context)
 
 
 def signup_view(request):
@@ -350,6 +397,46 @@ def signup_view(request):
     else:
         form = CustomSignupForm()
     return render(request, 'dsr/signup.html', {'form': form})
+
+#admin reports
+def admin_admin_cases_summary_view(request):
+    csr_list = CSR.objects.all().order_by('-date_of_receipt')
+    bnss_cases = BNSSMissingCase.objects.filter(case_category='194 BNSS').order_by('-date_of_receipt')
+    missing_cases = BNSSMissingCase.objects.filter(case_category='Missing').order_by('-date_of_receipt')
+    other_cases = OtherCases.objects.all().order_by('-date_of_receipt')
+    maritime_cases= MaritimeAct.objects.all().order_by('-date_of_receipt')
+    
+    return render(request, 'dsr/admin/admin_cases_summary.html', {
+        'csr_list': csr_list,
+        'bnss_cases': bnss_cases,
+        'missing_cases': missing_cases,
+        'other_cases': other_cases,
+        'maritime_cases': maritime_cases,
+
+    })
+
+
+def admin_vvc_beat_proforma_summary_view(request):
+    vvc_records = VVCmeeting.objects.all().order_by('-submitted_at')
+    beat_records = BeatDetails.objects.all().order_by('-submitted_at')
+    proforma_records = Proforma.objects.all().order_by('-submitted_at')
+    return render(request, 'dsr/admin/admin_proforma_summary.html', {
+        'vvc_records': vvc_records,
+        'beat_records': beat_records,
+        'proforma_records':proforma_records
+    })
+    
+    
+
+def admin_patrol_check_summary_view(request):
+    return render(request, 'dsr/admin/admin_vehicle_check_patrol_summary.html')
+
+def admin_fishermen_attack_arrest_summary_view(request):
+    return render(request, 'dsr/admin/admin_fishermen_attack_arrest_summary.html')
+
+def admin_assets_summary_view(request):
+    return render(request, 'dsr/admin/admin_assets.html')
+
 
 # users 
 def user_dashboard_view(request):
@@ -849,10 +936,14 @@ def vehicle_check_others_form_view(request, record_id=None):
 @login_required
 def cases_registered_summary_view(request):
     csr_list = CSR.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_receipt')
-    bnss_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='194 BNSS').order_by('-date_of_receipt')
-    missing_cases = BNSSMissingCase.objects.filter(user=request.user, case_category='Missing').order_by('-date_of_receipt')
-    other_cases = OtherCases.objects.filter(user=request.user).order_by('-date_of_receipt')
-    maritime_cases= MaritimeAct.objects.filter(user=request.user).order_by('-date_of_receipt')
+
+    bnss_cases = BNSSMissingCase.objects.filter(mps_limit__name=request.user.username, case_category='194 BNSS').order_by('-date_of_receipt')
+    
+    missing_cases = BNSSMissingCase.objects.filter(mps_limit__name=request.user.username, case_category='Missing').order_by('-date_of_receipt')
+    
+    other_cases = OtherCases.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_receipt')
+    
+    maritime_cases= MaritimeAct.objects.filter(mps_limit__name=request.user.username).order_by('-date_of_receipt')
     
     return render(request, 'dsr/user/submitted_forms/cases_registered_summary.html', {
         'csr_list': csr_list,
@@ -947,16 +1038,21 @@ def csr_ajax_search_view(request):
     if query:
         csr_list = csr_list.filter(
             Q(csr_number__icontains=query) |
-            Q(petitioner__icontains=query) |
-            Q(io__name__icontains=query)  # Correct filter for Officer name
+            Q(mps_limit__name__icontains=query) |
+            Q(io__name__icontains=query) |
+            Q(date_of_receipt__icontains=query)
+            
+            
+              # Correct filter for Officer name
         )
 
     data = [
         {
             'id': csr.id,
             'csr_number': csr.csr_number,
+            'mps_limit': str(csr.mps_limit),
             'date_of_receipt': csr.date_of_receipt.strftime('%d-%m-%Y'),
-            'petitioner': csr.petitioner,
+            
             'io': str(csr.io) if csr.io else '',  # Displays "Rank - Name"
         }
         for csr in csr_list
@@ -968,13 +1064,14 @@ def csr_ajax_search_view(request):
 @login_required
 def bnss194_cases_ajax_search_view(request):
     query = request.GET.get('q', '').strip()
-    cases = BNSSMissingCase.objects.filter(case_category='194 BNSS', user=request.user)
+    cases = BNSSMissingCase.objects.filter(case_category='194 BNSS')
 
     if query:
         cases = cases.filter(
             Q(crime_number__icontains=query) |
             Q(date_of_occurrence__icontains=query) |
             Q(date_of_receipt__icontains=query) |
+            Q(mps_limit__name__icontains=query) |
             Q(ps_limit__name__icontains=query) |  # Assuming PS model has station_name field
             Q(io__name__icontains=query) |
             Q(transfered_to__agency_name__icontains=query)
@@ -984,9 +1081,11 @@ def bnss194_cases_ajax_search_view(request):
         {
             'id': case.id,
             'crime_number': case.crime_number,
+            'mps_limit': str(case.mps_limit) if case.mps_limit else '',
+            'ps_limit': str(case.ps_limit) if case.ps_limit else '',
             'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
             'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'ps_limit': str(case.ps_limit) if case.ps_limit else '',
+            
             'io': str(case.io) if case.io else '',
             'transfered_to': str(case.transfered_to) if case.transfered_to else '',
         }
@@ -998,14 +1097,16 @@ def bnss194_cases_ajax_search_view(request):
 @login_required
 def missing_ajax_search_view(request):
     query = request.GET.get('q', '').strip()
-    cases = BNSSMissingCase.objects.filter(case_category='Missing', user=request.user)
+    cases = BNSSMissingCase.objects.filter(case_category='Missing')
 
     if query:
         cases = cases.filter(
             Q(crime_number__icontains=query) |
+            Q(mps_limit__name__icontains=query) |
+            Q(ps_limit__name__icontains=query) |
+
             Q(date_of_occurrence__icontains=query) |
             Q(date_of_receipt__icontains=query) |
-            Q(ps_limit__name__icontains=query) |
             Q(io__name__icontains=query) |
             Q(transfered_to__agency_name__icontains=query)
         )
@@ -1014,9 +1115,10 @@ def missing_ajax_search_view(request):
         {
             'id': case.id,
             'crime_number': case.crime_number,
+            'mps_limit': str(case.mps_limit) if case.mps_limit else '',
+            'ps_limit': str(case.ps_limit) if case.ps_limit else '',
             'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
             'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
-            'ps_limit': case.ps_limit.name if case.ps_limit else '',
             'io': str(case.io) if case.io else '',
             'transfered_to': str(case.transfered_to) if case.transfered_to else '-',
         }
@@ -1028,14 +1130,16 @@ def missing_ajax_search_view(request):
 @login_required
 def othercases_ajax_search_view(request):
     query = request.GET.get('q', '').strip()
-    cases = OtherCases.objects.filter(user=request.user)
+    cases = OtherCases.objects.all()
 
     if query:
         cases = cases.filter(
             Q(crime_number__icontains=query) |
+            Q(mps_limit__name__icontains=query) |
+            Q(ps_limit__name__icontains=query) |
+
             Q(date_of_occurrence__icontains=query) |
             Q(date_of_receipt__icontains=query) |
-            Q(ps_limit__name__icontains=query) |
             Q(io__name__icontains=query) |
             Q(transfered_to__agency_name__icontains=query)
         )
@@ -1044,6 +1148,8 @@ def othercases_ajax_search_view(request):
         {
             'id': case.id,
             'crime_number': case.crime_number,
+            'mps_limit': str(case.mps_limit) if case.mps_limit else '',
+            'ps_limit': str(case.ps_limit) if case.ps_limit else '',
             'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
             'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
             'ps_limit': case.ps_limit.name if case.ps_limit else '',
@@ -1058,14 +1164,15 @@ def othercases_ajax_search_view(request):
 @login_required
 def maritimeact_ajax_search_view(request):
     query = request.GET.get('q', '').strip()
-    cases = MaritimeAct.objects.filter(user=request.user)
+    cases = MaritimeAct.objects.all()
 
     if query:
         cases = cases.filter(
             Q(crime_number__icontains=query) |
+            Q(mps_limit__name__icontains=query) |
+            Q(ps_limit__name__icontains=query) |
             Q(date_of_occurrence__icontains=query) |
             Q(date_of_receipt__icontains=query) |
-            Q(ps_limit__name__icontains=query) |
             Q(io__name__icontains=query) |
             Q(transfered_to__agency_name__icontains=query)
             
@@ -1075,6 +1182,8 @@ def maritimeact_ajax_search_view(request):
         {
             'id': case.id,
             'crime_number': case.crime_number,
+            'mps_limit': str(case.mps_limit) if case.mps_limit else '',
+            'ps_limit': str(case.ps_limit) if case.ps_limit else '',
             'date_of_occurrence': case.date_of_occurrence.strftime('%d-%m-%Y %H%Mhrs'),
             'date_of_receipt': case.date_of_receipt.strftime('%d-%m-%Y %H%Mhrs'),
             'ps_limit': case.ps_limit.name if case.ps_limit else '',
@@ -1175,14 +1284,13 @@ def forecast_ajax_search_view(request):
     if query:
         cases = cases.filter(
             Q(date_of_forecast__icontains=query) |
-            Q(place_of_forecast__icontains=query) |
-            Q(forecast_details__icontains=query)
+            Q(place_of_forecast__icontains=query)
         )
 
     data = [
         {
             'id': case.id,
-            'date_of_forecast': case.date_of_forecast.strftime('%d-%m-%Y %H%Mhrs'),
+            'date_of_forecast': case.date_of_forecast.strftime('%d-%m-%Y'),
             'place_of_forecast': case.place_of_forecast,
             'forecast_details': case.forecast_details,
         }
@@ -1279,23 +1387,32 @@ def ajax_search_arrest_slfishermen(request):
 @login_required
 def vvc_ajax_search_view(request):    
     query = request.GET.get('q', '').strip()
-    cases = VVCmeeting.objects.filter(user=request.user)
+    cases = VVCmeeting.objects.all()
 
     if query:
         cases = cases.filter(
             Q(date_of_vvc__icontains=query) |
+           Q(mps_limit__name__icontains=query) |
             Q(village_name__icontains=query) 
+            
+            
         )
 
     data = [
         {
             'id': case.id,
-            'date_of_vvc': case.date_of_vvc,
-            'village_name':case.village_name
+            'date_of_vvc': case.date_of_vvc.strftime('%d-%m-%Y'),
+            'mps_limit': str(case.mps_limit) if case.mps_limit else '',
+            'village_name':case.village_name,
+            'number_of_villagers':case.number_of_villagers,
+            'vvc_image':case.vvc_image.url if case.vvc_image else ''
         }
         for case in cases
     ]
     return JsonResponse(data, safe=False)
+
+
+
 
 #search for beat details 
 @login_required
@@ -1311,7 +1428,9 @@ def beat_ajax_search_view(request):
     data = [
         {
             'id': case.id,
-            'date_of_beat': case.date_of_beat
+            'date_of_beat': case.date_of_beat.strftime('%d-%m-%Y'),
+            'day_beat_count': case.day_beat_count,
+            'night_beat_count': case.night_beat_count
    
         }
         for case in cases
@@ -1358,6 +1477,7 @@ def onroad_vehicle_status_ajax_search_view(request):
             'id': case.id,
             'vehicle_type': case.get_vehicle_type_display(),
             'vehicle_number': case.vehicle_number,
+            'alloted_to':case.alloted_to,
             'working_status': case.working_status
         }
         for case in cases
@@ -1390,25 +1510,27 @@ def onwater_vehicle_status_ajax_search_view(request):
 
 #search for boat patrol
 @login_required
+@login_required
 def boat_patrol_ajax_search(request):    
     query = request.GET.get('q', '').strip()
-    cases = BoatPatrol.objects.all
+    cases = BoatPatrol.objects.all()  # <-- FIXED
 
     if query:
         cases = cases.filter(
             Q(date_of_patrol__icontains=query) |
             Q(boat_type__icontains=query) |
-            Q(boat_number__icontains=query) |
-            Q(numberof_boats_checked__icontains=query) 
+            Q(boat_number__boat_number__icontains=query) |
+            Q(numberof_boats_checked__icontains=query)
         )
 
     data = [
         {
             'id': case.id,
-            'boat_type': case.boat_type,
-            'boat_number': case.boat_number,
+            'date_of_patrol': case.date_of_patrol.strftime('%d-%m-%Y'),  # format fixed
+            'patrol_place': case.patrol_place,
+            'boat_type': case.get_boat_type_display(),
+            'boat_number': case.boat_number.boat_number,
             'numberof_boats_checked': case.numberof_boats_checked
-   
         }
         for case in cases
     ]
@@ -1424,21 +1546,24 @@ def atv_patrol_ajax_search_view(request):
         cases = cases.filter(
             Q(date_of_patrol__icontains=query) |
             Q(patrol_place__icontains=query) |
-            Q(atv_number__icontains=query) 
-            
+            Q(atv_number__vehicle_number__icontains=query) |
+            Q(atv_number__vehicle_type__icontains=query)
         )
 
     data = [
         {
             'id': case.id,
-            'date_of_patrol': case.date_of_patrol,
+            'date_of_patrol': case.date_of_patrol.strftime('%d-%m-%Y'),
             'patrol_place': case.patrol_place,
-            'atv_number': case.atv_number
-   
+            'atv_number': (
+                f"{case.atv_number.get_vehicle_type_display()} - {case.atv_number.vehicle_number}"
+                if case.atv_number else "—"
+            )
         }
         for case in cases
     ]
     return JsonResponse(data, safe=False)
+
 
 #search for Vehicle check- checkpost
 @login_required
@@ -1449,15 +1574,19 @@ def vehicle_checkpost_ajax_search_view(request):
     if query:
         cases = cases.filter(
             Q(date_of_check__icontains=query) |
-            Q(check_post__icontains=query) 
+            Q(check_post__name__icontains=query) 
             
         )
 
     data = [
         {
             'id': case.id,
-            'date_of_check': case.date_of_check,
-            'check_post': case.check_post,
+            'date_of_check': case.date_of_check.strftime('%d-%m-%Y'),
+            'vehicle_check_start_time': case.vehicle_check_start_time.strftime('%H:%M') if case.vehicle_check_start_time else '',
+            'vehicle_check_end_time': case.vehicle_check_end_time.strftime('%H:%M') if case.vehicle_check_end_time else '',
+            'check_post': case.check_post.name ,
+            'number_of_vehicles_checked': case.number_of_vehicles_checked,
+            
             
    
         }
@@ -1471,22 +1600,25 @@ def vehicle_check_others_ajax_search_view(request):
     query = request.GET.get('q', '').strip()
     cases = VehicleCheckothers.objects.filter(user=request.user)
 
+    
+
     if query:
+
         cases = cases.filter(
             Q(date_of_check__icontains=query) |
             Q(place_of_check__icontains=query) 
-            
         )
 
     data = [
-        {
-            'id': case.id,
-            'date_of_check': case.date_of_check,
-            'place_of_check': case.place_of_check,
-            
-   
-        }
-        for case in cases
+    {
+        'id': case.id,
+        'date_of_check': case.date_of_check.strftime('%d-%m-%Y'),
+        'vehicle_check_start_time': case.vehicle_check_start_time.strftime('%H:%M') if case.vehicle_check_start_time else '',
+        'vehicle_check_end_time': case.vehicle_check_end_time.strftime('%H:%M') if case.vehicle_check_end_time else '',
+        'place_of_check': case.place_of_check,
+        'number_of_vehicles_checked': case.number_of_vehicles_checked,
+    }
+    for case in cases
     ]
     return JsonResponse(data, safe=False)
 
@@ -1977,6 +2109,7 @@ def onroad_vehicle_status_export_word_view(request):
         fields = [
             ("Vehicle Type", vehicle.get_vehicle_type_display()),
             ("Vehicle Number", vehicle.vehicle_number),
+            ("Alloted to",vehicle.alloted_to),
             ("Working Status", vehicle.get_working_status_display()),
             ("MPS Limit", str(vehicle.mps_limit) if vehicle.mps_limit else ''),
             ("Remarks", vehicle.remarks if vehicle.remarks else ''),
@@ -2719,6 +2852,7 @@ def onroad_vehicle_status_download_view(request, pk):
     add_row('MPS Limit', str(case.mps_limit))
     add_row('Vehicle Type', case.get_vehicle_type_display())
     add_row('Vehicle Number', case.vehicle_number)
+    add_row('Alloted To', case.alloted_to)
     add_row('Working Status', case.get_working_status_display())
     add_row('Remarks', case.remarks if case.remarks else '')
 
