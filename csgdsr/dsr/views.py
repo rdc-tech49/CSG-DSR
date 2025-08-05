@@ -3,11 +3,11 @@ from django.http import HttpResponse
 from docx import Document
 from docx.shared import Inches
 from django import forms
-from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser, SeizedItemCategory, PS, RescueAtBeach,RescueAtSea,Seizure,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen,OnRoadVehicleStatus,OnWaterVehicleStatus,VVCmeeting,BeatDetails,Proforma,BoatPatrol,VehicleCheckPost,Atvpatrol,VehicleCheckothers
+from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser, SeizedItemCategory, PS, RescueAtBeach,RescueAtSea,Seizure,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen,OnRoadVehicleStatus,OnWaterVehicleStatus,VVCmeeting,BeatDetails,Proforma,BoatPatrol,VehicleCheckPost,Atvpatrol,VehicleCheckothers, Unit, Headquarters, Zone, Range
 
 from django.utils.dateparse import parse_date
 
-from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm,PSForm, RescueAtBeachForm,RescueAtSeaForm,SeizureForm,ForecastForm,AttackOnTNFishermenForm,ArrestOfTNFishermenForm,ArrestOfSLFishermenForm,OnRoadVehicleStatusForm, OnWaterVehicleStatusForm,  VVCmeetingForm, BeatDetailsForm, ProformaForm, BoatPatrolForm, VehicleCheckPostForm, AtvpatrolForm, VehicleCheckothersForm
+from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm,PSForm, RescueAtBeachForm,RescueAtSeaForm,SeizureForm,ForecastForm,AttackOnTNFishermenForm,ArrestOfTNFishermenForm,ArrestOfSLFishermenForm,OnRoadVehicleStatusForm, OnWaterVehicleStatusForm,  VVCmeetingForm, BeatDetailsForm, ProformaForm, BoatPatrolForm, VehicleCheckPostForm, AtvpatrolForm, VehicleCheckothersForm, HeadquartersForm, ZoneForm, RangeForm, UnitForm 
 
 
 from django.contrib import messages
@@ -115,16 +115,61 @@ def admin_officers_strength_view(request, officer_id=None):
     return render(request, 'dsr/admin/officers_details.html', context)
 
 @login_required
-def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None,ps_id=None):
+def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None,ps_id=None, headquarters_id=None, zone_id=None, range_id=None, unit_id=None):
     mps_list = MPS.objects.all().order_by('name')
     checkpost_list = CheckPost.objects.all().order_by('name')
     ps_list = PS.objects.all().order_by('name')
+    headquarters_list = Headquarters.objects.all().order_by('name')
+    zone_list = Zone.objects.all().order_by('name')
+    range_list = Range.objects.all().order_by('name')
+    unit_list = Unit.objects.all().order_by('name')
+
 
     mps_instance = get_object_or_404(MPS, id=mps_id) if mps_id else None
     checkpost_instance = get_object_or_404(CheckPost, id=checkpost_id) if checkpost_id else None
     ps_instance = get_object_or_404(PS, id=ps_id) if ps_id else None
+    headquarters_instance = get_object_or_404(Headquarters, id=headquarters_id) if headquarters_id else None
+    zone_instance = get_object_or_404(Zone, id=zone_id) if zone_id else None
+    range_instance = get_object_or_404(Range, id=range_id) if range_id else None
+    unit_instance = get_object_or_404(Unit, id=unit_id) if unit_id else None
+
     if request.method == 'POST':
-        
+        if 'delete_mps' in request.POST:
+            MPS.objects.filter(id=request.POST.get('delete_mps')).delete()
+            messages.success(request, "MPS deleted successfully.")
+            return redirect('admin_MPS_buildings_page')
+
+        if 'delete_checkpost' in request.POST:
+            CheckPost.objects.filter(id=request.POST.get('delete_checkpost')).delete()
+            messages.success(request, "CheckPost deleted successfully.")
+            return redirect('admin_MPS_buildings_page')
+
+        if 'delete_ps' in request.POST:
+            PS.objects.filter(id=request.POST.get('delete_ps')).delete()
+            messages.success(request, "PS deleted successfully.")
+            return redirect('admin_MPS_buildings_page')
+
+        if 'delete_headquarters' in request.POST:
+            Headquarters.objects.filter(id=request.POST.get('delete_headquarters')).delete()
+            messages.success(request, "Headquarters deleted successfully.")
+            return redirect('admin_MPS_buildings_page')
+
+        if 'delete_zone' in request.POST:
+            Zone.objects.filter(id=request.POST.get('delete_zone')).delete()
+            messages.success(request, "Zone deleted successfully.")
+            return redirect('admin_MPS_buildings_page')
+
+        if 'delete_range' in request.POST:
+            Range.objects.filter(id=request.POST.get('delete_range')).delete()
+            messages.success(request, "Range deleted successfully.")
+            return redirect('admin_MPS_buildings_page')
+
+        if 'delete_unit' in request.POST:
+            Unit.objects.filter(id=request.POST.get('delete_unit')).delete()
+            messages.success(request, "Unit deleted successfully.")
+            return redirect('admin_MPS_buildings_page')
+
+
         # Handle MPS Form
         if 'mps_submit' in request.POST:
             mps_form = MPSForm(request.POST, instance=mps_instance)
@@ -137,8 +182,7 @@ def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None,ps_id=None)
                 return redirect('admin_MPS_buildings_page')
             else:
                 messages.error(request, "Please correct the MPS form errors.")
-            checkpost_form = CheckPostForm()  # Empty Checkpost form
-
+            mps_form = MPSForm()
         # Handle CheckPost Form
         elif 'checkpost_submit' in request.POST:
             checkpost_form = CheckPostForm(request.POST, instance=checkpost_instance)
@@ -165,24 +209,99 @@ def admin_MPS_buildings_view(request, mps_id=None, checkpost_id=None,ps_id=None)
             else:
                 messages.error(request, "Please correct the PS form errors.")
             mps_form = MPSForm()
+        
+        elif 'headquarters_submit' in request.POST:
+            headquarters_form = HeadquartersForm(request.POST, instance=headquarters_instance)
+            if headquarters_form.is_valid():
+                headquarters_form.save()
+                if headquarters_instance:
+                    messages.success(request, "Headquarters updated successfully.")
+                else:
+                    messages.success(request, "Headquarters added successfully.")
+                return redirect('admin_MPS_buildings_page')
+            else:
+                messages.error(request, "Please correct the Headquarters form errors.")
+            mps_form = MPSForm()
+        
+        elif 'zone_submit' in request.POST:
+            zone_form = ZoneForm(request.POST, instance=zone_instance)
+            if zone_form.is_valid():
+                zone_form.save()
+                if zone_instance:
+                    messages.success(request, "Zone updated successfully.")
+                else:
+                    messages.success(request, "Zone added successfully.")
+                return redirect('admin_MPS_buildings_page')
+            else:
+                messages.error(request, "Please correct the Zone form errors.")
+            mps_form = MPSForm()
+
+        elif 'range_submit' in request.POST:
+            range_form = RangeForm(request.POST, instance=range_instance)
+            if range_form.is_valid():
+                range_form.save()
+                if range_instance:
+                    messages.success(request, "Range updated successfully.")
+                else:
+                    messages.success(request, "Range added successfully.")
+                return redirect('admin_MPS_buildings_page')
+            else:
+                messages.error(request, "Please correct the Range form errors.")
+            mps_form = MPSForm()
+        
+        elif 'unit_submit' in request.POST:
+            unit_form = UnitForm(request.POST, instance=unit_instance)
+            if unit_form.is_valid():
+                unit_form.save()
+                if unit_instance:
+                    messages.success(request, "Unit updated successfully.")
+                else:
+                    messages.success(request, "Unit added successfully.")
+                return redirect('admin_MPS_buildings_page')
+            else:
+                messages.error(request, "Please correct the Unit form errors.")
+            mps_form = MPSForm()
+
+
+
 
     else:
         mps_form = MPSForm(instance=mps_instance)
         checkpost_form = CheckPostForm(instance=checkpost_instance)
         ps_form = PSForm(instance=ps_instance)
+        headquarters_form = HeadquartersForm(instance=headquarters_instance)
+        zone_form = ZoneForm(instance=zone_instance)
+        range_form = RangeForm(instance=range_instance)
+        unit_form = UnitForm(instance=unit_instance)
     context = {
         'mps_form': mps_form,
         'checkpost_form': checkpost_form,
         'ps_form': ps_form,
+        'headquarters_form': headquarters_form,
+        'zone_form': zone_form,
+        'range_form': range_form,
+        'unit_form': unit_form,
         'mps_list': mps_list,
         'checkpost_list': checkpost_list,
         'ps_list': ps_list,
+        'headquarters_list': headquarters_list,
+        'zone_list': zone_list,
+        'range_list': range_list,
+        'unit_list': unit_list,
         'edit_mps': mps_instance is not None,
         'edit_checkpost': checkpost_instance is not None,
         'edit_ps': ps_instance is not None,
+        'edit_headquarters': headquarters_instance is not None,
+        'edit_zone': zone_instance is not None,
+        'edit_range': range_instance is not None,
+        'edit_unit': unit_instance is not None,
         'mps_id': mps_instance.id if mps_instance else '',
         'checkpost_id': checkpost_instance.id if checkpost_instance else '',
         'ps_id': ps_instance.id if ps_instance else '',
+        'headquarters_id': headquarters_instance.id if headquarters_instance else '',
+        'zone_id': zone_instance.id if zone_instance else '',
+        'range_id': range_instance.id if range_instance else '',
+        'unit_id': unit_instance.id if unit_instance else '',
     }
     return render(request, 'dsr/admin/buildings.html', context)
 
@@ -429,7 +548,18 @@ def admin_vvc_beat_proforma_summary_view(request):
     
 
 def admin_patrol_check_summary_view(request):
-    return render(request, 'dsr/admin/admin_vehicle_check_patrol_summary.html')
+    boatpatrol_records = BoatPatrol.objects.all().order_by('-submitted_at')
+    atv_records = Atvpatrol.objects.all().order_by('-submitted_at')
+    vehiclec_records = VehicleCheckPost.objects.all().order_by('-submitted_at')
+    vehicleo_records = VehicleCheckothers.objects.all().order_by('-submitted_at')
+    return render(request, 'dsr/admin/admin_vehicle_check_patrol_summary.html', {
+        'boatpatrol_records': boatpatrol_records,
+        'atv_records': atv_records,
+        'vehiclec_records':vehiclec_records,
+        'vehicleo_records':vehicleo_records
+    })
+
+
 
 def admin_fishermen_attack_arrest_summary_view(request):
     return render(request, 'dsr/admin/admin_fishermen_attack_arrest_summary.html')
@@ -1359,7 +1489,12 @@ def ajax_search_arrest_tnfishermen(request):
 #search for arrest of SL fishermen cases
 def ajax_search_arrest_slfishermen(request):
     query = request.GET.get('q', '').strip()
-    cases = ArrestOfSLFishermen.objects.filter(user=request.user)
+    # cases = ArrestOfSLFishermen.objects.filter(user=request.user)
+    user = request.user
+    if user.is_superuser:
+        cases = ArrestOfSLFishermen.objects.all()
+    else:
+        cases = ArrestOfSLFishermen.objects.filter(mps_limit__name=request.user.username)
 
     if query:
         cases = cases.filter(
@@ -1387,12 +1522,17 @@ def ajax_search_arrest_slfishermen(request):
 @login_required
 def vvc_ajax_search_view(request):    
     query = request.GET.get('q', '').strip()
-    cases = VVCmeeting.objects.all()
+    # cases = VVCmeeting.objects.all()
+    user = request.user
+    if user.is_superuser:
+        cases = VVCmeeting.objects.all()
+    else:
+        cases = VVCmeeting.objects.filter(mps_limit__name=request.user.username)
 
     if query:
         cases = cases.filter(
             Q(date_of_vvc__icontains=query) |
-           Q(mps_limit__name__icontains=query) |
+            Q(mps_limit__name__icontains=query) |
             Q(village_name__icontains=query) 
             
             
@@ -1418,17 +1558,25 @@ def vvc_ajax_search_view(request):
 @login_required
 def beat_ajax_search_view(request):    
     query = request.GET.get('q', '').strip()
-    cases = BeatDetails.objects.filter(user=request.user)
+    # cases = BeatDetails.objects.all()
+    user = request.user
+    if user.is_superuser:
+        cases = BeatDetails.objects.all()
+    else:
+        cases = BeatDetails.objects.filter(mps_limit__name=request.user.username)
+    
 
     if query:
         cases = cases.filter(
-            Q(date_of_beat__icontains=query) 
+            Q(date_of_beat__icontains=query) |
+            Q(mps_limit__name__icontains=query) 
         )
 
     data = [
         {
             'id': case.id,
             'date_of_beat': case.date_of_beat.strftime('%d-%m-%Y'),
+            'mps_limit': str(case.mps_limit) if case.mps_limit else '',
             'day_beat_count': case.day_beat_count,
             'night_beat_count': case.night_beat_count
    
@@ -1441,18 +1589,28 @@ def beat_ajax_search_view(request):
 @login_required
 def proforma_ajax_search_view(request):    
     query = request.GET.get('q', '').strip()
-    cases = Proforma.objects.filter(user=request.user)
+    cases = Proforma.objects.all()
 
     if query:
         cases = cases.filter(
-            Q(date_of_proforma__icontains=query) 
+            Q(date_of_proforma__icontains=query) |
+            Q(officer__name__icontains=query)
+
         )
 
     data = [
         {
             'id': case.id,
-            'date_of_proforma': case.date_of_proforma
-   
+            'officer': str(case.officer) if case.officer else '',
+            'date_of_proforma': case.date_of_proforma.strftime('%d-%m-%Y'),
+            'mps_visited': case.mps_visited,
+            'check_post_checked': case.check_post_checked,
+            'boat_guard_checked': case.boat_guard_checked,
+            'vvc_meeting_conducted': case.vvc_meeting_conducted,
+            'villages_visited': case.villages_visited,
+            'meetings_attended': case.meetings_attended,
+            'awareness_programs_conducted': case.awareness_programs_conducted,
+            'coastal_security_exercises_conducted': case.coastal_security_exercises_conducted,
         }
         for case in cases
     ]
@@ -1509,15 +1667,24 @@ def onwater_vehicle_status_ajax_search_view(request):
     return JsonResponse(data, safe=False)
 
 #search for boat patrol
-@login_required
+
 @login_required
 def boat_patrol_ajax_search(request):    
     query = request.GET.get('q', '').strip()
-    cases = BoatPatrol.objects.all()  # <-- FIXED
+    
+    # cases = BoatPatrol.objects.all()  # <-- FIXED
+    user = request.user
+    if user.is_superuser:
+        cases = BoatPatrol.objects.all()
+    else:
+        cases = BoatPatrol.objects.filter(mps_limit__name=request.user.username)
+
+
 
     if query:
         cases = cases.filter(
             Q(date_of_patrol__icontains=query) |
+            Q(mps_limit__name__icontains=query) |
             Q(boat_type__icontains=query) |
             Q(boat_number__boat_number__icontains=query) |
             Q(numberof_boats_checked__icontains=query)
@@ -1527,6 +1694,7 @@ def boat_patrol_ajax_search(request):
         {
             'id': case.id,
             'date_of_patrol': case.date_of_patrol.strftime('%d-%m-%Y'),  # format fixed
+            'mps_limit': str(case.mps_limit) if case.mps_limit else '',
             'patrol_place': case.patrol_place,
             'boat_type': case.get_boat_type_display(),
             'boat_number': case.boat_number.boat_number,
@@ -1540,11 +1708,17 @@ def boat_patrol_ajax_search(request):
 @login_required
 def atv_patrol_ajax_search_view(request):    
     query = request.GET.get('q', '').strip()
-    cases = Atvpatrol.objects.filter(user=request.user)
+    # cases = Atvpatrol.objects.all()
+    user = request.user
+    if user.is_superuser:
+        cases = Atvpatrol.objects.all()
+    else:
+        cases = Atvpatrol.objects.filter(mps_limit__name=request.user.username)
 
     if query:
         cases = cases.filter(
             Q(date_of_patrol__icontains=query) |
+            Q(mps_limit__name__icontains=query) |
             Q(patrol_place__icontains=query) |
             Q(atv_number__vehicle_number__icontains=query) |
             Q(atv_number__vehicle_type__icontains=query)
@@ -1554,6 +1728,7 @@ def atv_patrol_ajax_search_view(request):
         {
             'id': case.id,
             'date_of_patrol': case.date_of_patrol.strftime('%d-%m-%Y'),
+            'mps_limit': str(case.mps_limit) if case.mps_limit else '',
             'patrol_place': case.patrol_place,
             'atv_number': (
                 f"{case.atv_number.get_vehicle_type_display()} - {case.atv_number.vehicle_number}"
@@ -1569,11 +1744,18 @@ def atv_patrol_ajax_search_view(request):
 @login_required
 def vehicle_checkpost_ajax_search_view(request):    
     query = request.GET.get('q', '').strip()
-    cases = VehicleCheckPost.objects.filter(user=request.user)
+    # cases = VehicleCheckPost.objects.all()
+    user = request.user
+    if user.is_superuser:
+        cases = VehicleCheckPost.objects.all()
+    else:
+        cases = VehicleCheckPost.objects.filter(mps_limit__name=request.user.username)
+
 
     if query:
         cases = cases.filter(
             Q(date_of_check__icontains=query) |
+            Q(mps_limit__name__icontains=query) |
             Q(check_post__name__icontains=query) 
             
         )
@@ -1582,6 +1764,7 @@ def vehicle_checkpost_ajax_search_view(request):
         {
             'id': case.id,
             'date_of_check': case.date_of_check.strftime('%d-%m-%Y'),
+            'mps_limit': str(case.mps_limit) if case.mps_limit else '',
             'vehicle_check_start_time': case.vehicle_check_start_time.strftime('%H:%M') if case.vehicle_check_start_time else '',
             'vehicle_check_end_time': case.vehicle_check_end_time.strftime('%H:%M') if case.vehicle_check_end_time else '',
             'check_post': case.check_post.name ,
@@ -1598,7 +1781,12 @@ def vehicle_checkpost_ajax_search_view(request):
 @login_required
 def vehicle_check_others_ajax_search_view(request):    
     query = request.GET.get('q', '').strip()
-    cases = VehicleCheckothers.objects.filter(user=request.user)
+    # cases = VehicleCheckothers.objects.all()
+    user = request.user
+    if user.is_superuser:
+        cases = VehicleCheckothers.objects.all()
+    else:
+        cases = VehicleCheckothers.objects.filter(mps_limit__name=request.user.username)
 
     
 
@@ -1606,6 +1794,7 @@ def vehicle_check_others_ajax_search_view(request):
 
         cases = cases.filter(
             Q(date_of_check__icontains=query) |
+            Q(mps_limit__name__icontains=query) |
             Q(place_of_check__icontains=query) 
         )
 
@@ -1613,6 +1802,7 @@ def vehicle_check_others_ajax_search_view(request):
     {
         'id': case.id,
         'date_of_check': case.date_of_check.strftime('%d-%m-%Y'),
+        'mps_limit': str(case.mps_limit) if case.mps_limit else '',
         'vehicle_check_start_time': case.vehicle_check_start_time.strftime('%H:%M') if case.vehicle_check_start_time else '',
         'vehicle_check_end_time': case.vehicle_check_end_time.strftime('%H:%M') if case.vehicle_check_end_time else '',
         'place_of_check': case.place_of_check,

@@ -87,8 +87,36 @@ CASE_CATEGORIES = [
     ('Missing', 'Missing'),
 ]
 
+class Headquarters(models.Model):
+    name = models.CharField(max_length=100)
+    # Other fields
+    def __str__(self):
+        return self.name
+    
+class Zone(models.Model):
+    headquarters = models.ForeignKey(Headquarters, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+    
+class Range(models.Model):
+    zone = models.ForeignKey(Zone, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return f"{self.name}"
+    
+class Unit(models.Model):
+    range = models.ForeignKey(Range, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return  f"{self.name}"
+
 class MPS(models.Model):
+    
     name = models.CharField(max_length=200, unique=True)
+    unit = models.ForeignKey('Unit', on_delete=models.CASCADE, null=True, blank=True)
+    range = models.ForeignKey('Range', on_delete=models.CASCADE, null=True, blank=True)
+    zone = models.ForeignKey('Zone', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.name.replace("_", " ")
@@ -149,7 +177,7 @@ class CSR(models.Model):
       # stores the logged-in user
  
     def __str__(self):
-        return f"{self.csr_number} - {self.police_station}"
+        return f"{self.csr_number} - {self.mps_limit}"
 
 class BNSSMissingCase(models.Model):
     user = models.ForeignKey('dsr.CustomUser', on_delete=models.CASCADE, null=True, blank=True)

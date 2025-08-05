@@ -20,6 +20,215 @@
     </div>
   {% endif %}
 
+  <!-- Headquarters Form -->
+  <h2 class="mb-4">Headquarters Management</h2>
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_headquarters %} Edit Headquarters {% else %} Add Headquarters {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_headquarters %}{% url 'edit_headquarters' headquarters_id %}{% else %}{% url 'admin_MPS_buildings_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ headquarters_form.as_p }}
+        <button type="submit" name="headquarters_submit" class="btn btn-primary">{% if headquarters_mps %}Update{% else %}Add{% endif %} Headquarters</button>
+        {% if edit_headquarters %}
+          <a href="{% url 'admin_MPS_buildings_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+  <!-- headquarters Table -->
+  <h4>Headquarters List</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for headquarters in headquarters_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ headquarters.name }}</td>
+            <td>
+              <a href="{% url 'edit_headquarters' headquarters.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_headquarters" value="{{ headquarters.id }}">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this Entry?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No headquarters entries found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <hr class="my-4">
+
+  <!-- Zone Form -->
+  <h2 class="mb-4">Zone Management</h2>
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_zone %} Edit Zone {% else %} Add Zone {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_zone %}{% url 'edit_zone' zone_id %}{% else %}{% url 'admin_MPS_buildings_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ zone_form.as_p }}
+        <button type="submit" name="zone_submit" class="btn btn-primary">{% if edit_zone %}Update{% else %}Add{% endif %} Zone</button>
+        {% if edit_zone %}
+          <a href="{% url 'admin_MPS_buildings_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+  <!-- Zone Table -->
+  <h4>Zone List</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for zone in zone_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ zone.name }}</td>
+            <td>
+              <a href="{% url 'edit_zone' zone.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_zone" value="{{ zone.id }}">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this Zone?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No zone entries found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <hr class="my-4">
+
+  <!-- Range Form -->
+  <h2 class="mb-4">Range Management</h2>
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_range %} Edit Range {% else %} Add Range {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_range %}{% url 'edit_range' range_id %}{% else %}{% url 'admin_MPS_buildings_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ range_form.as_p }}
+        <button type="submit" name="range_submit" class="btn btn-primary">{% if edit_range %}Update{% else %}Add{% endif %} range </button>
+        {% if edit_range %}
+          <a href="{% url 'admin_MPS_buildings_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+  <!-- Range Table -->
+  <h4>Range List</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for range in range_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ range.name }}</td>
+            <td>
+              <a href="{% url 'edit_range' range.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_range" value="{{ range.id }}">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this Range?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No range entries found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <hr class="my-4">
+
+    <!-- Unit Form -->
+  <h2 class="mb-4">Unit Management</h2>
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      {% if edit_unit %} Edit Unit {% else %} Add Unit {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{% if edit_unit %}{% url 'edit_unit' unit_id %}{% else %}{% url 'admin_MPS_buildings_page' %}{% endif %}">
+        {% csrf_token %}
+        {{ unit_form.as_p }}
+        <button type="submit" name="unit_submit" class="btn btn-primary">{% if edit_unit %}Update{% else %}Add{% endif %} unit </button>
+        {% if edit_unit %}
+          <a href="{% url 'admin_MPS_buildings_page' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+  <!-- Unit Table -->
+  <h4>Unit List</h4>
+  <div style="max-height: 260px; overflow-y: auto;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for unit in unit_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ unit.name }}</td>
+            <td>
+              <a href="{% url 'edit_unit' unit.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_unit" value="{{ unit.id }}">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this Unit?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">No unit entries found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <hr class="my-4">
+
+
   <!-- MPS Form -->
   <h2 class="mb-4">MPS Management</h2>
   <div class="card mb-4">
@@ -37,7 +246,6 @@
       </form>
     </div>
   </div>
-
   <!-- MPS Table -->
   <h4>MPS List</h4>
   <div style="max-height: 260px; overflow-y: auto;">
@@ -56,6 +264,11 @@
             <td>{{ mps.name }}</td>
             <td>
               <a href="{% url 'edit_mps' mps.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_mps" value="{{ mps.id }}">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this MPS?');">Delete</button>
+              </form>
             </td>
           </tr>
         {% empty %}
@@ -66,7 +279,6 @@
       </tbody>
     </table>
   </div>
-
   <hr class="my-4">
 
   <!-- CheckPost Form -->
@@ -105,6 +317,11 @@
             <td>{{ checkpost.name }}</td>
             <td>
               <a href="{% url 'edit_checkpost' checkpost.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_checkpost" value="{{ checkpost.id }}">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this CheckPost?');">Delete</button>
+              </form>
             </td>
           </tr>
         {% empty %}
@@ -152,6 +369,11 @@
             <td>{{ ps.name }}</td>
             <td>
               <a href="{% url 'edit_ps' ps.id %}" class="btn btn-sm btn-warning">Edit</a>
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="delete_checkpost" value="{{ cp.id }}">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this CheckPost?');">Delete</button>
+              </form>
             </td>
           </tr>
         {% empty %}

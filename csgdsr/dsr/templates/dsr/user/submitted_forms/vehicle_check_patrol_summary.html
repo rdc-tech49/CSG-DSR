@@ -36,6 +36,7 @@
         <tr>
           <th>S. No</th>
           <th>Date</th>
+          <th>MPS</th>
           <th>Place</th>
           <th>Boat Type</th>
           <th>Baot No.</th>
@@ -51,6 +52,7 @@
               <a href="{% url 'boat_patrol_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_patrol|date:"d-m-Y" }}
             </td>
+            <td>{{ record.mps_limit }}</td>
             <td>{{ record.patrol_place }}</td>
             <td>{{ record.get_boat_type_display }}</td>
             <td>{{ record.boat_number.boat_number }}</td>
@@ -62,7 +64,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="7" class="text-center">No records found.</td>
+            <td colspan="8" class="text-center">No records found.</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -93,6 +95,7 @@
         <tr>
           <th>S. No</th>
           <th>Date</th>
+          <th>MPS Limit</th>
           <th>Place</th>
           <th>ATV No.</th>
           <th>Action</th>
@@ -106,6 +109,7 @@
               <a href="{% url 'atv_patrol_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_patrol|date:"d-m-Y" }}
             </td>
+            <td>{{ record.mps_limit }}</td>
             <td>{{ record.patrol_place }}</td>
             <td>{{ record.atv_number }}</td>
             
@@ -116,7 +120,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="5" class="text-center">No records found.</td>
+            <td colspan="6" class="text-center">No records found.</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -147,6 +151,7 @@
         <tr>
           <th>S. No</th>
           <th>Date</th>
+          <th>MPS</th>
           <th>Time</th>
           <th>Check Post</th>
           <th>Vehicles Checked</th>
@@ -161,6 +166,7 @@
               <a href="{% url 'vehicle_checkpost_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_check|date:"d-m-Y" }}
             </td>
+            <td>{{ record.mps_limit }}</td>
             <td>{{ record.vehicle_check_start_time|time:"H:i" }} - {{ record.vehicle_check_end_time|time:"H:i" }} hrs</td>
             <td>{{ record.check_post }}</td>
             <td>{{ record.number_of_vehicles_checked }}</td>
@@ -172,7 +178,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="6" class="text-center">No records found.</td>
+            <td colspan="7" class="text-center">No records found.</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -202,6 +208,7 @@
         <tr>
           <th>S. No</th>
           <th>Date</th>
+          <th>MPS</th>
           <th>Time</th>
           <th>Place</th>
           <th>Vehicles Checked</th>
@@ -216,6 +223,7 @@
               <a href="{% url 'vehicle_check_others_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_check|date:"d-m-Y" }}
             </td>
+            <td>{{ record.mps_limit }}</td>
             <td>{{ record.vehicle_check_start_time|time:"H:i" }} - {{ record.vehicle_check_end_time|time:"H:i" }} hrs </td>
             <td>{{ record.place_of_check }}</td>
             
@@ -227,7 +235,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="6" class="text-center">No records found.</td>
+            <td colspan="7" class="text-center">No records found.</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -251,13 +259,14 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7">No Patrol entries found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8">No Patrol entries found.</td></tr>';
         } else {
           data.forEach((entry, index) => {
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
                 <td><a href="/boat_patrol/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_patrol}</a></td>
+                <td>${entry.mps_limit}</td>
                 <td>${entry.patrol_place}</td>
                 <td>${entry.boat_type}</td>
                 <td>${entry.boat_number}</td>
@@ -290,13 +299,14 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5">No Patrol entries found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6">No Patrol entries found.</td></tr>';
         } else {
           data.forEach((entry, index) => {
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
                 <td><a href="/atv_patrol/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_patrol}</a></td>
+                <td>${entry.mps_limit}</td>
                 <td>${entry.patrol_place}</td>
                 <td>${entry.atv_number}</td>
                 <td>
@@ -327,13 +337,14 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6">No Vehicle Check entries found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7">No Vehicle Check entries found.</td></tr>';
         } else {
           data.forEach((entry, index) => {
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
                 <td><a href="/vehicle_checkpost/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_check}</a></td>
+                <td>${entry.mps_limit}</td>
                 <td>${entry.vehicle_check_start_time} - ${entry.vehicle_check_end_time} hrs </td>
                 <td>${entry.check_post}</td>
                 <td>${entry.number_of_vehicles_checked}</td>
@@ -366,13 +377,14 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6">No Vehicle check entries found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7">No Vehicle check entries found.</td></tr>';
         } else {
           data.forEach((entry, index) => {
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
                 <td><a href="/vehicle_check_others/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_check}</a></td>
+                <td>${entry.mps_limit}</td>
                 <td>${entry.vehicle_check_start_time} - ${entry.vehicle_check_end_time} hrs </td>
                 <td>${entry.place_of_check}</td>
                 <td>${entry.number_of_vehicles_checked}</td>

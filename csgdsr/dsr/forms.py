@@ -2,7 +2,7 @@ from django import forms
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from .models import CASE_CATEGORIES, MPS_CHOICES, AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, MaritimeAct, OtherCases, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers,CheckPost,Other_Agencies,MPS, CustomUser, PS
+from .models import CASE_CATEGORIES, MPS_CHOICES, AttackOnTNFishermen_Choices,ArrestOfTNFishermen_Choices,ArrestOfSLFishermen_Choices, CSR,BNSSMissingCase, MaritimeAct, OtherCases, RescueAtBeach, RescueAtSea, Seizure, Officer,SeizedItemCategory,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen, OnRoadVehicleStatus, OnWaterVehicleStatus,VVCmeeting, BeatDetails, BoatPatrol,Atvpatrol, Proforma,VehicleCheckPost,VehicleCheckothers,CheckPost,Other_Agencies,MPS, CustomUser, PS, Headquarters, Zone, Range, Unit
 from django.core.exceptions import ValidationError
 User = get_user_model()
 USER_CHOICES = [
@@ -61,7 +61,7 @@ USER_CHOICES = [
 # admin interface forms 
 
 class CustomSignupForm(forms.ModelForm):
-    username = forms.ChoiceField(choices=USER_CHOICES, widget=forms.Select(attrs={"class": "form-select"}))
+    username = forms.CharField(label="Username", widget=forms.TextInput(attrs={"class": "form-control"}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-control"}))
     role = forms.ChoiceField(
         choices=[('', 'Select Role')] + CustomUser.ROLE_CHOICES,
@@ -121,12 +121,50 @@ class OfficerForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Officer Name'}),
         }
 
+class HeadquartersForm(forms.ModelForm):
+    class Meta:
+        model = Headquarters
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Headquarters Name'}),
+        }
+class ZoneForm(forms.ModelForm):
+    class Meta:
+        model = Zone
+        fields = ['name', 'headquarters']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Zone Name'}),
+            'headquarters': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+class RangeForm(forms.ModelForm):
+    class Meta:
+        model = Range
+        fields = ['name', 'zone']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Range Name'}),
+            'zone': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+class UnitForm(forms.ModelForm):
+    class Meta:
+        model = Unit
+        fields = ['name', 'range']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Unit Name'}),
+            'range': forms.Select(attrs={'class': 'form-control'}),
+           
+        }
+
 class MPSForm(forms.ModelForm):
     class Meta:
         model = MPS
-        fields = ['name']
+        fields = ['name', 'unit', 'range','zone']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter MPS Name'}),
+            'unit': forms.Select(attrs={'class': 'form-control'}),
+            'range': forms.Select(attrs={'class': 'form-control'}),
+            'zone': forms.Select(attrs={'class': 'form-control'}),
         }
 
 class PSForm(forms.ModelForm):

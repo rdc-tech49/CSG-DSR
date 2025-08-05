@@ -72,7 +72,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="6" class="text-center">No records found.</td>
+            <td colspan="7" class="text-center">No records found.</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -103,6 +103,7 @@
         <tr>
           <th>S. No</th>
           <th>Date</th>
+          <th>MPS Limit</th>
           <th>Day Beat </th>
           <th>Night Beat </th>
           <th>Actions</th>
@@ -116,6 +117,7 @@
               <a href="{% url 'beat_download' record.id %}" class= "text-decoration-none" target="_blank">
               {{ record.date_of_beat|date:"d-m-Y" }}
             </td>
+            <td>{{ record.mps_limit }}</td>
             <td>{{ record.day_beat_count }}</td>
             <td>{{ record.night_beat_count }}</td>
             <td>
@@ -125,7 +127,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="5" class="text-center">No records found.</td>
+            <td colspan="6" class="text-center">No records found.</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -148,13 +150,14 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6">No VVC entries found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7">No VVC entries found.</td></tr>';
         } else {
           data.forEach((entry, index) => {
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
                 <td><a href="/vvc/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_vvc}</a></td>
+                <td>${entry.mps_limit}</td>
                 <td>${entry.village_name}</td>
                 <td>${entry.number_of_villagers}</td>
                 <td>
@@ -187,13 +190,14 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5">No Beat entries found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6">No Beat entries found.</td></tr>';
         } else {
           data.forEach((entry, index) => {
             tbody.innerHTML += `
               <tr>
                 <td>${index + 1}</td>
                 <td><a href="/beat/${entry.id}/download/" class="text-decoration-none" target="_blank"> ${entry.date_of_beat}</a></td>
+                <td>${entry.mps_limit}</td>
                 <td>${entry.day_beat_count}</td>
                 <td>${entry.night_beat_count}</td>
                 

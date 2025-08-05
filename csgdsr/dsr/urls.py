@@ -40,6 +40,11 @@ urlpatterns = [
     path('admin_MPS_buildings/mps/edit/<int:mps_id>/', views.admin_MPS_buildings_view, name='edit_mps'),
     path('admin_MPS_buildings/checkpost/edit/<int:checkpost_id>/', views.admin_MPS_buildings_view, name='edit_checkpost'),
     path('admin_MPS_buildings/ps/edit/<int:ps_id>/', views.admin_MPS_buildings_view, name='edit_ps'),
+    path('admin_MPS_buildings/headquarters/edit/<int:headquarters_id>/', views.admin_MPS_buildings_view, name='edit_headquarters'),
+    path('admin_MPS_buildings/zone/edit/<int:zone_id>/', views.admin_MPS_buildings_view, name='edit_zone'),
+    path('admin_MPS_buildings/range/edit/<int:range_id>/', views.admin_MPS_buildings_view, name='edit_range'),
+    path('admin_MPS_buildings/unit/edit/<int:unit_id>/', views.admin_MPS_buildings_view, name='edit_unit'),
+
 
     # admin vehicle boat 
     path('admin_vehicle_boat/', views.admin_vehicle_boat_view, name='admin_vehicle_boat_page'),
