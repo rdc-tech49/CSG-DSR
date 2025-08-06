@@ -5,6 +5,8 @@ from docx.shared import Inches
 from django import forms
 from .models import CheckPost, CSR, BNSSMissingCase, OtherCases,Other_Agencies, MaritimeAct, Officer, MPS, CheckPost,Other_Agencies, AttackOnTNFishermen_Choices, ArrestOfTNFishermen_Choices, ArrestOfSLFishermen_Choices, SeizedItemCategory, CustomUser, SeizedItemCategory, PS, RescueAtBeach,RescueAtSea,Seizure,Forecast,AttackOnTNFishermen, ArrestOfTNFishermen, ArrestOfSLFishermen,OnRoadVehicleStatus,OnWaterVehicleStatus,VVCmeeting,BeatDetails,Proforma,BoatPatrol,VehicleCheckPost,Atvpatrol,VehicleCheckothers, Unit, Headquarters, Zone, Range
 
+from django.db.models import Count, Sum
+
 from django.utils.dateparse import parse_date
 
 from .forms import CustomSignupForm, UpdateUserForm,OfficerForm, CheckPostForm, CSRForm, BNSSMissingCaseForm,othercasesForm, MaritimeActForm,Other_AgenciesForm,OfficerForm, MPSForm, CheckPostForm,Other_AgenciesForm, AttackOnTNFishermen_ChoicesForm,ArrestOfTNFishermen_ChoicesForm, ArrestOfSLFishermen_ChoicesForm, SeizedItemCategoryForm,PSForm, RescueAtBeachForm,RescueAtSeaForm,SeizureForm,ForecastForm,AttackOnTNFishermenForm,ArrestOfTNFishermenForm,ArrestOfSLFishermenForm,OnRoadVehicleStatusForm, OnWaterVehicleStatusForm,  VVCmeetingForm, BeatDetailsForm, ProformaForm, BoatPatrolForm, VehicleCheckPostForm, AtvpatrolForm, VehicleCheckothersForm, HeadquartersForm, ZoneForm, RangeForm, UnitForm 
@@ -49,7 +51,178 @@ def home_view(request):
 # admin views
 @login_required
 def admin_dashboard_view(request):
-    return render(request, 'dsr/admin/admin_dashboard.html')
+    # buildings 
+    total_mps = MPS.objects.count()
+    total_checkpost = CheckPost.objects.count()
+    total_officers = Officer.objects.count()
+
+    # cases 
+    total_csr = CSR.objects.count()
+    total_bnss_cases = BNSSMissingCase.objects.count()
+    total_other_cases= OtherCases.objects.count()
+    total_maritime_cases = MaritimeAct.objects.count()
+
+    # rescue 
+    total_rescue_beach = RescueAtBeach.objects.count()
+    total_rescued_beachvictims = RescueAtBeach.objects.aggregate(
+        total=Sum('number_of_victims')
+    )['total'] or 0 
+    total_rescue_sea = RescueAtSea.objects.count()
+    total_rescued_seavictims = RescueAtSea.objects.aggregate(
+        total=Sum('number_of_victims')
+    )['total'] or 0
+    total_rescued_seaboats = RescueAtSea.objects.aggregate(
+        total=Sum('number_of_boats_rescued')
+    )['total'] or 0
+
+    #tnfishermen arrest
+    # --- CARD 3: ArrestOfTNFishermen stats ---
+    arrest_qs = ArrestOfTNFishermen.objects.all()
+    arrest_stats = arrest_qs.aggregate(
+        total_entries=Count('id'),
+        total_arrested=Sum('number_of_TNFishermen_arrested'),
+        total_boats_seized=Sum('no_of_boats_seized'),
+        total_released=Sum('number_of_TNFishermen_released'),
+        total_boats_released=Sum('no_of_boats_released')
+    )
+    # --- CARD 4: AttackOnTNFishermen stats for SriLankan Navy ---
+    navy = Other_Agencies.objects.filter(agency_name__iexact="SriLankan Navy").first()
+    navy_stats = {}
+    if navy:
+        navy_stats = AttackOnTNFishermen.objects.filter(attacked_by=navy).aggregate(
+            total_entries=Count('id'),
+            total_injured=Sum('number_of_TNFishermen_injured'),
+            total_missing=Sum('number_of_TNFishermen_missing'),
+            total_died=Sum('number_of_TNFishermen_died')
+        )
+    # --- CARD 5: AttackOnTNFishermen stats for SriLankan Fishermen ---
+    fishermen = Other_Agencies.objects.filter(agency_name__iexact="SriLankan Fishermen").first()
+    fishermen_stats = {}
+    if fishermen:
+        fishermen_stats = AttackOnTNFishermen.objects.filter(attacked_by=fishermen).aggregate(
+            total_entries=Count('id'),
+            total_injured=Sum('number_of_TNFishermen_injured'),
+            total_missing=Sum('number_of_TNFishermen_missing'),
+            total_died=Sum('number_of_TNFishermen_died')
+        )
+
+
+
+
+    # sl fishermen arrest 
+    total_slfisheremen_arrested_incident = ArrestOfSLFishermen.objects.count()
+    total_slfisheremen_arrested = ArrestOfSLFishermen.objects.aggregate(total_arrested=Sum('number_of_SLFishermen_arrested'))
+    ['total_arrested'] or 0
+    total_slfisheremen_released = ArrestOfSLFishermen.objects.aggregate(total_released=Sum('number_of_SLFishermen_released'))['total_released'] or 0
+    total_slboats_seized = ArrestOfSLFishermen.objects.aggregate(total_seized=Sum('no_of_boats_seized'))['total_seized'] or 0
+    total_slboats_released = ArrestOfSLFishermen.objects.aggregate(total_released=Sum('no_of_boats_released'))['total_released'] or 0
+
+    # attack on tn fishermen
+    total_tnfisheremen_attacked_incident = AttackOnTNFishermen.objects.count()
+    total_tnfishermen_injured = AttackOnTNFishermen.objects.aggregate(total_injured=Sum('number_of_TNFishermen_injured'))['total_injured'] or 0
+    total_tnfisheremen_killed = AttackOnTNFishermen.objects.aggregate(total_killed=Sum('number_of_TNFishermen_died'))['total_killed'] or 0
+    total_tnfishermen_missing= AttackOnTNFishermen.objects.aggregate(total_injured=Sum('number_of_TNFishermen_missing'))['total_injured'] or 0
+
+
+
+
+
+
+
+
+    twelve_ton_boats = OnWaterVehicleStatus.objects.filter(boat_type='12_TON_BOAT')
+    total_12t_boats= OnWaterVehicleStatus.objects.filter(boat_type='12_TON_BOAT').count()
+    working_12ton_count = twelve_ton_boats.filter(working_status='WORKING').count()
+    not_working_12ton_count = twelve_ton_boats.filter(working_status='NOT_WORKING').count()
+    condemned_12ton_count = twelve_ton_boats.filter(working_status='CONDEMNED').count()
+
+    five_ton_boats = OnWaterVehicleStatus.objects.filter(boat_type='5_TON_BOAT')
+    total_5t_boats = OnWaterVehicleStatus.objects.filter(boat_type='5_TON_BOAT').count()
+    working_5ton_count = five_ton_boats.filter(working_status='WORKING').count()
+    not_working_5ton_count = five_ton_boats.filter(working_status='NOT_WORKING').count()
+    condemned_5ton_count = five_ton_boats.filter(working_status='CONDEMNED').count()
+
+    jetskis = OnWaterVehicleStatus.objects.filter(boat_type='JET_SKI')
+    total_jetskis = OnWaterVehicleStatus.objects.filter(boat_type='JET_SKI').count()
+    working_jetskis= jetskis.filter(working_status='WORKING').count()
+    not_working_jetskis = jetskis.filter(working_status='NOT_WORKING').count()
+    condemned_jetskis = jetskis.filter(working_status='CONDEMNED').count()
+
+    jetboats= OnWaterVehicleStatus.objects.filter(boat_type='JET_BOAT')
+    total_jetboats = OnWaterVehicleStatus.objects.filter(boat_type='JET_BOAT').count()
+    working_jetboats = jetboats.filter(working_status='WORKING').count()
+    not_working_jetboats = jetboats.filter(working_status='NOT_WORKING').count()
+    condemned_jetboats = jetboats.filter(working_status='CONDEMNED').count()
+
+
+
+
+    total_twowheelers = OnRoadVehicleStatus.objects.filter(vehicle_type='Two Wheeler').count()
+    total_fourwheelers = OnRoadVehicleStatus.objects.filter(vehicle_type='Four Wheeler').count()
+    total_atv=OnRoadVehicleStatus.objects.filter(vehicle_type='ATV').count()
+
+    total_vvc_meetings = VVCmeeting.objects.count()
+    total_villagers_attended = VVCmeeting.objects.aggregate(total=Sum('number_of_villagers'))['total'] or 0
+
+    total_boat_patrols = BoatPatrol.objects.count()
+    total_boats_checked= BoatPatrol.objects.aggregate(total=Sum('numberof_boats_checked'))['total'] or 0
+    total_atv_patrols = Atvpatrol.objects.count()
+    total_vehicle_checkposts = VehicleCheckPost.objects.count()
+    total_vehicle_check_others = VehicleCheckothers.objects.count()
+    total_vehicles_checked_others = VehicleCheckothers.objects.aggregate(
+        total=Sum('number_of_vehicles_checked')
+    )['total'] or 0
+    total_vehicles_checked_checkpost = VehicleCheckPost.objects.aggregate(total=Sum('number_of_vehicles_checked'))['total'] or 0
+
+
+    total_daybeats = BeatDetails.objects.aggregate(total=Sum('day_beat_count'))['total'] or 0
+    total_nightbeats = BeatDetails.objects.aggregate(total=Sum('night_beat_count'))['total'] or 0
+
+
+
+    context = {
+        'total_mps': total_mps,
+        'total_checkpost': total_checkpost,
+        'total_csr': total_csr,
+        'total_bnss_cases': total_bnss_cases,
+        'total_other_cases': total_other_cases,
+        'total_maritime_cases': total_maritime_cases,
+        'total_rescue_beach': total_rescue_beach,
+        'total_rescued_beachvictims': total_rescued_beachvictims,
+        'total_rescue_sea': total_rescue_sea,
+        'total_rescued_seavictims': total_rescued_seavictims,
+        'total_rescued_seaboats': total_rescued_seaboats,
+        'total_12t_boats': total_12t_boats,
+        'working_12ton_count': working_12ton_count,
+        'not_working_12ton_count': not_working_12ton_count,
+        'condemned_12ton_count': condemned_12ton_count,
+        'total_5t_boats': total_5t_boats,
+        'working_5ton_count': working_5ton_count,
+        'not_working_5ton_count': not_working_5ton_count,
+        'condemned_5ton_count': condemned_5ton_count,
+        'total_jetskis': total_jetskis,
+        'working_jetskis': working_jetskis,
+        'not_working_jetskis': not_working_jetskis,
+        'condemned_jetskis': condemned_jetskis,
+        'total_jetboats': total_jetboats,
+        'working_jetboats': working_jetboats,
+        'not_working_jetboats': not_working_jetboats,
+        'condemned_jetboats': condemned_jetboats,
+
+
+        # Arrest Stats
+        'total_arrest_entries': arrest_stats['total_entries'],
+        'number_of_TNFishermen_arrested': arrest_stats['total_arrested'],
+        'no_of_boats_seized': arrest_stats['total_boats_seized'],
+        'number_of_TNFishermen_released': arrest_stats['total_released'],
+        'no_of_boats_released': arrest_stats['total_boats_released'],
+
+        # Attack Stats
+        'navy_attack_data': navy_stats,
+        'fishermen_attack_data': fishermen_stats,
+
+    }    
+    return render(request, 'dsr/admin/admin_dashboard.html',context)
 
 @login_required
 def admin_users_view(request, user_id=None):

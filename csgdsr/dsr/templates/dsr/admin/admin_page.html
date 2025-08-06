@@ -17,11 +17,66 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+  <!-- Optional: Custom CSS -->
+
+
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+
+
+
+
   {# Custom CSS #}
   {% load static %}
   <link rel="stylesheet" href="{% static 'dsr/css/style.css' %}">
+  <style>
+    .dashboard-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.dashboard-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+}
+
+  {% comment %} .dashboard-card {
+    border-radius: 18px;
+    background: linear-gradient(135deg, #f9f9f9, #ffffff);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #e6f0ff, #f9f9f9);
+  }
+
+  .icon-circle {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  h2 {
+    font-size: 2.2rem;
+  } {% endcomment %}
+</style>
+
+
+
+
+
+
 </head>
-<body>
+<body style="">
 
 {% include 'dsr/admin/admin_sidebar.html' %}
 

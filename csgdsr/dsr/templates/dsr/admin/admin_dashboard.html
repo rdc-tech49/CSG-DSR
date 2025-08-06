@@ -1,6 +1,6 @@
 {% extends 'dsr/admin/admin_page.html' %}
 {% load static %}
-{% block usercontent %}
+{% block admincontent %}
 
 {% if messages %}
   <div id="message-container">
@@ -12,6 +12,368 @@
     {% endfor %}
   </div>
 {% endif %}
+
+<div class="container mt-4">
+  <div class="row">
+
+    {% comment %} MPS card  {% endcomment %}
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card h-100 shadow-lg border-0" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title font-weight-bold text-uppercase text-secondary mb-2" style="letter-spacing:1px;"> MPS</h6>
+            <h6 class="display-6 text-primary mb-0" style="font-weight:700;">{{ total_mps }}</h6>
+          </div>
+          <div class="rounded-circle bg-white shadow p-3 d-flex align-items-center justify-content-center" style="width:70px; height:70px;">
+            <i class="fas fa-building fa-2x" style="color: #007bff;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} Checkpost card  {% endcomment %}
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #e0f9f2 0%, #b2f0e3 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="text-uppercase text-success mb-2 fw-semibold"
+                style="letter-spacing:1px;"> Check Posts</h5>
+            <h6 class="display-6 fw-bold mb-0 text-success"
+                style="font-weight: 700;">{{ total_checkpost }}</h6>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-shield-halved fa-2x" style="color: #28a745;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} total csr  {% endcomment %}
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-warning mb-2 fw-semibold" style="letter-spacing:1px;">CSR Registered</h6>
+            <h6 class="display-6 fw-bold mb-0 text-warning" style="font-weight: 700;">{{ total_csr }}</h6>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-gavel fa-2x" style="color: #ffc107;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} bnss cases registered  {% endcomment %}
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #ffe6fa 0%, #b8c6db 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-danger mb-2 fw-semibold" style="letter-spacing:1px;">BNSS Cases Registered</h6>
+            <h6 class="display-6 fw-bold mb-0 text-danger" style="font-weight: 700;">{{ total_bnss_cases }}</h6>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-folder-open fa-2x" style="color: #dc3545;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} other cases registered  {% endcomment %}
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-info mb-2 fw-semibold" style="letter-spacing:1px;">Other Cases</h6>
+            <h6 class="display-6 fw-bold mb-0 text-info" style="font-weight: 700;">{{ total_other_cases }}</h6>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-box-open fa-2x" style="color: #17a2b8;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} maritime cases  {% endcomment %}
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #e9f0e3 0%, #c8e6c9 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-primary mb-2 fw-semibold" style="letter-spacing:1px;">Maritime Cases </h6>
+            <h6 class="display-6 fw-bold mb-0 text-primary" style="font-weight: 700;">{{ total_maritime_cases }}</h6>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-life-ring fa-2x" style="color: #007bff;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} beach rescue  {% endcomment %}
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase  mb-2 fw-semibold" style="letter-spacing:1px; color: #6f42c1">Rescue at beach</h6>
+            <h6 class="fw-bold mb-0" style="color: #6f42c1; font-weight: 500;">Incidents: {{ total_rescue_beach }}</h6>
+            <h6 class="fw-bold mb-0" style="color: #6f42c1; font-weight: 400;">Persons Rescued: {{ total_rescued_beachvictims }}</h6>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-ship fa-2x" style="color: #6f42c1;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} sea rescue  {% endcomment %}
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #fff6e0 0%, #fed6e3 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-secondary mb-2 fw-semibold" style="letter-spacing:1px;">Rescue at Sea</h6>
+            <h6 class=" fw-bold mb-0 text-secondary" style="font-weight: 700;">Inicidents : {{ total_rescue_sea }}</h6>
+            <h6 class=" fw-bold mb-0 text-secondary" style="font-weight: 700;">Fishermen rescued : {{ total_rescued_seavictims }}</h6>
+            <h6 class=" fw-bold mb-0 text-secondary" style="font-weight: 700;">Boats rescued : {{ total_rescued_seaboats }}</h6>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-car fa-2x" style="color: #343a40;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} boats  {% endcomment %}
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #fff9e5 0%, #fde6e6 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-danger mb-2 fw-semibold" style="letter-spacing:1px;">Boats</h6>
+            <h6 class=" fw-bold mb-0 text-danger" style="font-weight: 700;">12 Ton Boats: {{ total_12t_boats }}</h6>
+            <h6 class=" fw-bold mb-0 text-danger" style="font-weight: 700;">05 Ton Boats: {{ total_5t_boats }}</h6>
+            <h6 class=" fw-bold mb-0 text-danger" style="font-weight: 700;">Jet Boats: {{ total_jetboats }}</h6>
+            <h6 class=" fw-bold mb-0 text-danger" style="font-weight: 700;">Jet Skis: {{ total_jetskis }}</h6>
+
+
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-users fa-2x" style="color: #e83e8c;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-success mb-2 fw-semibold" style="letter-spacing:1px;">Village Meetings</h6>
+            <h2 class="display-5 fw-bold mb-0 text-success" style="font-weight: 700;">{{ total_village_meetings }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-comments fa-2x" style="color: #28a745;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #fddb92 0%, #d1fdff 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-info mb-2 fw-semibold" style="letter-spacing:1px;">Forecasts Issued</h6>
+            <h2 class="display-5 fw-bold mb-0 text-info" style="font-weight: 700;">{{ total_forecasts }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-cloud-sun fa-2x" style="color: #17a2b8;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #deefff 0%, #c9f7f5 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-primary mb-2 fw-semibold" style="letter-spacing:1px;">Meetings Attended</h6>
+            <h2 class="display-5 fw-bold mb-0 text-primary" style="font-weight: 700;">{{ total_meetings }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-handshake-angle fa-2x" style="color: #007bff;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #fee2f8 0%, #fcd34d 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-warning mb-2 fw-semibold" style="letter-spacing:1px;">Vehicle Checks</h6>
+            <h2 class="display-5 fw-bold mb-0 text-warning" style="font-weight: 700;">{{ total_vehicle_checks }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-clipboard-check fa-2x" style="color: #ffc107;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #e7f0fd 0%, #b6deff 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-secondary mb-2 fw-semibold" style="letter-spacing:1px;">Beat Checks</h6>
+            <h2 class="display-5 fw-bold mb-0 text-secondary" style="font-weight: 700;">{{ total_beat_checks }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-user-secret fa-2x" style="color: #343a40;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-danger mb-2 fw-semibold" style="letter-spacing:1px;">Suspicious Activities</h6>
+            <h2 class="display-5 fw-bold mb-0 text-danger" style="font-weight: 700;">{{ total_suspicious }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-exclamation-triangle fa-2x" style="color: #c82333;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #cef2f7 0%, #e4c1f9 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-info mb-2 fw-semibold" style="letter-spacing:1px;">FIR Registered</h6>
+            <h2 class="display-5 fw-bold mb-0 text-info" style="font-weight: 700;">{{ total_fir }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-file-lines fa-2x" style="color: #17a2b8;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-orange mb-2 fw-semibold" style="letter-spacing:1px; color:#fd7e14;">Arrests Made</h6>
+            <h2 class="display-5 fw-bold mb-0" style="color: #fd7e14; font-weight: 700;">{{ total_arrests }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-user-lock fa-2x" style="color: #fd7e14;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #f9d5e5 0%, #eeaeca 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-primary mb-2 fw-semibold" style="letter-spacing:1px;">Staff On Duty</h6>
+            <h2 class="display-5 fw-bold mb-0 text-primary" style="font-weight: 700;">{{ total_staff_on_duty }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-user-check fa-2x" style="color: #007bff;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-danger mb-2 fw-semibold" style="letter-spacing:1px;">Emergency Calls</h6>
+            <h2 class="display-5 fw-bold mb-0 text-danger" style="font-weight: 700;">{{ total_emergency_calls }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-phone-volume fa-2x" style="color: #dc3545;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card dashboard-card shadow-lg border-0 h-100"
+          style="background: linear-gradient(135deg, #fdc830 0%, #f37335 100%);">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-uppercase text-warning mb-2 fw-semibold" style="letter-spacing:1px;">Rewards</h6>
+            <h2 class="display-5 fw-bold mb-0 text-warning" style="font-weight: 700;">{{ total_rewards }}</h2>
+          </div>
+          <div class="bg-white shadow rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 70px; height: 70px;">
+            <i class="fa-solid fa-trophy fa-2x" style="color: #ffc107;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Example Navy Attack Card -->
+<div class="card shadow-sm rounded p-4 hover:bg-blue-100">
+  <h5 class="mb-1">SriLankan Navy Attacks</h5>
+  <p>Total Entries: {{ navy_attack_data.total_entries }}</p>
+  <p>Injured: {{ navy_attack_data.total_injured }}</p>
+  <p>Missing: {{ navy_attack_data.total_missing }}</p>
+  <p>Died: {{ navy_attack_data.total_died }}</p>
+</div>
+
+<!-- Example Fishermen Attack Card -->
+<div class="card shadow-sm rounded p-4 hover:bg-green-100">
+  <h5 class="mb-1">SriLankan Fishermen Attacks</h5>
+  <p>Total Entries: {{ fishermen_attack_data.total_entries }}</p>
+  <p>Injured: {{ fishermen_attack_data.total_injured }}</p>
+  <p>Missing: {{ fishermen_attack_data.total_missing }}</p>
+  <p>Died: {{ fishermen_attack_data.total_died }}</p>
+</div>
+
+
+
+
+  </div>
+</div>
+
+
+
+
+
 
 <script>
   // hide message after 5 seconds 
