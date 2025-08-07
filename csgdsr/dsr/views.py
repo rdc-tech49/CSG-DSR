@@ -156,10 +156,23 @@ def admin_dashboard_view(request):
 
 
 
+    twowheelers = OnRoadVehicleStatus.objects.filter(vehicle_type='TWO_WHEELER')
+    total_twowheelers = OnRoadVehicleStatus.objects.filter(vehicle_type='TWO_WHEELER').count()
+    working_twowheelers = twowheelers.filter(working_status='WORKING').count()
+    not_working_twowheelers = twowheelers.filter(working_status='NOT_WORKING').count()
+    condemned_twowheelers = twowheelers.filter(working_status='CONDEMNED').count()
 
-    total_twowheelers = OnRoadVehicleStatus.objects.filter(vehicle_type='Two Wheeler').count()
-    total_fourwheelers = OnRoadVehicleStatus.objects.filter(vehicle_type='Four Wheeler').count()
+    fourwheelers = OnRoadVehicleStatus.objects.filter(vehicle_type='FOUR_WHEELER')
+    total_fourwheelers = OnRoadVehicleStatus.objects.filter(vehicle_type='FOUR_WHEELER').count()
+    working_fourwheelers = fourwheelers.filter(working_status='WORKING').count()
+    not_working_fourwheelers = fourwheelers.filter(working_status='NOT_WORKING').count()
+    condemned_fourwheelers = fourwheelers.filter(working_status='CONDEMNED').count()
+
+    atvs= OnRoadVehicleStatus.objects.filter(vehicle_type='ATV')
     total_atv=OnRoadVehicleStatus.objects.filter(vehicle_type='ATV').count()
+    working_atv = atvs.filter(working_status='WORKING').count()
+    not_working_atv = atvs.filter(working_status='NOT_WORKING').count()
+    condemned_atv = atvs.filter(working_status='CONDEMNED').count()
 
     total_vvc_meetings = VVCmeeting.objects.count()
     total_villagers_attended = VVCmeeting.objects.aggregate(total=Sum('number_of_villagers'))['total'] or 0
@@ -208,8 +221,29 @@ def admin_dashboard_view(request):
         'working_jetboats': working_jetboats,
         'not_working_jetboats': not_working_jetboats,
         'condemned_jetboats': condemned_jetboats,
-
-
+        'total_twowheelers': total_twowheelers,
+        'working_twowheelers': working_twowheelers,
+        'not_working_twowheelers': not_working_twowheelers,
+        'condemned_twowheelers': condemned_twowheelers,
+        'total_fourwheelers': total_fourwheelers,
+        'working_fourwheelers': working_fourwheelers,
+        'not_working_fourwheelers': not_working_fourwheelers,
+        'condemned_fourwheelers': condemned_fourwheelers,
+        'total_atv': total_atv,
+        'working_atv': working_atv,
+        'not_working_atv': not_working_atv,
+        'condemned_atv': condemned_atv,
+        'total_boat_patrols': total_boat_patrols,
+        'total_boats_checked': total_boats_checked,
+        'total_atv_patrols': total_atv_patrols,
+        'total_vehicle_checkposts': total_vehicle_checkposts,
+        'total_vehicle_check_others': total_vehicle_check_others,
+        'total_vehicles_checked_others': total_vehicles_checked_others,
+        'total_vehicles_checked_checkpost': total_vehicles_checked_checkpost,
+        'total_vvc_meetings': total_vvc_meetings,
+        'total_villagers_attended': total_villagers_attended,
+        'total_daybeats': total_daybeats,
+        'total_nightbeats': total_nightbeats,
         # Arrest Stats
         'total_arrest_entries': arrest_stats['total_entries'],
         'number_of_TNFishermen_arrested': arrest_stats['total_arrested'],
@@ -217,6 +251,13 @@ def admin_dashboard_view(request):
         'number_of_TNFishermen_released': arrest_stats['total_released'],
         'no_of_boats_released': arrest_stats['total_boats_released'],
 
+        'total_slfisheremen_arrested_incident': total_slfisheremen_arrested_incident,
+        'total_slfisheremen_arrested':total_slfisheremen_arrested,
+        'total_slboats_seized': total_slboats_seized,
+        'total_slfisheremen_released': total_slfisheremen_released,
+        'total_slboats_released': total_slboats_released,
+
+        
         # Attack Stats
         'navy_attack_data': navy_stats,
         'fishermen_attack_data': fishermen_stats,
