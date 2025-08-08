@@ -85,49 +85,50 @@ def admin_dashboard_view(request):
         total_released=Sum('number_of_TNFishermen_released'),
         total_boats_released=Sum('no_of_boats_released')
     )
-    # --- CARD 4: AttackOnTNFishermen stats for SriLankan Navy ---
-    navy = Other_Agencies.objects.filter(agency_name__iexact="SriLankan Navy").first()
-    navy_stats = {}
-    if navy:
-        navy_stats = AttackOnTNFishermen.objects.filter(attacked_by=navy).aggregate(
-            total_entries=Count('id'),
-            total_injured=Sum('number_of_TNFishermen_injured'),
-            total_missing=Sum('number_of_TNFishermen_missing'),
-            total_died=Sum('number_of_TNFishermen_died')
-        )
-    # --- CARD 5: AttackOnTNFishermen stats for SriLankan Fishermen ---
-    fishermen = Other_Agencies.objects.filter(agency_name__iexact="SriLankan Fishermen").first()
-    fishermen_stats = {}
-    if fishermen:
-        fishermen_stats = AttackOnTNFishermen.objects.filter(attacked_by=fishermen).aggregate(
-            total_entries=Count('id'),
-            total_injured=Sum('number_of_TNFishermen_injured'),
-            total_missing=Sum('number_of_TNFishermen_missing'),
-            total_died=Sum('number_of_TNFishermen_died')
-        )
-
-
-
-
+    
     # sl fishermen arrest 
+    arrest_sl = ArrestOfSLFishermen.objects.all()
+    slarrest_stats = arrest_sl.aggregate(
+        total_entries=Count('id'),
+        total_arrested=Sum('number_of_SLFishermen_arrested'),
+        total_boats_seized=Sum('no_of_boats_seized'),
+        total_released=Sum('number_of_SLFishermen_released'),
+        total_boats_released=Sum('no_of_boats_released')
+    )
+     # ---- Fishermen Attack Stats ----
+    try:
+        sl_fishermen_agency = Other_Agencies.objects.get(agency_name="Sri Lankan Fishermen")
+    except Other_Agencies.DoesNotExist:
+        sl_fishermen_agency = None
+
+    try:
+        sl_navy_agency = Other_Agencies.objects.get(agency_name="Sri Lankan Navy")
+    except Other_Agencies.DoesNotExist:
+        sl_navy_agency = None
+
+    sl_fishermen_stats = {'injured': 0, 'missing': 0, 'died': 0}
+    sl_navy_stats = {'injured': 0, 'missing': 0, 'died': 0}
+
+    if sl_fishermen_agency:
+        sl_fishermen_stats = AttackOnTNFishermen.objects.filter(attacked_by=sl_fishermen_agency).aggregate(
+            injured=Sum('number_of_TNFishermen_injured'),
+            missing=Sum('number_of_TNFishermen_missing'),
+            died=Sum('number_of_TNFishermen_died')
+        )
+
+    if sl_navy_agency:
+        sl_navy_stats = AttackOnTNFishermen.objects.filter(attacked_by=sl_navy_agency).aggregate(
+            injured=Sum('number_of_TNFishermen_injured'),
+            missing=Sum('number_of_TNFishermen_missing'),
+            died=Sum('number_of_TNFishermen_died')
+        )
+
     total_slfisheremen_arrested_incident = ArrestOfSLFishermen.objects.count()
-    total_slfisheremen_arrested = ArrestOfSLFishermen.objects.aggregate(total_arrested=Sum('number_of_SLFishermen_arrested'))
+    total_slfisheremen_arrested = ArrestOfSLFishermen.objects.all().aggregate(total_arrested=Sum('number_of_SLFishermen_arrested'))
     ['total_arrested'] or 0
     total_slfisheremen_released = ArrestOfSLFishermen.objects.aggregate(total_released=Sum('number_of_SLFishermen_released'))['total_released'] or 0
     total_slboats_seized = ArrestOfSLFishermen.objects.aggregate(total_seized=Sum('no_of_boats_seized'))['total_seized'] or 0
     total_slboats_released = ArrestOfSLFishermen.objects.aggregate(total_released=Sum('no_of_boats_released'))['total_released'] or 0
-
-    # attack on tn fishermen
-    total_tnfisheremen_attacked_incident = AttackOnTNFishermen.objects.count()
-    total_tnfishermen_injured = AttackOnTNFishermen.objects.aggregate(total_injured=Sum('number_of_TNFishermen_injured'))['total_injured'] or 0
-    total_tnfisheremen_killed = AttackOnTNFishermen.objects.aggregate(total_killed=Sum('number_of_TNFishermen_died'))['total_killed'] or 0
-    total_tnfishermen_missing= AttackOnTNFishermen.objects.aggregate(total_injured=Sum('number_of_TNFishermen_missing'))['total_injured'] or 0
-
-
-
-
-
-
 
 
     twelve_ton_boats = OnWaterVehicleStatus.objects.filter(boat_type='12_TON_BOAT')
@@ -250,17 +251,19 @@ def admin_dashboard_view(request):
         'no_of_boats_seized': arrest_stats['total_boats_seized'],
         'number_of_TNFishermen_released': arrest_stats['total_released'],
         'no_of_boats_released': arrest_stats['total_boats_released'],
-
-        'total_slfisheremen_arrested_incident': total_slfisheremen_arrested_incident,
-        'total_slfisheremen_arrested':total_slfisheremen_arrested,
-        'total_slboats_seized': total_slboats_seized,
-        'total_slfisheremen_released': total_slfisheremen_released,
-        'total_slboats_released': total_slboats_released,
+        # sl arrest stat 
+        'total_slfisheremen_arrested_incident': slarrest_stats['total_entries'],
+        'total_slfisheremen_arrested':slarrest_stats['total_arrested'],
+        'total_slboats_seized': slarrest_stats['total_boats_seized'],
+        'total_slfisheremen_released': slarrest_stats['total_released'],
+        'total_slboats_released': slarrest_stats['total_boats_released'],
+        # Fishermen Attack
+        'sl_fishermen_stats': sl_fishermen_stats,
+        'sl_navy_stats': sl_navy_stats,
+       
+        
 
         
-        # Attack Stats
-        'navy_attack_data': navy_stats,
-        'fishermen_attack_data': fishermen_stats,
 
     }    
     return render(request, 'dsr/admin/admin_dashboard.html',context)
